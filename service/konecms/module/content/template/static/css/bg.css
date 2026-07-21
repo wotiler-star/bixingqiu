@@ -1,0 +1,28 @@
+.bgwhite{
+	background:#fff;
+}
+.bggray{
+	background:gray;
+}
+.bggray-alpha{
+	background:rgba(125,125,125,0.5);
+}
+.bgred{
+	background:#f00 
+}
+.bgblue{
+	background:blue;
+}
+.bgblack{
+	background:black;
+}
+.bggreen{
+	background:green;
+}
+.bgorange{
+	background:orange;
+}
+.bgpurple{
+	background:purple;
+}
+

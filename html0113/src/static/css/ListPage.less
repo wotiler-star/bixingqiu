@@ -1,0 +1,245 @@
+.list-page {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    padding-top: 0.76rem;
+    font-size: 0.14rem;
+    .navBox {
+        width: 100%;
+        height: 0.82rem;
+        background: #1c273d;
+        ul {
+            margin: 0 auto;
+            padding: 0;
+            overflow: hidden;
+            width: 12rem;
+            height: 100%;
+            line-height: 0.82rem;
+            li {
+                a {
+                    text-decoration: none;
+                    color: #eee;
+                }
+                cursor: pointer;
+                color: #eee;
+                display: block;
+                float: left;
+                font-size: 0.18rem;
+                margin-left: 0.5rem;
+                &:hover {
+                    color: #1482f0;
+                }
+            }
+            .active {
+                color: #1482f0;
+            }
+        }
+    }
+    .main {
+        width: 11.7rem;
+        margin: 0.3rem auto;
+        overflow: hidden;
+        .left-content {
+            width: 8rem;
+            height: auto;
+            float: left;
+            padding-bottom: 1rem;
+            .list-content {
+                width: 100%;
+                display: block;
+                float: left;
+                .news-list {
+                    position: relative;
+                    display: block;
+                    width: 8rem;
+                    height: 1.6rem;
+                    padding: 0.2rem 0;
+                    box-sizing: content-box;
+                    border-bottom: 1px #eee solid;
+                    cursor: pointer;
+                    margin: 0;
+                    a {
+                        position: relative;
+                        z-index: 6;
+                        text-decoration: none;
+                        display: block;
+                        height: 100%;
+                        .imgBox {
+                            position: relative;
+                            overflow: hidden;
+                            width: 2.2rem;
+                            height: 1.6rem;
+                            margin-right: 0.2rem;
+                            float: left;
+                            z-index: 5;
+                            &:hover img {
+                                transform: scale(1.04);
+                            }
+                            img {
+                                width: 100%;
+                                height: 100%;
+                                transition: transform .15s ease;
+                            }
+                        }
+                        .content-text {
+                            width: 5.6rem;
+                            float: right;
+                            h1 {
+                                width: 100%;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                font-weight: 700;
+                                font-size: 0.2rem;
+                                margin: 0;
+                                color: #000;
+                                display: block;
+                                &:hover {
+                                    color: #0163c5;
+                                }
+                            }
+                            p {
+                                width: 100%;
+                                display: block;
+                                color: #828a92;
+                                margin-top: 0.1rem;
+                                max-height: 0.6rem;
+                                overflow: hidden;
+                                &:hover {
+                                    color: #555c62;
+                                }
+                            }
+                        }
+                        .list-bottom {
+                            position: absolute;
+                            bottom: 0;
+                            right: 0;
+                            width: 5.6rem;
+                            height: 0.3rem;
+                            color: #828a92;
+                            display: block;
+                            span {
+                                display: inline-block;
+                                float: left;
+                                margin-right: 0.2rem;
+                            }
+                            p,
+                            a {
+                                max-width: 2.24rem;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                display: inline-block;
+                                float: right;
+                                margin: 0;
+                                color: #828a92;
+                                margin-left: 0.07rem;
+                                &:hover {
+                                    color: #0163c5;
+                                }
+                            }
+                        }
+                    }
+                    &:hover .shadow {
+                        opacity: 1;
+                        box-shadow: #ccc 0 0 20px;
+                        transition: .3s;
+                        border-radius: 5px;
+                    }
+                    .shadow {
+                        position: absolute;
+                        width: 830px;
+                        height: 200px;
+                        background: #fff;
+                        z-index: 4;
+                        left: -15px;
+                        top: 0;
+                        opacity: 0;
+                        transition: .3s;
+                        box-shadow: #a9a9a9 0 0 20px;
+                    }
+                }
+            }
+            .lazy {
+                margin-top: 0.2rem;
+                width: 100%;
+                height: 0.5rem;
+                line-height: 0.5rem;
+                border-radius: 8px;
+                display: block;
+                background: #F5F5F5;
+                border: #F5F5F5 1px solid;
+                text-align: center;
+                color: #777;
+                float: left;
+                cursor: pointer;  
+                &:hover {
+                    background: #fff;
+                    border-color: #DCDCDC;
+                }
+            }
+        }
+        .right-content {
+            width: 3.58rem;
+            height: auto;
+            float: right;
+            .recomend {
+                width: 3.18rem;
+                padding: 0.2rem;
+                float: right;
+                border: 1px solid #EEE;
+                h3 {
+                    margin-top: 0;
+                }
+                .listBox {
+                    cursor: pointer;
+                    width: 100%;
+                    height: 1rem;
+                    color: #424242;
+                    padding: 0.2rem 0;
+                    border-top: 1px solid #eee;
+                    display: block;
+                    &:nth-of-type(1) {
+                        border: none;
+                    }
+                    img {
+                        display: inline-block;
+                        float: left;
+                        width: 0.9rem;
+                        height: 0.65rem;
+                    }
+                    span {
+                        float: right;
+                        width: 1.8rem;
+                        height: 0.4rem;
+                        font-size: 0.16rem;
+                        line-height: 0.2rem;
+                        color: #212121;
+                        margin-bottom: 0.07rem;
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        /** 对象作为伸缩盒子模型显示 **/
+                        -webkit-box-orient: vertical;
+                        /** 设置或检索伸缩盒对象的子元素的排列方式 **/
+                        -webkit-line-clamp: 2;
+                        /** 显示的行数 **/
+                        overflow: hidden;
+                        /** 隐藏超出的内容 **/
+                        &:hover {
+                            color: #1482f0;
+                        }
+                    }
+                    p {
+                        display: inline-block;
+                        float: right;
+                        width: 1.8rem;
+                        margin: 0;
+                        font-size: 0.13rem;
+                        color: #828a92;
+                    }
+                }
+            }
+        }
+    }
+}

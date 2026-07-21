@@ -1,0 +1,1170 @@
+.homeBox {
+    width: 100%;
+    margin: 0;
+    font-size: 0.14rem;
+    .mainBox {
+        padding-top: 0.76rem;
+        .primaryBox {
+            padding-top: 0.2rem;
+            background: #f0f2f5;
+            .primary {
+                width: 11.7rem;
+                margin: 0 auto;
+                overflow: hidden;
+                padding-bottom: 0.4rem;
+                .primary-left {
+                    width: 8rem;
+                    height: 4.5rem;
+                    float: left;
+                    .carousel {
+                        width: 100%;
+                        height: 3.35rem;
+                        float: left;
+                        margin-bottom: 0.15rem;
+                        .swiper-container {
+                            width: 5.32rem;
+                            height: 3.35rem;
+                            margin: 0;
+                            float: left;
+                            cursor: pointer;
+                            .swiper-slide {
+                                overflow: hidden;
+                            }
+                            &:hover img {
+                                transform: scale(1.05);
+                            }
+                            img {
+                                width: 100%;
+                                height: 100%;
+                                transition: all .2s;
+                            }
+                            .swiper-button-prev,
+                            .swiper-button-next {
+                                width: 0.5rem;
+                                height: 0.5rem;
+                                line-height: 0.55rem;
+                                text-align: center;
+                                background: rgba(0, 0, 0, .1);
+                                border-radius: 0.5rem;
+                                i {
+                                    font-size: 0.3rem;
+                                    color: #FFF;
+                                }
+                            }
+                            .swiper-button-prev:hover {
+                                background: rgba(0, 0, 0, .5);
+                            }
+                            .swiper-button-next:hover {
+                                background: rgba(0, 0, 0, .5);
+                            }
+                            .mode {
+                                display: inline-block;
+                                position: absolute;
+                                bottom: 0;
+                                left: 0;
+                                width: 5.32rem;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                height: 30%;
+                                line-height: 1.5rem;
+                                padding: 0 0.1rem;
+                                box-sizing: border-box;
+                                z-index: 3;
+                                background: linear-gradient(to top, rgba(0, 0, 0, .85), rgba(0, 0, 0, .4), transparent);
+                                font-size: 0.2rem;
+                                color: #fff;
+                            }
+                        }
+                        .recommend-cont {
+                            width: 2.5rem;
+                            height: 100%;
+                            float: right;
+                            a {
+                                text-decoration: none;
+                                position: relative;
+                                display: block;
+                                width: 2.5rem;
+                                height: 1.6rem;
+                                overflow: hidden;
+                                &:hover img {
+                                    transform: scale(1.05);
+                                }
+                                img {
+                                    width: 100%;
+                                    height: 100%;
+                                    transition: all .2s;
+                                }
+                                &:nth-child(1) {
+                                    margin-bottom: 0.15rem;
+                                }
+                                p {
+                                    margin: 0;
+                                    position: absolute;
+                                    bottom: 0;
+                                    color: #fff;
+                                    padding: 0.15rem 0.2rem 0.05rem;
+                                    width: 100%;
+                                    font-size: 0.14rem;
+                                    line-height: 0.2rem;
+                                    background: linear-gradient(to top, rgba(0, 0, 0, .85), rgba(0, 0, 0, .4), transparent);
+                                }
+                            }
+                        }
+                    }
+                    .imgBox {
+                        display: block;
+                        border-radius: 0.03rem;
+                        width: 100%;
+                        overflow: hidden;
+                        img {
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+                }
+                .primary-right {
+                    position: relative;
+                    float: right;
+                    width: 3.18rem;
+                    padding: 0.1rem .2rem 0.25rem;
+                    border-top: 2px #0c7ff2 solid;
+                    background-color: #fff;
+                    h3 {
+                        display: inline-block;
+                        font-size: 0.16rem;
+                        font-weight: 700;
+                        padding: 0.1rem 0;
+                        margin: 0;
+                    }
+                    .more {
+                        margin: 0.15rem 0;
+                        display: inline-block;
+                        border-right: 3px solid;
+                        border-bottom: 3px solid;
+                        width: 0.1rem;
+                        height: 0.1rem;
+                        transform: rotate(-45deg);
+                        color: #ccc;
+                        float: right;
+                    }
+                    #list-items::-webkit-scrollbar-track {
+                        -webkit-box-shadow: inset 0 0 0.06rem rgba(0, 0, 0, 0.1);
+                        background-color: #F5F5F5;
+                        border-radius: 0.1rem;
+                    }
+                    #list-items::-webkit-scrollbar {
+                        width: 0.05rem;
+                        background-color: #F5F5F5;
+                    }
+                    #list-items::-webkit-scrollbar-thumb {
+                        border-radius: 0.1rem;
+                        background-color: #FFF;
+                        background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(#d5dbe4), to(#d5dbe4), color-stop(.6, #d5dbe4))
+                    }
+                    .list-box {
+                        position: relative;
+                        width: 3.3rem;
+                        height: 3.7rem;
+                        overflow-y: scroll;
+                        margin-top: 0.03rem;
+                        .item-box {
+                            width: 100%;
+                            height: auto;
+                            padding-bottom: 0.8rem;
+                            .item {
+                                position: relative;
+                                .item-icons {
+                                    height: 0.2rem;
+                                    position: absolute;
+                                    top: 0.04rem;
+                                    #active {
+                                        span {
+                                            background: #0c7ff2;
+                                            color: #FFF;
+                                        }
+                                        &:before {
+                                            border-left-color: #0c7ff2;
+                                        }
+                                    }
+                                    .item-left {
+                                        position: relative;
+                                        &:before {
+                                            content: '';
+                                            display: block;
+                                            border: 0.1rem solid transparent;
+                                            border-left-color: #f0f0f0;
+                                            float: right;
+                                        }
+                                        &:after {
+                                            content: '';
+                                            display: block;
+                                            width: 0.45rem;
+                                            height: 0.2rem;
+                                            float: right;
+                                            background-color: #f0f0f0;
+                                        }
+                                        span {
+                                            position: absolute;
+                                            display: block;
+                                            left: 0.01rem;
+                                            width: 0.45rem;
+                                            text-align: center;
+                                            font-size: 0.12rem;
+                                            color: #666;
+                                            line-height: 0.19rem;
+                                        }
+                                    }
+                                }
+                                a {
+                                    text-decoration: none;
+                                    color: #222;
+                                    display: inline-block;
+                                    width: 2.6rem;
+                                    padding-left: 0.63rem;
+                                    font-size: 0.14rem;
+                                    padding-bottom: 0.22rem;
+                                    line-height: 0.22rem;
+                                }
+                            }
+                        }
+                        .filsh {
+                            text-decoration: none;
+                            position: absolute;
+                            z-index: 5;
+                            font-size: 0.16rem;
+                            color: #d4d4d4;
+                            text-align: center;
+                            margin-top: -0.6rem;
+                            left: 1.3rem;
+                        }
+                    }
+                    .gradual {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 0.95rem;
+                        background: linear-gradient(to top, #fff, rgba(255, 255, 255, .4), transparent);
+                    }
+                }
+            }
+        }
+        .main-content {
+            font-size: 0.14rem;
+            margin: 0 auto;
+            width: 11.7rem;
+            background: #FFF;
+            padding: 0.2rem 0 1rem 0;
+            .left-content {
+                width: 8rem;
+                height: auto;
+                float: left;
+                padding-bottom: 1rem;
+                .title {
+                    padding: 0;
+                    margin: 0;
+                    width: 100%;
+                    height: 0.45rem;
+                    float: left;
+                    li.active {
+                        border-bottom: 0.02rem solid #222;
+                    }
+                    li.active,
+                    li:hover {
+                        color: #222;
+                        font-weight: 700;
+                    }
+                    li {
+                        display: block;
+                        list-style: none;
+                        position: relative;
+                        margin: 0 0.32rem 0 0;
+                        height: 0.45rem;
+                        float: left;
+                        line-height: 0.45rem;
+                        color: #757575;
+                        font-size: 0.16rem;
+                        text-align: center;
+                        cursor: pointer;
+                        a{
+                            text-decoration: none;
+                            color: #777;
+                            width: 100%;
+                            height: 100%;
+                            display: block;
+                        }
+                    }
+                }
+                .list-content {
+                    width: 100%;
+                    display: block;
+                    float: left;
+                    .news-list {
+                        position: relative;
+                        display: block;
+                        width: 8rem;
+                        height: 1.6rem;
+                        padding: 0.2rem 0;
+                        box-sizing: content-box;
+                        border-bottom: 1px #eee solid;
+                        cursor: pointer;
+                        margin: 0;
+                        a {
+                            position: relative;
+                            z-index: 6;
+                            text-decoration: none;
+                            display: block;
+                            height: 100%;
+                            .imgBox {
+                                position: relative;
+                                overflow: hidden;
+                                width: 2.2rem;
+                                height: 1.6rem;
+                                margin-right: 0.2rem;
+                                float: left;
+                                z-index: 5;
+                                &:hover img {
+                                    transform: scale(1.04);
+                                }
+                                img {
+                                    width: 100%;
+                                    height: 100%;
+                                    transition: transform .15s ease;
+                                }
+                            }
+                            .content-text {
+                                width: 5.6rem;
+                                float: right;
+                                h1 {
+                                    width: 100%;
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    font-weight: 700;
+                                    font-size: 0.2rem;
+                                    margin: 0;
+                                    color: #000;
+                                    display: block;
+                                    &:hover {
+                                        color: #0163c5;
+                                    }
+                                }
+                                p {
+                                    max-height: 0.6rem;
+                                    overflow: hidden;
+                                    width: 100%;
+                                    display: block;
+                                    color: #828a92;
+                                    margin-top: 0.1rem;
+                                    &:hover {
+                                        color: #555c62;
+                                    }
+                                }
+                            }
+                            .list-bottom {
+                                position: absolute;
+                                bottom: 0;
+                                right: 0;
+                                width: 5.6rem;
+                                height: 0.3rem;
+                                color: #828a92;
+                                display: block;
+                                span {
+                                    display: inline-block;
+                                    float: left;
+                                    margin-right: 0.2rem;
+                                }
+                                p,
+                                a {
+                                    display: inline-block;
+                                    float: right;
+                                    margin: 0;
+                                    color: #828a92;
+                                    margin-left: 0.07rem;
+                                    &:hover {
+                                        color: #0163c5;
+                                    }
+                                }
+                            }
+                        }
+                        &:hover .shadow {
+                            opacity: 1;
+                            box-shadow: #ccc 0 0 20px;
+                            transition: .3s;
+                            border-radius: 5px;
+                        }
+                        .shadow {
+                            position: absolute;
+                            width: 830px;
+                            height: 200px;
+                            background: #fff;
+                            z-index: 4;
+                            left: -15px;
+                            top: 0;
+                            opacity: 0;
+                            transition: .3s;
+                            box-shadow: #a9a9a9 0 0 20px;
+                        }
+                    }
+                }
+                .lazy {
+                    margin-top: 0.2rem;
+                    width: 100%;
+                    height: 0.5rem;
+                    line-height: 0.5rem;
+                    border-radius: 8px;
+                    display: block;
+                    background: #F5F5F5;
+                    border: #F5F5F5 1px solid;
+                    text-align: center;
+                    color: #777;
+                    float: left;
+                    cursor: pointer;
+                    &:hover {
+                        background: #fff;
+                        border-color: #DCDCDC;
+                    }
+                }
+            }
+            .right-content {
+                float: right;
+                width: 3.6rem;
+                position: relative;
+                .advertising {
+                    width: 3.18rem;
+                    border: 1px solid #eee;
+                    padding: 0.1rem 0.2rem 0.2rem;
+                    overflow: hidden;
+                    background: #fff;
+                    margin: 0;
+                    float: right;
+                    position: relative;
+                    .title {
+                        overflow: hidden;
+                        width: 100%;
+                        float: left;
+                        h3 {
+                            margin: 0;
+                            display: inline-block;
+                            float: left;
+                        }
+                        .more-5 {
+                            margin: 0.05rem 0.1rem;
+                            display: inline-block;
+                            border-right: 3px solid;
+                            border-bottom: 3px solid;
+                            width: 0.1rem;
+                            height: 0.1rem;
+                            transform: rotate(-45deg);
+                            color: #ccc;
+                            float: right;
+                        }
+                    }
+                    h4 {
+                        color: #999;
+                        font-size: 0.14rem;
+                        font-weight: 700;
+                        padding: 0.1rem 0;
+                        margin: 0;
+                    }
+                    .swiper-t {
+                        width: 100%;
+                        margin: 0;
+                        .swiper-pagination {
+                            bottom: -0.05rem;
+                        }
+                        overflow: hidden;
+                        .swiper-list {
+                            display: block;
+                            width: 100%;
+                            height: 0.7rem;
+                            padding: 10px 0;
+                            border-bottom: 1px #eee solid;
+                            overflow: hidden;
+                            margin: 0 0.2rem;
+                            &:nth-last-child(1) {
+                                border: none;
+                            }
+                            .imgBox {
+                                border-radius: 100%;
+                                width: 0.4rem;
+                                height: 0.4rem;
+                                float: left;
+                                img {
+                                    display: block;
+                                    border-radius: 100%;
+                                    width: 100%;
+                                    height: 100%;
+                                }
+                            }
+                            .textBox {
+                                float: right;
+                                width: 2.2rem;
+                                height: 0.5rem;
+                                line-height: 0.2rem;
+                                span {
+                                    font-size: 0.16rem;
+                                    color: #222;
+                                    font-weight: 400;
+                                    &:hover {
+                                        color: #0163c5;
+                                    }
+                                }
+                                p {
+                                    margin: 0;
+                                    width: 2rem;
+                                    height: 0.25rem;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    font-size: 0.14rem;
+                                    color: #828a92;
+                                    &:hover {
+                                        color: #555c62;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .activity-box {
+                    overflow: hidden;
+                    padding: 0.2rem 0.2rem 0.3rem;
+                    float: right;
+                    width: 3.18rem;
+                    border: 1px #eee solid;
+                    margin-top: 0.2rem;
+                    position: relative;
+                    .title {
+                        overflow: hidden;
+                        width: 100%;
+                        float: left;
+                        h3 {
+                            margin: 0;
+                            display: inline-block;
+                            float: left;
+                        }
+                        .more-2 {
+                            margin: 0.05rem 0.1rem;
+                            display: inline-block;
+                            border-right: 3px solid;
+                            border-bottom: 3px solid;
+                            width: 0.1rem;
+                            height: 0.1rem;
+                            transform: rotate(-45deg);
+                            color: #ccc;
+                            float: right;
+                        }
+                    }
+                    .swiper-activity {
+                        width: 100%;
+                        margin: 0;
+                        overflow: hidden;
+                        .swiper-slide {
+                            a {
+                                text-decoration: none;
+                                p {
+                                    font-size: 0.14rem;
+                                    color: #828a92;
+                                    width: 100%;
+                                    height: 0.2rem;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    line-height: 0.2rem;
+                                    margin-bottom: 0.1rem;
+                                }
+                            }
+                        }
+                    }
+                }
+                .products-box {
+                    width: 3.18rem;
+                    padding: 0.2rem;
+                    border: 1px #eee solid;
+                    float: right;
+                    margin: 0.2rem 0;
+                    .title {
+                        overflow: hidden;
+                        width: 100%;
+                        height: 0.25rem;
+                        float: left;
+                        padding-bottom: 0.1rem;
+                        h3 {
+                            margin: 0;
+                            display: inline-block;
+                            float: left;
+                        }
+                        a {
+                            text-decoration: none;
+                            display: inline-block;
+                            float: right;
+                            &:hover span {
+                                color: #1d65ae;
+                            }
+                            &:hover .more-2 {
+                                color: #1d65ae;
+                                border-right: 2px solid;
+                                border-bottom: 2px solid;
+                            }
+                            span {
+                                color: #999;
+                                font-size: 0.16rem;
+                            }
+                            .more-2 {
+                                margin: 0.05rem 0.05rem;
+                                display: inline-block;
+                                border-right: 3px solid;
+                                border-bottom: 3px solid;
+                                width: 0.1rem;
+                                height: 0.1rem;
+                                transform: rotate(-45deg);
+                                color: #ccc;
+                                float: right;
+                            }
+                        }
+                    }
+                    .products {
+                        display: block;
+                        width: 100%;
+                        padding: 10px 0;
+                        border-bottom: 1px #eee solid;
+                        overflow: hidden;
+                        margin-right: 0.15rem;
+                        &:nth-last-child(1) {
+                            border: none;
+                        }
+                        .imgBox {
+                            float: left;
+                            img {
+                                display: block;
+                                width: 0.54rem;
+                                height: 0.54rem;
+                                border-radius: 0.1rem;
+                            }
+                        }
+                        .textBox {
+                            float: left;
+                            width: 1.15rem;
+                            height: 0.5rem;
+                            line-height: 0.2rem;
+                            margin-left: 0.2rem;
+                            padding-top: 0.05rem;
+                            overflow: hidden;
+                            span {
+                                font-size: 0.16rem;
+                                color: #222;
+                                font-weight: 400;
+                                &:hover {
+                                    color: #0163c5;
+                                }
+                            }
+                            p {
+                                margin: 0;
+                                width: 100%;
+                                height: 0.25rem;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                                font-size: 0.14rem;
+                                color: #828a92;
+                                &:hover {
+                                    color: #555c62;
+                                }
+                            }
+                        }
+                        .like {
+                            float: right;
+                            font-size: 0.14rem;
+                            width: 0.68rem;
+                            height: 0.34rem;
+                            line-height: 0.34rem;
+                            text-align: center;
+                            box-shadow: 0 0.01rem 0.04rem rgba(0, 0, 0, .3);
+                            border-radius: 0.02rem;
+                            margin: 0.1rem 0.1rem 0 0;
+                            color: #333;
+                            cursor: pointer;
+                            b {
+                                color: red;
+                                font-size: 0.18rem;
+                                padding-right: 0.03rem;
+                            }
+                        }
+                    }
+                }
+                .mostviews {
+                    overflow: hidden;
+                    padding: 0.2rem;
+                    border: 1px #eee solid;
+                    float: right;
+                    margin: 0.2rem 0;
+                    width: 3.18rem;
+                    h3 {
+                        margin-top: 0;
+                    }
+                    .listBox {
+                        width: 100%;
+                        padding: 0.2rem 0 0.1rem;
+                        border-bottom: 1px solid #f0f0f0;
+                        float: left;
+                        &:nth-last-child(1) {
+                            border: none;
+                        }
+                        a {
+                            text-decoration: none;
+                            .imgBox {
+                                width: 1rem;
+                                height: 0.74rem;
+                                float: left;
+                                overflow: hidden;
+                                &:hover img {
+                                    transform: scale(1.1);
+                                }
+                                img {
+                                    width: 100%;
+                                    height: 100%;
+                                    transition: all 0.5s ease-out 0s;
+                                }
+                            }
+                            p {
+                                display: inline-block;
+                                float: right;
+                                width: 1.65rem;
+                                font-size: 0.16rem;
+                                color: #666;
+                                margin: -0.05rem 0 0 0;
+                                max-height: 0.8rem;
+                                overflow: hidden;
+                                line-height: 0.28rem;
+                            }
+                        }
+                        .project {
+                            display: block;
+                            width: 100%;
+                            float: left;
+                            vertical-align: text-top;
+                            color: #bbb;
+                            height: 0.28rem;
+                            line-height: 0.28rem;
+                        }
+                    }
+                }
+                .comment {
+                    overflow: hidden;
+                    padding: 0.2rem;
+                    border: 1px #eee solid;
+                    float: right;
+                    margin: 0.2rem 0;
+                    width: 3.18rem;
+                    h3 {
+                        margin-top: 0;
+                    }
+                    .list-content {
+                        height: 5rem;
+                        width: 100%;
+                        overflow: hidden;
+                        .list-content-2 {
+                            overflow: auto;
+                            .listBox {
+                                width: 100%;
+                                float: left;
+                                min-height: 1.05rem;
+                                padding: 0.1rem 0;
+                                margin-bottom: 0.1rem;
+                                border-bottom: 1px solid #f0f0f0;
+                                overflow: hidden;
+                                .topBox {
+                                    margin-bottom: 0.15rem;
+                                    width: 100%;
+                                    overflow: hidden;
+                                    float: left;
+                                    line-height: 0.35rem;
+                                    img {
+                                        float: left;
+                                        display: inline-block;
+                                        margin-right: 0.1rem;
+                                        width: 0.35rem;
+                                        height: 0.35rem;
+                                        border-radius: 50%;
+                                        border: 1px solid #EFEFEF;
+                                        background: #F7F5F5;
+                                    }
+                                    a {
+                                        color: #999;
+                                        text-decoration: none;
+                                        float: left;
+                                        &:hover {
+                                            color: #ed1c24;
+                                        }
+                                    }
+                                    span {
+                                        float: right;
+                                        color: #999;
+                                        font-size: 0.12rem;
+                                    }
+                                }
+                                .contentBox {
+                                    &::before {
+                                        content: '';
+                                        position: absolute;
+                                        border: 0.05rem solid #FFF;
+                                        border-bottom-color: #e9e9e9;
+                                        top: -0.1rem;
+                                        left: 0.15rem;
+                                    }
+                                    float: left;
+                                    width: 100%;
+                                    box-sizing: border-box;
+                                    padding: 0.1rem;
+                                    position: relative;
+                                    border-radius: 0.04rem;
+                                    margin-bottom: 0.1rem;
+                                    border: 1px solid #e9e9e9;
+                                    text-align: left;
+                                    a {
+                                        text-decoration: none;
+                                        font-size: 0.14rem;
+                                        color: #555;
+                                        &:hover {
+                                            color: #ed1c24;
+                                        }
+                                    }
+                                }
+                                .bottomBox {
+                                    width: 100%;
+                                    float: left;
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    color: #bbb;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .subject-box {
+                padding: 0.2rem;
+                margin-top: 0.2rem;
+                overflow: hidden;
+                float: right;
+                width: 3.18rem;
+                border: 1px #eee solid;
+                .title {
+                    overflow: hidden;
+                    width: 100%;
+                    float: left;
+                    h3 {
+                        margin: 0;
+                        display: inline-block;
+                        float: left;
+                    }
+                    .more-3 {
+                        margin: 0.05rem 0.1rem;
+                        display: inline-block;
+                        border-right: 3px solid;
+                        border-bottom: 3px solid;
+                        width: 0.1rem;
+                        height: 0.1rem;
+                        transform: rotate(-45deg);
+                        color: #ccc;
+                        float: right;
+                    }
+                }
+                .list-box {
+                    float: left;
+                    width: 100%;
+                    padding: 0.2rem 0;
+                    display: block;
+                    height: auto;
+                    border-bottom: 1px #eee solid;
+                    &:nth-last-child(1) {
+                        border: none;
+                        padding-bottom: 0;
+                    }
+                    a {
+                        display: block;
+                        text-decoration: none;
+                        img {
+                            display: inline-block;
+                            width: 0.9rem;
+                            height: 0.65rem;
+                            float: left;
+                        }
+                        h4 {
+                            margin: 0;
+                            color: #000;
+                            width: 2.15rem;
+                            height: 0.65rem;
+                            float: right;
+                            line-height: 0.22rem;
+                            font-weight: 700;
+                            font-size: 0.16rem;
+                        }
+                    }
+                    ul {
+                        margin-bottom: 0;
+                        display: block;
+                        float: left;
+                        padding-left: 0.2rem;
+                        li {
+                            font-size: 0.14rem;
+                            color: #828a92;
+                        }
+                    }
+                }
+            }
+            .video-box {
+                float: right;
+                padding: 0.2rem;
+                overflow: hidden;
+                border: 1px solid #EEE;
+                margin: 0.2rem 0;
+                width: 3.18rem;
+                .title {
+                    overflow: hidden;
+                    width: 100%;
+                    float: left;
+                    h3 {
+                        margin: 0;
+                        display: inline-block;
+                        float: left;
+                    }
+                    .more-4 {
+                        margin: 0.05rem 0.1rem;
+                        display: inline-block;
+                        border-right: 3px solid;
+                        border-bottom: 3px solid;
+                        width: 0.1rem;
+                        height: 0.1rem;
+                        transform: rotate(-45deg);
+                        color: #ccc;
+                        float: right;
+                    }
+                }
+                .video-list {
+                    cursor: pointer;
+                    float: left;
+                    position: relative;
+                    display: block;
+                    width: 100%;
+                    height: 1.75rem;
+                    margin-top: 0.2rem;
+                    overflow: hidden;
+                    &:hover .video-img {
+                        transform: scale(1.05);
+                    }
+                    .video-img {
+                        width: 100%;
+                        height: 100%;
+                        transition: all .2s;
+                    }
+                    p {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        padding: 0.15rem;
+                        color: #FFF;
+                        font-size: 0.14rem;
+                        margin: 0;
+                        width: 2.88rem;
+                        background: linear-gradient(to top, rgba(0, 0, 0, .85), rgba(0, 0, 0, .4), transparent);
+                    }
+                    .video-btn {
+                        position: absolute;
+                        display: block;
+                        top: 0.4rem;
+                        left: 50%;
+                        margin-left: -0.44rem;
+                    }
+                }
+            }
+            .market {
+                overflow: hidden;
+                float: right;
+                border: 1px solid #EEE;
+                width: 3.18rem;
+                padding: 0.2rem;
+                margin: 0.2rem 0;
+                .title {
+                    overflow: hidden;
+                    width: 100%;
+                    float: left;
+                    h3 {
+                        margin: 0;
+                        display: inline-block;
+                        float: left;
+                    }
+                    .more-6 {
+                        margin: 0.05rem 0.1rem;
+                        display: inline-block;
+                        border-right: 3px solid;
+                        border-bottom: 3px solid;
+                        width: 0.1rem;
+                        height: 0.1rem;
+                        transform: rotate(-45deg);
+                        color: #ccc;
+                        float: right;
+                    }
+                }
+                .tab-box {
+                    float: left;
+                    display: block;
+                    padding-top: 0.1rem;
+                    width: 100%;
+                    .tab-switch {
+                        float: left;
+                        display: block;
+                        width: 100%;
+                        .active {
+                            color: #424242;
+                            border-bottom: 1px #424242 solid;
+                        }
+                        span {
+                            color: #999;
+                            font-size: 0.16rem;
+                            float: left;
+                            cursor: pointer;
+                            height: 0.3rem;
+                            line-height: 0.3rem;
+                            margin-right: 0.16rem;
+                        }
+                    }
+                    .tab-switch-box {
+                        margin-top: 0.1rem;
+                        width: 100%;
+                        float: left;
+                        display: block;
+                        .titleBox {
+                            width: 100%;
+                            display: block;
+                            float: left;
+                            padding: 0;
+                            margin: 0.1rem 0;
+                            li {
+                                display: inline-block;
+                                list-style: none;
+                                font-size: 0.14rem;
+                                color: #bbb;
+                                width: 20%;
+                                float: left;
+                                &:nth-child(3) {
+                                    width: 30%;
+                                    text-align: center;
+                                }
+                                &:nth-child(4) {
+                                    text-align: right;
+                                    width: 25%;
+                                    padding-right: 0.05rem;
+                                }
+                            }
+                        }
+                        .tab-list-box {
+                            padding: 0;
+                            margin: 0;
+                            display: block;
+                            float: left;
+                            width: 100%;
+                            li {
+                                list-style: none;
+                                display: block;
+                                width: 100%;
+                                height: 0.42rem;
+                                line-height: 0.42rem;
+                                background: #ffffff;
+                                &:nth-child(1) {
+                                    span:nth-child(1) {
+                                        color: #0c7ff2;
+                                    }
+                                }
+                                &:nth-child(2) {
+                                    span:nth-child(1) {
+                                        color: #5cbcff;
+                                    }
+                                }
+                                &:nth-child(3) {
+                                    span:nth-child(1) {
+                                        color: #95e7ff;
+                                    }
+                                }
+                            }
+                            &:hover {
+                                background: #f6f6f6;
+                            }
+                            span {
+                                display: inline-block;
+                                float: left;
+                                &:nth-child(1) {
+                                    width: 15%;
+                                    color: #d4d4d4;
+                                    font-size: 0.16rem;
+                                    font-weight: 700;
+                                    text-align: left;
+                                    padding-left: 3%;
+                                }
+                                &:nth-child(2) {
+                                    color: #999;
+                                    width: 22%;
+                                    text-align: left;
+                                    img {
+                                        width: 0.16rem;
+                                        padding: 0;
+                                        border: 0;
+                                        vertical-align: middle;
+                                        margin-right: 0.06rem;
+                                    }
+                                }
+                                &:nth-child(3) {
+                                    width: 30%;
+                                    color: #424242;
+                                    text-align: center;
+                                }
+                                &:nth-child(4) {
+                                    width: 27%;
+                                    text-align: right;
+                                    padding-right: 3%;
+                                    color: #66bb6a;
+                                }
+                            }
+                        }
+                    }
+                    .tab-list-box-2 {
+                        .list-box {
+                            span:nth-child(4) {
+                                color: #ee250a;
+                            }
+                        }
+                    }
+                }
+            }
+            .tags-box {
+                width: 3.18rem;
+                padding: 0.2rem;
+                border: 1px solid #EEE;
+                float: right;
+                margin-bottom: 0.2rem;
+                h3 {
+                    margin-top: 0;
+                }
+                a {
+                    text-decoration: none;
+                    display: inline-block;
+                    height: 0.3rem;
+                    line-height: 0.3rem;
+                    color: #222;
+                    font-size: 0.14rem;
+                    background: #f5f7fa;
+                    padding: 0 0.1rem;
+                    border-radius: 0.05rem;
+                    margin: 0 0.08rem 0.1rem 0;
+                    &:hover {
+                        background: #e9edf3;
+                    }
+                }
+            }
+        }
+    }
+}

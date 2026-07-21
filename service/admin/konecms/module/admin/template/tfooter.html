@@ -1,0 +1,47 @@
+
+                            <tfoot>
+                            <tr>
+                                <td colspan="22">
+                                    <div class="tDiv">
+                                        <div class="tfoot_btninfo">
+                                            <input type="hidden" name="act" value="batch">
+
+                                            <div class="item">
+                                                <div class="label_value">
+                                                    <div id="type_select" class="imitate_select select_w120">
+                                                           
+                                                        <select name="" id="piliang">
+                                                            <option value="_">请选择</option>
+                                                            <option value="del">移除</option> 
+                                                            <option value="orderid">排序</option> 
+                                                        </select>
+                                                        <input type="button" value="确定"  class="btn dopiliang btn_disabled">
+															    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="list-page">
+                                        <input type=hidden id=pageurl value="<?php echo $pageurl?>">
+                                            <!-- $Id: page.lbi 14216 2008-03-10 02:27:21Z testyang $ -->
+                                            <div id="turn-page">
+        <span class="page page_1">[<em id="totalRecords"><?php echo $curpage?>/<?php echo $pageCount?></em> ]&nbsp;&nbsp;&nbsp;[total: <em id="totalRecords"><?php echo $amount?></em>]&nbsp;&nbsp;&nbsp;[per:<em id="totalPages"><?php echo $percount?></em></span>]&nbsp;&nbsp;&nbsp;
+                                              
+                                                <!--<span>页当前第<em id="pageCurrent">1</em></span>-->
+                                      
+                                        <span id="page-link">
+                                            <a href="?<?php echo $pageurl;?>&page=1" class="first" title="第一页"></a>
+                                            <a href="?<?php echo $pageurl;?>&page=<?php echo $prepage?>" class="prev" title="上一页"></a>
+                                            <select id="gotoPage">
+                                            <?php for($i=1;$i<=$pageCount;$i++){ echo "<option value=$i";if($i==$curpage) echo " selected";echo ">$i</option>";}?>
+                                            </select>
+                                            <a href="?<?php echo $pageurl;?>&page=<?php echo $nextpage?>" class="next" title="下一页"></a>
+                                            <a href="?<?php echo $pageurl;?>&page=<?php echo $pageCount?>" class="last" title="最末页"></a>
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tfoot>
+	

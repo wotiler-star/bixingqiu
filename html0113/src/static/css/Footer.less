@@ -1,0 +1,187 @@
+.footer {
+    width: 100%;
+    overflow: hidden;
+    background: #292a32;
+    .main {
+        width: 11.7rem;
+        margin: 0 auto;
+        padding-top: 0.2rem;
+        overflow: hidden;
+        .topBox {
+            margin: 0;
+            width: 100%;
+            padding-bottom: 0.2rem;
+            border-bottom: 1px solid #333;
+            overflow: hidden;
+            .friendship-link {
+                width: 5.8rem;
+                float: left;
+                height: 100%;
+                h3 {
+                    font-size: 0.16rem;
+                    color: #c8c8c8;
+                    font-weight: normal;
+                    margin-bottom: 0.2rem;
+                }
+                div {
+                    a {
+                        display: inline-block;
+                        text-decoration: none;
+                        font-size: 0.16rem;
+                        color: #999;
+                        padding-right: 0.4rem;
+                        line-height: 0.4rem;
+                        float: left;
+                        text-align: left;
+                        position: relative;
+                        &:nth-of-type(5n) {
+                            span {
+                                display: none;
+                            }
+                        }
+                        &:nth-last-child(1) {
+                            span {
+                                display: none;
+                            }
+                        }
+                        &:hover {
+                            color: #c3c3c3;
+                        }
+                        span {
+                            position: absolute;
+                            right: 0.2rem;
+                            top: 0.18rem;
+                            width: 0.05rem;
+                            height: 0.08rem;
+                            border-right: 1px #757575 solid;
+                        }
+                    }
+                }
+            }
+            .cooperation {
+                width: 5.2rem;
+                float: right;
+                h3 {
+                    font-size: 0.16rem;
+                    width: 100%;
+                    font-weight: normal;
+                    color: #ededed;
+                    text-align: right;
+                }
+                p {
+                    text-align: right;
+                    width: 100%;
+                    float: right;
+                    color: #757575;
+                    font-size: 0.16rem;
+                }
+            }
+        }
+        .bottomBox {
+            float: left;
+            margin: 0.3rem 0;
+            width: 100%;
+            height: 100%;
+            font-size: 14px;
+            .footerLog {
+                float: left;
+                color: #5a5a5a;
+                font-size: 0.12rem;
+                img {
+                    float: left;
+                }
+                p {
+                    float: left;
+                    margin: 0 0 0 0.15rem;
+                    a {
+                        color: #5a5a5a;
+                        text-decoration: none;
+                        margin: 0;
+                    }
+                }
+            }
+            .footer-right {
+                float: right;
+                .footer-share {
+                    display: block;
+                    a {
+                        position: relative;
+                        display: inline-block;
+                        width: 0.4rem;
+                        height: 0.4rem;
+                        line-height: 0.46rem;
+                        text-align: center;
+                        border-radius: 100%;
+                        background: #333;
+                        margin-left: 0.25rem;
+                        &:hover {
+                            background: #444;
+                        }
+                        &:nth-child(1):hover .footer-wechat {
+                            display: block;
+                        }
+                        i {
+                            color: #999;
+                            font-size: 0.3rem
+                        }
+                        .footer-wechat {
+                            display: none;
+                            position: absolute;
+                            top: -1.76rem;
+                            left: -0.52rem;
+                            background: #fff;
+                            border-radius: 0.05rem;
+                            z-index: 10;
+                            padding: 0.2rem;
+                            img {
+                                float: left;
+                                width: 0.98rem;
+                                height: 0.98rem;
+                                margin: 0 auto;
+                            }
+                            span {
+                                margin-left: 0.17rem;
+                                float: left;
+                                display: inline-block;
+                                height: 0.18rem;
+                                line-height: 0.18rem;
+                                vertical-align: text-top;
+                                font-size: 0.16rem;
+                                color: #616161;
+                            }
+                            div {
+                                position: absolute;
+                                bottom: -0.09rem;
+                                width: 0;
+                                left: 0.62rem;
+                                height: 0;
+                                border-left: 10px solid transparent;
+                                border-right: 10px solid transparent;
+                                border-top: 10px solid #fff;
+                            }
+                        }
+                    }
+                }
+                .footer-right-b {
+                    float: right;
+                    margin-top: 0.2rem;
+                    a {
+                        text-decoration: none;
+                        color: #999;
+                        font-size: 0.14rem;
+                        &:hover{
+                            color: #e2e2e2;
+                        }
+                    }
+                    span {
+                        margin: 5px 30px;
+                        background: #3b3b3d;
+                        display: inline-block;
+                        height: 12px;
+                        width: 1px;
+                    }
+                }
+            }
+        }
+    }
+}

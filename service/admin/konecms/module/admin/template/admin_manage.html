@@ -1,0 +1,400 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+<div class="warpper">
+    <div class="title">
+        管理员列表
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>搜索当天的登陆账号，请将截止日期往前多推一天</li>
+                <li><a href="?c=admin&a=manage" class=seeAll>点击此处</a> 查看全部</li>
+            </ul>
+        </div>
+		
+		<?php 
+				echo "<input type=hidden class=pageurl value=$pageurl />";
+				if($soArr){
+             echo "<div class=so><ul>";  
+				     foreach($soArr as $a){
+					     $mytitle=$a["mytitle"];
+						 $myv=$a["myv"];
+						 $myk=$a["myk"];
+						 echo "<li >$mytitle:&nbsp;&nbsp;&nbsp;<span class=soli><font style='color:#f00'>$myv</font>&nbsp;&nbsp;&nbsp;&nbsp;<font class=delSo k=$myk>X</font></span></li>";
+					 }
+					 
+			 echo "</ul></div>"; 
+				}
+				
+		?> 
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="article">
+                    <form action="">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th width="50">
+                                    <div class="checkbox-all"></div>
+                                </th>
+                                <th width="50">
+                                    行号
+                                </th>
+                                <th width="50">
+                                    ID
+                                </th>
+                                <th>账号</th>
+                                <th width="250">登录时间</th>
+                                <th width="250">账号有效期</th>
+                                <th width="150">组名</th> 
+                                <th width="100" style="text-align: center">绑定IP</th>
+                                <th width="100">重设密码</th>
+<?php 			
+        if(in_array("*",$this->gteamArr)||in_array("adminList",$this->gteamArr)){
+?>		
+                                <th width="100">有效</th>
+                                <th width="130" style="text-align: center">操作</th>
+								<?php
+								}
+								?>
+                            </tr>
+                            </thead>
+                            <tbody>
+							<?php $i=1;foreach($listArr as $a){?>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"  lineid=<?php echo $a["id"]?>></div>
+                                </td>
+                                <td class="td2"><span><?php echo $i++?></span></td>
+                                <td class="td3">
+                                    <?php echo $a["id"]?>
+                                </td>
+                                <td class="td4"><a class=listTitle href="?<?php echo $url?>&page=<?php echo $curpage?>&id=<?php echo $a['id']?>">  <?php echo $a["adminname"]?></a></td>
+                                <td class="td5">
+                                    <?php echo $a["riqi_login"]?$a["riqi_login"]:"无登陆记录"?>
+                                </td>
+                                <td class="td6">
+                                    <?php  echo $a["riqi_start"]."~";echo $a["riqi_expire"]=="0000-00-00"?"永久有效":$a["riqi_expire"];?>
+                                </td>
+                                <td><?php echo $a["gname"]?></td> 
+								
+                                <td style="text-align: center">
+                                   <?php if($a["ifip"]=='0') echo "<font color=green>是</font>";else echo "<font color=red>否</font>";?>
+                                </td>
+                                <td>
+                                    <a style="color: #62BFFF" href="?c=admin&a=manage_pwd_mod&id=<?php echo $a["id"]?>">重设密码</a>
+                                </td>
+								
+		 <?php 			
+           if(in_array("*",$this->gteamArr)||in_array("adminList",$this->gteamArr)){ 
+		   ?>
+                                <td>
+                                    <div>
+                                        <div class="biaoqian <?php if(!$a["ifok"]) echo " switch";?>" bid=<?php echo $a["id"]?> sort=ifok>
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="a3">
+                                        <a href="?<?php echo $url?>&page=<?php echo $curpage?>&id=<?php echo $a['id']?>" class="btn_edit"><i class="icon icon-edit"></i>编辑</a>
+                                <a href="javascript:;" class="btn_trash" id=<?php echo $a['id']?>><i class="icon icon-trash"></i>移除</a> 
+                                    </div>
+                                </td>
+								
+		 <?php }?>
+                            </tr>
+							<?php }?>
+                            </tbody>
+                            
+ <?php  		
+  if(in_array("*",$this->gteamArr)||in_array("adminList",$this->gteamArr)){ 
+   include $this->load_tpl('tfooter');
+}
+?>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<form method="post" action="?c=admin&a=manage">
+        <div class="gj_search">
+            <div class="search-gao-list" id="searchBarOpen">
+                <i class="icon icon-zoom-in"></i>高级搜索
+            </div>
+            <div class="search-gao-bar" style="right:-350px;">
+                <div class="handle-btn" id="searchBarClose"><i class="icon icon-zoom-out"></i>收起边栏</div>
+                <div class="title"><h3>高级搜索</h3></div>
+                <div class="searchContent w300">
+                    <div class="layout-box">
+                        <!-- 分类 -->
+                    <dl class="w300">
+                        <dt>登录时间</dt>
+                        <dd>
+                            <div class="time">
+                              
+                            <div class="time">
+                                <input type="text"  class="is_p2 w100" data-beatpicker="true"
+                                       name="riqi1"/>
+                                <span>~</span>
+                                <input type="text"  class="is_p2 w100" data-beatpicker="true"
+                                       name="riqi2"/>
+                            </div>
+                            </div>
+                        </dd>
+                    </dl>
+                        <dl class="w140">
+                            <dt>角色选择</dt>
+                            <dd>
+                                <div id="" class="imitate_select select_w140">
+                                    <select class="w140" name="gid" >
+                                      <?php 
+									  echo "<option value=_>请选择----</option>";
+                                       if($gteamArr){
+                                          foreach($gteamArr as $a){
+                                              echo "<option value=".$a["id"].">".$a["title"]."</option>";
+                                          }
+                                       }else{
+                                          echo "<option value=0>请先添加组名</option>";
+                                        }
+
+                                    ?> 
+                                    </select>
+                                </div>
+                            </dd>
+                        </dl>
+                     
+                        <dl class="w140">
+                            <dt>有效状态</dt>
+                            <dd>
+                                <div id="" class="imitate_select select_w140">
+                                    <select class="w140" name="ifok"  >
+                                        <option value="_">请选择----</option>
+                                        <option value="0">有效</option>
+                                        <option value="1">无效</option>
+                                     
+                                    </select>
+                                </div>
+                            </dd>
+                        </dl> 
+                        <dl class="w140">
+                            <dt>绑定IP</dt>
+                            <dd>
+                                <div id="" class="imitate_select select_w140">
+                                    <select class="w140" name="ifip"  >
+                                        <option value="_">请选择----</option>
+                                        <option value="0">是</option>
+                                        <option value="1">否</option>
+                                     
+                                    </select>
+                                </div>
+                            </dd>
+                        </dl> 
+                        <dl class="w140">
+                            <dt>关键字搜索</dt>
+                            <dd>
+                                <input type="text" name="w" size="15" class="text gjc w130 mr0" autocomplete="off"/>
+                            </dd>
+                        </dl>
+                        <!-- 关键字 end-->
+
+                    </div>
+                </div>
+                <div class="bot_btn">
+                    <input type="submit" class="btn red_btn" name="" value="提交查询"/>
+                <input type="button" class="btn blue_btn"   value="查看全部" onClick="javascript:window.location.href='?c=admin&a=manage'"/> 
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    function tab(ss) {
+        $(".common-content").eq($(ss).index()).show().siblings().hide()
+    }
+    $(function () {
+					
+							
+		//开关
+        $(".biaoqian").click(function () {
+			bid=$(this).attr("bid");
+			sort=$(this).attr("sort"); 
+			if($(this).hasClass("switch")){ //关闭
+			    v=1;
+			}else{//打开
+			   v=0;
+			}
+			
+			if(sort=="ifok"){
+			  $.ajax({
+				    type:"post",
+					url:"?c=admin&a=ajax_set_ifok",
+					dataType:"json",
+					data:{"ifok":v,"id":bid }
+				});
+			 
+			}
+			
+			if(sort=="ifone"){
+			  $.ajax({
+				    type:"post",
+					url:"?c=admin&a=ajax_set_ifone",
+					dataType:"json",
+					data:{"ifone":v,"id":bid }
+				});
+			 
+			}
+			if(sort=="ifhidden"){
+			 
+			  $.ajax({
+				    type:"post",
+					url:"?c=admin&a=ajax_set_ifhidden",
+					dataType:"json",
+					data:{"ifhidden":v,"id":bid}
+				});
+			 
+			}
+            $(this).toggleClass("switch")
+        })
+		//单个删除
+    	$(".btn_trash").click(function(){
+    		id=$(this).attr("id");
+    		$.ajax({
+    		    type:"post",
+    		    dataType:"json",
+    		    url:"?c=admin&a=ajax_del",
+    		    data:{"id":id},
+    		    success:function(json){
+    		    	if(json.success==0){
+    		    		location.reload();
+    		    	}
+    		    }
+    		})
+    	});
+		
+		//删除单个搜索条件
+		
+    	$(".delSo").click(function(){
+		    pageurl=$(".pageurl").val();
+			k=$(this).attr("k");
+			 $.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=admin&a=ajax_del_so",
+        		    data:{"k":k,"pageurl":pageurl},
+        		    success:function(json){
+        		    	if(json.success==0){
+        		    		window.location.href="?"+json.url;
+        		    	}
+        		    }
+        		})
+		})
+		
+		//页面跳转
+    	$("#gotoPage").change(function(){
+    		page=$(this).val();
+    		url="?"+$("#pageurl").val()+"&page="+page;
+    		 
+    		window.location.href=url
+    	});
+		
+		//批量操作
+    	$(".dopiliang").click(function(){
+    		action=$("#piliang").val();
+    		var ids = '';
+    		for(var i=0;i<=$(".checkbox").length-1;i++){
+    			if($(".checkbox").eq(i).html()!=''){
+    				ids+=$(".checkbox").eq(i).attr('lineid')+',';
+    			}
+    		}
+    		if(ids!=''){ 
+    			ids=ids.substring(0,ids.length-1); 
+    		}else{
+    			alert("没有选中的项！");
+    			return;
+    		} 
+			if(action=="_"){
+    			alert("请选择操作的项！");
+    			return;
+			}
+    		if(action=="del"){
+                //批量删除 
+        		$.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=admin&a=ajax_dels",
+        		    data:{"ids":ids},
+        		    success:function(json){
+        		    	if(json.success==0){
+        		    		location.reload();
+        		    	}
+        		    }
+        		})
+    		} 
+    	});
+		
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".label-ul>ul>li").click(function () {
+            $(this).toggleClass("checked")
+        })
+        $(".tabs_info>ul>li").click(function () {
+            $(this).addClass("curr").siblings().removeClass("curr")
+            tab(this)
+        })
+       
+        $(".checkbox").click(function () {
+            if ($(this).html() == "") {
+                $(this).html("√")
+                $(this).css("background", "#62B3FF")
+                $(this).parents("tr").css("background", "#FFFEE0")
+            } else if ($(this).html() == "√") {
+                $(this).html("")
+                $(this).css("background", "#fff")
+                $(this).parents("tr").css("background", "#fff")
+            }
+            for (var i = 0; i < $(".checkbox").length; i++) {
+                if ($(".checkbox").eq(i).html() == "") {
+                    $(".checkbox-all").html("")
+                    $(".checkbox-all").css("background", "#fff")
+                } else if ($(".checkbox").eq(i).html() == "√") {
+                    $(".checkbox-all").html("√")
+                    $(".checkbox-all").css("background", "#62b3ff")
+                }
+            }
+        })
+        $(".checkbox-all").click(function () {
+            if ($(this).html() == "") {
+                $(this).html("√")
+                $(this).css("background", "#62B3FF")
+                $(".checkbox").html("√")
+                $(".checkbox").css("background", "#62B3FF")
+                $(".checkbox").parents("tr").css("background", "#FFFEE0")
+            } else if ($(this).html() == "√") {
+                $(this).html("")
+                $(this).css("background", "#fff")
+                $(".checkbox").html("")
+                $(".checkbox").css("background", "#fff")
+                $(".checkbox").parents("tr").css("background", "#fff")
+            }
+        })
+        //        高级搜索
+        $(".search-gao-list").click(function () {
+            $(this).animate({right: "-40"}, 300)
+            $(".search-gao-bar").delay(300).animate({right: 0}, 500)
+        })
+        $(".search-gao-bar>.handle-btn").click(function () {
+            $(this).parents(".search-gao-bar").animate({right: "-350"}, 500)
+            $(".search-gao-list").delay(500).animate({right: 0}, 500)
+        })
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+<div class="warpper">
+    <div class="title">
+        添加角色
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>说明：管理员所具备的权限是由它所在的组决定，而添加角色正是为权限组指定可操作项内容。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info gteam">
+				    <form method="post" id=myform class=okform action="#" >
+                    <table   cellpadding=0 cellspacing=0  border=0 width=100%>
+                        <tr align=center>
+                            <td  width=100px>组名: </td>
+                            <td  align=left><input type="text" class=input id=title   name="title"  /> * <span></span></td>
+                        </tr>
+                        <tr>
+                            <td align=center class="quanxian" width=100px>权限:</td>
+                            <td  align=left valign=top>
+                                <table cellpadding=10px cellspacing=10px  border=0 width=100%>
+								
+                                    <tr><td align=left   class=ttd>【平台】</td> </tr>
+									<tr> 
+                                        <td  align=left valign=center>
+										 <label class=tlabel>权限 ：</label> 
+                                            <label><input type=checkbox name=pwdmod value=pwdmod> 修改密码 &nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=adminList value=adminList> 管理员列表&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=adminGen value=adminGen> 添加管理员&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=gteamList value=gteamList> 添加角色&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=gteamGen value=gteamGen> 角色列表&nbsp;&nbsp;</label>
+                                        </td>
+                                    </tr> 
+									<tr> 
+                                        <td  align=left valign=center>
+										 <label  class=tlabel>广告 ：</label> 
+                                            <label><input type=checkbox name=adList value=adList> 广告列表&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=adGen value=adGen> 添加广告&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=adCataGen value=adCataGen> 添加位置&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=adCataList value=adCataList> 位置管理&nbsp;&nbsp;</label>
+                                        </td>
+                                    </tr>  
+									<tr> 
+                                        <td  align=left valign=center>
+										 <label  class=tlabel>设置 ：</label> 
+                                            <label><input type=checkbox name=web value=web> 网站配置&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=contact value=contact> 资料配置&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=sysmanage value=sysmanage> 后台配置&nbsp;&nbsp;</label>
+                                               </td>
+                                    </tr>    
+									<tr><td align=left   class=ttd>【文档】</td> </tr>
+									<tr> 
+                                        <td  align=left valign=center>
+										 <label class=tlabel>文档 ：</label> 
+                                            <label><input type=checkbox name=iList value=iList> 文档列表&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=iGen value=iGen> 添加文档&nbsp;&nbsp;</label> 
+                                        </td>
+                                    </tr>    
+									 
+									<tr><td align=left   class=ttd>【目录】</td> </tr>
+									<tr> 
+                                        <td  align=left valign=center>
+										 <label class=tlabel>目录 ：</label> 
+                                            <label><input type=checkbox name=cataList value=cataList> 目录列表&nbsp;&nbsp;</label>
+                                            <label><input type=checkbox name=cataGen value=cataGen> 添加目录&nbsp;&nbsp;</label> 
+                                        </td>
+                                    </tr>    
+									<tr><td align=left   class=ttd>【数据】</td> </tr>
+									<tr> 
+                                        <td  align=left valign=center>
+										 <label class=tlabel>站点留言 ：</label> 
+                                            <label><input type=checkbox name=feedback value=feedback> 留言列表&nbsp;&nbsp;</label> 
+                                        </td>
+                                    </tr> 
+									
+									<tr><td align=left   class=ttd>【会员】</td> </tr>
+									<tr> 
+                                        <td  align=left valign=center>
+										 <label class=tlabel>会员管理 ：</label> 
+                                            <label><input type=checkbox name=h value=h > 会员管理&nbsp;&nbsp;</label> 
+                                            <label><input type=checkbox name=vip value=vip > 专栏管理&nbsp;&nbsp;</label> 
+                                        </td>
+                                    </tr> 
+                                </table>
+                            </td>
+                        </tr>
+                     
+                    </table>
+					 <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn"> 
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">
+	
+                </form> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() {
+	 
+		$("#title").blur(function(){
+		    title=$.trim($(this).val());
+		    if(title==""){
+		        $(this).siblings("span").html("<font color=red>请输入组名</font>");
+				return false;
+		    }
+			// 唯一性检查 
+			$.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=admin&a=ajax_check_gteam",
+        		    data:{"title":title},
+        		    success:function(json){
+        		    	if(json.success=='0'){
+        		    		$("#title").siblings("span").html("<font color=green>输入正确 ！</font>"); 
+        		    	}else{
+        		    		$("#title").siblings("span").html("<font color=red>该组名已经存在，不允许重复！</font>"); 
+						}
+        		    }
+        		})
+				
+		}); 
+		$("#title").focus(function(){ 
+		        $(this).siblings("span").text("");
+		});
+		
+		
+		
+	 $(".dosubmit").click(function(){
+		    title=$.trim($("#title").val());
+		    if(title==""){
+		        $("#title").siblings("span").html("<font color=red>请输入组名</font>");
+				return false;
+		    }
+		   $(".mysubmit").click();
+	 });
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".select-jia").click(function(){
+            var dom=$(".screening")
+            var clone_dom=dom.clone()
+            clone_dom.find(".select-jia").removeClass("select-jia").addClass("select-jian")
+            $(this).parents(".label_value").append(clone_dom.eq(0))
+            $(".select-jian").click(function(){
+                console.log(121)
+                $(this).parents(".screening").remove()
+            })
+        })
+        $(".control-input").click(function () {
+            $(this).prop("checked")
+            if ($(this).prop("checked")) {
+                $(this).siblings("input").attr("disable", false)
+                $(this).siblings("input").removeAttr("disabled");
+            } else {
+                $(this).siblings("input").attr("disabled", "disabled");
+            }
+        })
+
+    })
+</script>
+</body>
+</html>

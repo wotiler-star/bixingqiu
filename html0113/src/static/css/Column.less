@@ -1,0 +1,404 @@
+.column {
+    position: relative;
+    top: 1.2rem;
+    width: 11.7rem;
+    margin: 0 auto;
+    overflow: hidden;
+    padding-bottom: 2.5rem;
+    .leftBox {
+        float: left;
+        width: 7.7rem;
+        overflow: hidden;
+        .lazy {
+            margin-top: 0.2rem;
+            width: 100%;
+            height: 0.5rem;
+            line-height: 0.5rem;
+            border-radius: 8px;
+            display: block;
+            background: #F5F5F5;
+            border: #F5F5F5 1px solid;
+            text-align: center;
+            color: #777;
+            float: left;
+            cursor: pointer;
+            &:hover {
+                background: #fff;
+                border-color: #DCDCDC;
+            }
+        }
+        .title {
+            float: left;
+            margin-bottom: 0.8rem;
+            vertical-align: top;
+            a {
+                margin-left: 0.14rem;
+                text-decoration: none;
+                color: rgb(153, 153, 153);
+                font-size: 0.22rem;
+                padding-bottom: 0.05rem;
+            }
+            .active {
+                color: #000;
+                font-weight: bold;
+                border-bottom: 3px solid rgb(242, 151, 0);
+            }
+        }
+        .list {
+            width: 100%;
+            overflow: hidden;
+            float: left;
+            margin-bottom: 0.3rem;
+            position: relative;
+            a {
+                width: 2.7rem;
+                height: 1.67rem;
+                display: block;
+                float: left;
+                border-radius: 0.04rem;
+                overflow: hidden;
+                &:hover img {
+                    transform: scale(1.03);
+                }
+                img {
+                    width: 100%;
+                    height: 100%;
+                    will-change: transform;
+                    transition: transform 0.15s ease-in, -webkit-transform 0.15s ease-in;
+                }
+            }
+            .text {
+                width: 4.7rem;
+                float: right;
+                a {
+                    float: left;
+                    width: 100%;
+                    height: 0.55rem;
+                    text-decoration: none;
+                    color: #222;
+                    h2 {
+                        font-size: 0.2rem;
+                        width: 100%;
+                        margin: 0;
+                        cursor: pointer;
+                        &:hover {
+                            color: #397BFF;
+                        }
+                    }
+                }
+                p {
+                    float: left;
+                    height: 0.57rem;
+                    margin: 0.1rem 0;
+                    font-size: 0.14rem;
+                    color: #666;
+                }
+                div {
+                    width: 4.7rem;
+                    height: 0.28rem;
+                    line-height: 0.28rem;
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    cursor: pointer;
+                    a {
+                        width: 1.87rem;
+                        height: 100%;
+                        display: inline-block;
+                        text-decoration: none;
+                        img {
+                            display: inline-block;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 0.24rem;
+                            height: 0.24rem;
+                            border-radius: 100%;
+                        }
+                        span {
+                            float: left;
+                            display: inline-block;
+                            margin-left: 0.3rem;
+                            font-size: 0.14rem;
+                            color: #999;
+                        }
+                    }
+                    i,
+                    em {
+                        float: right;
+                        font-size: 0.14rem;
+                        color: #999;
+                        font-style: normal;
+                        display: inline-block;
+                    }
+                    i{
+                        margin-top: 6px;
+                    }
+                    em{
+                        margin-top: -1px;
+                    }
+                }
+            }
+        }
+    }
+    .rightBox {
+        width: 3.7rem;
+        float: right;
+        .enter {
+            box-sizing: border-box;
+            width: 100%;
+            margin-bottom: 0.3rem;
+            border: #DCDCDC 1px solid;
+            border-radius: 0.04rem;
+            padding: 0.2rem;
+            h3 {
+                font-size: 0.18rem;
+                text-align: center;
+            }
+            p {
+                text-align: center;
+                display: block;
+                font-size: 0.14rem;
+            }
+            a {
+                display: block;
+                text-decoration: none;
+                font-size: 0.16rem;
+                width: 3.32rem;
+                height: 0.48rem;
+                line-height: 0.48rem;
+                text-align: center;
+                border-radius: 0.04rem;
+                background: #F29700;
+                font-weight: bold;
+                color: #FFF;
+            }
+        }
+        .ranking {
+            margin-bottom: 0.3rem;
+            border: #DCDCDC 1px solid;
+            border-radius: 0.04rem;
+            padding: 0.2rem;
+            padding-bottom: 0.1rem;
+            .tabs-height {
+                height: 0.65rem;
+                overflow: hidden;
+                h3 {
+                    margin-top: 0;
+                    font-size: 0.18rem;
+                    float: left;
+                }
+                div {
+                    float: right;
+                    span {
+                        width: 0.4rem;
+                        height: 0.22rem;
+                        line-height: 0.22rem;
+                        border: #999 1px solid;
+                        float: left;
+                        display: block;
+                        background: #FFF;
+                        color: #999;
+                        font-size: 0.14rem;
+                        text-align: center;
+                        border-radius: 4px 0 0 4px;
+                        &:nth-child(2n) {
+                            border-radius: 0 4px 4px 0;
+                        }
+                    }
+                    .active {
+                        background: #999;
+                        color: #fff;
+                    }
+                }
+            }
+            .main {
+                &:nth-child(3) {
+                    .status {
+                        color: #F29700;
+                    }
+                }
+                &:nth-child(4) {
+                    .status {
+                        color: #F29700;
+                    }
+                }
+                &:nth-child(2) {
+                    .status {
+                        color: #F29700;
+                    }
+                }
+                line-height: 0.48rem;
+                border-top: #DCDCDC 1px solid;
+                padding: 0.12rem 0;
+                overflow: hidden;
+                a {
+                    display: block;
+                    text-decoration: none;
+                    .status {
+                        float: left;
+                        color: #666;
+                        font-size: 0.22rem;
+                    }
+                    img {
+                        margin-left: 0.1rem;
+                        width: 0.48rem;
+                        height: 0.48rem;
+                        float: left;
+                        border-radius: 100%;
+                    }
+                    .name {
+                        display: inline-block;
+                        width: 1.42rem;
+                        margin-left: 0.2rem;
+                        float: left;
+                        span {
+                            display: block;
+                            height: 0.26rem;
+                            line-height: 0.26rem;
+                            &:nth-child(1) {
+                                font-weight: bold;
+                                font-size: 0.16rem;
+                                color: #333;
+                            }
+                            &:nth-child(2) {
+                                color: #999;
+                                font-size: 0.14rem;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                                overflow: hidden;
+                            }
+                        }
+                    }
+                    .attention {
+                        float: right;
+                        padding-top: 0.1rem;
+                        position: relative;
+                        span {
+                            font-size: 0.16rem;
+                            height: 0.26rem;
+                            line-height: 0.26rem;
+                            color: #999;
+                            display: block;
+                        }
+                        a {
+                            position: absolute;
+                            top: 0.1rem;
+                            right: 0.02rem;
+                            width: 0.56rem;
+                            display: block;
+                            height: 0.26rem;
+                            line-height: 0.26rem;
+                            border-radius: 4px;
+                            background: #333;
+                            text-align: center;
+                            color: #FFF;
+                            font-size: 0.14rem;
+                        }
+                        &:hover .a {
+                            display: block;
+                        }
+                    }
+                }
+            }
+        }
+        .recommended {
+            h3 {
+                margin-bottom: 0.01rem;
+                height: 0.65rem;
+                font-size: 0.18rem;
+                color: #333;
+            }
+            .control {
+                float: left;
+                display: block;
+                overflow: hidden;
+                width: 100%;
+                .listBox {
+                    position: relative;
+                    text-decoration: none;
+                    height: 1.2rem;
+                    margin-bottom: 0.3rem;
+                    display: block;
+                    padding-left: 0.7rem;
+                    width: 100%;
+                    &:hover .attention {
+                        display: block;
+                    }
+                    img {
+                        float: left;
+                        width: 0.7rem;
+                        height: 0.7rem;
+                        border-radius: 100%;
+                        overflow: hidden;
+                        display: block;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                        margin-right: 0.15rem;
+                    }
+                    .title {
+                        overflow: hidden;
+                        a {
+                            float: left;
+                            display: block;
+                            text-decoration: none;
+                            font-weight: bold;
+                            color: #333;
+                            font-size: 0.16rem;
+                            margin: 0;
+                            height: 0.2rem;
+                            width: 100%;
+                            &:hover {
+                                color: #397BFF;
+                            }
+                        }
+                        span {
+                            float: left;
+                            display: block;
+                            color: #999;
+                            font-size: 0.14rem;
+                            margin: 0.1rem 0;
+                            width: 100%;
+                        }
+                    }
+                    ul {
+                        margin: 0;
+                        display: inline-block;
+                        padding: 0;
+                        i,
+                        span {
+                            display: inline-block;
+                            float: left;
+                            font-size: 0.12rem;
+                        }
+                        i {
+                            font-style: normal;
+                            color: #000;
+                            margin-right: 0.07rem;
+                            &:nth-child(3) {
+                                margin-left: 0.2rem;
+                            }
+                        }
+                        span {
+                            color: #999
+                        }
+                    }
+                    .attention {
+                        font-size: 0.14rem;
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        background: #333;
+                        height: 0.25rem;
+                        width: 0.6rem;
+                        text-align: center;
+                        padding: 0.03rem 0;
+                        border-radius: 0.04rem;
+                        display: block;
+                        color: #FFF;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}

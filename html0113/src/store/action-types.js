@@ -1,0 +1,2 @@
+export const COURSE_QUERY_HOME = 'COURSE_QUERY_HOME';
+

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+ <head lang="zh-CN"> 
+  <meta charset="UTF-8" /> 
+<META CONTENT="项目组：邝伟林 杨林" NAME="Author">
+<TITLE>发布文章</TITLE> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>bootstrap3/css/bootstrap.min.css" /> 
+  <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script> 
+  <script src="<?php echo STATIC_PATH?>bootstrap3/js/bootstrap.min.js"></script> 
+ 
+  <!--[if lt IE 9]>
+      <script src="<?php echo STATIC_PATH?>js/html5shiv.min.js"></script>
+      <script src="<?php echo STATIC_PATH?>js/respond.min.js"></script>
+    <![endif]--> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/custom.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/padding.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/margin.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/bg.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/media.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/a.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/h.css"/>
+  
+    <link rel="stylesheet" href="<?php echo SITE_PATH?>source/kindeditor-4.1.7/themes/default/default.css" />
+		<script src="<?php echo SITE_PATH?>source/kindeditor-4.1.7/kindeditor-all.js"></script>
+		<script src="<?php echo SITE_PATH?>source/kindeditor-4.1.7/lang/zh_CN.js"></script>
+		<script>
+			KindEditor.ready(function(K) {
+				var editor = K.editor({
+					allowFileManager : true
+				});
+				
+	 
+   
+				//可视化编辑器
+				editor = K.create('textarea[name="cnt"]', {
+					resizeType : 1,
+					// allowPreviewEmoticons : true,
+					allowImageUpload : true, 
+					items : ['source','fontname','fontsize','forecolor','preview','selectall','justifyleft','justifycenter','justifyright','emoticons','table','image'],
+					allowFileManager : true,
+					height:500
+				});
+				
+			   //单图上传-列表页
+				K('#actionpiclist').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpiclist').val(url);
+								K("#showpiclist").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+				 
+		   });
+  
+		 
+		</script>
+		
+ </head> 
+ <body> 
+ 
+<!--头部导航-->
+
+<?php include parent::load_tpl("header");?>
+<!--头部导航-->
+ 
+<div class="content_inner project">
+  <div class="container">
+  <?php include parent::load_tpl("h/hbanner");?>
+  <!-- 课程详情的内容区域-->
+   <!-- 会员注册-->
+  <div class="huiyuan mbottom30 pbottom10  ">
+  <div class="mtop10 ptop10 pbottom10 borderbottomgray1 font16">发布文章</div>
+  
+  <form class="form-horizontal mtop30 myform" role="form" method=post action="?c=h&a=geni">
+  <div class="form-group">
+    <label for="firstname" class="col-sm-2 control-label"><font color=red>*</font> 选择栏目：</label>
+    <div class="col-sm-10">
+   
+	 <?php foreach($subArr as $a){ 
+	 $cataid=$a["cataid"];
+	 $sort=$a["sort"];
+	 echo "<input type=radio name=data[cataid] value=$cataid>&nbsp;&nbsp;$sort&nbsp;&nbsp;&nbsp;";}?>
+	 
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 文章标题：</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  name=data[title] id="lastname" placeholder="">
+    </div>
+  </div>
+
+  
+  
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 文章详情：</label>
+    <div class="col-sm-10">
+      <textarea name=cnt  style="width:940px;height:500px;"></textarea>
+    </div>
+  </div>
+  
+  
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 关键词：</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  name=data[keywords]  placeholder="关键词之间请用空格或者中、英文下的逗号隔开">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 内容摘要：</label>
+    <div class="col-sm-10">
+      <textarea name=data[short]  style="width:940px;height:80px;"></textarea>
+    </div>
+  </div>
+  
+    
+  <div class="form-group">  
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 上传封面：</label>
+    <div class="col-sm-10">
+      <img src=<?php echo STATIC_PATH?>h/photo.jpg style="max-height:150px"  id="showpiclist"  />
+	  <br><input type="button" id="actionpiclist" value="点击上传">
+	  <br><font class="colorgray9f">优质的封面有利于推荐，请使用清晰度较高的图片，建议尺寸：225*150</font>
+				     <input type="hidden" name=data[picdir_list] id="formpiclist" /> 
+    </div>
+  </div> 
+  
+  
+   <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 说明：</label>
+    <div class="col-sm-10 bggray9f">
+       考虑到用户浏览体验，所有投稿美好星球的稿件，美好星球均有权对文章的标题、头图进行调整，这些调整并不会影响正文内容，如果需要进行内容调整，编辑会与作者联系确认，不会直接修改。
+    </div>
+  </div>
+  
+  
+  
+  <div class="form-group bordertopgray1 ptop20">
+    <div class="col-sm-offset-2 col-sm-10">
+	<input type=hidden class=ifpublic name=data[ifpublic]>
+	<input type=submit class=mysubmit style="visibility:hidden">
+      <button type="button"  class="btn btn1 btn-default bgorange colorwhite">提交审核</button>&nbsp;&nbsp;&nbsp;
+      <button type="button" class="btn btn2 btn-default">存草稿</button>&nbsp;&nbsp;&nbsp;
+      <button type="button" class="btn btn3 btn-default">取消返回</button>
+    </div>
+  </div>
+  
+ 
+  
+</form> 
+		  <script>
+		     $(document).ready(function(){
+			       $(".btn1").click(function(){
+				     $(".ifpublic").val("0");
+					$(".mysubmit").click();
+				   });
+			       $(".btn2").click(function(){
+				     $(".ifpublic").val("1");
+					 $(".mysubmit").click();
+				   });
+			       $(".btn3").click(function(){
+				     if(confirm("确认取消并前往会员中心首页？")){
+					    window.location.href="?c=h";
+					 }
+				   });
+			 })
+		  </script>
+  </div>
+   
+  </div>
+  </div>
+ 
+<!--底部内容-->
+
+<?php
+include parent::load_tpl("footer");
+?>
+ <script src="<?php echo STATIC_PATH?>h/jquery-1.8.3.min.js"></script>  

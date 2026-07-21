@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+ <head lang="zh-CN"> 
+  <meta charset="UTF-8" /> 
+<META CONTENT="项目组：邝伟林 杨林" NAME="Author">
+<TITLE>实名认证</TITLE> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>bootstrap3/css/bootstrap.min.css" /> 
+  <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script> 
+  <script src="<?php echo STATIC_PATH?>bootstrap3/js/bootstrap.min.js"></script> 
+ 
+  <!--[if lt IE 9]>
+      <script src="<?php echo STATIC_PATH?>js/html5shiv.min.js"></script>
+      <script src="<?php echo STATIC_PATH?>js/respond.min.js"></script>
+    <![endif]--> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/custom.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/padding.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/margin.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/bg.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/media.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/a.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/h.css"/>
+  
+  <link rel="stylesheet" href="<?php echo SITE_PATH?>source/kindeditor-4.1.7/themes/default/default.css" />
+		<script src="<?php echo SITE_PATH?>source/kindeditor-4.1.7/kindeditor-all.js"></script>
+		<script src="<?php echo SITE_PATH?>source/kindeditor-4.1.7/lang/zh_CN.js"></script>
+		<script>
+			KindEditor.ready(function(K) {
+				var editor = K.editor({
+					allowFileManager : true
+				});
+	 
+  
+			   //单图上传-首页
+				K('#actionpicindex').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpicindex').val(url);
+								K("#showpicindex").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+				
+			   //单图上传-列表页
+				K('#actionpiclist').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpiclist').val(url);
+								K("#showpiclist").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+				 
+		   });
+  
+		 
+		</script>
+		
+ </head> 
+ <body> 
+ 
+<!--头部导航-->
+
+<?php include parent::load_tpl("header");?>
+<!--头部导航-->
+ 
+<div class="content_inner project">
+  <div class="container">
+  <?php include parent::load_tpl("h/hbanner");?>
+  <!-- 课程详情的内容区域-->
+   <!-- 会员注册-->
+  <div class="huiyuan mbottom30 pbottom10  ">
+  <div class="mtop10 ptop10 pbottom10 borderbottomgray1 font16">实名认证</div>
+  <div class="textaligncenter mtop20"><img src="<?php echo STATIC_PATH?>h/step2.jpg" /></div>
+  <div class="mtop10 ptop10 pbottom10 borderbottomgray1 font16">主体信息</div> 
+       
+	   
+<form class="form-horizontal mtop30" role="form" method=post action="?c=h&a=certStep2&sort=0">
+  <div class="form-group">
+    <label for="firstname" class="col-sm-2 control-label"><font color=red>*</font> 证件类型：</label>
+    <div class="col-sm-10">
+     <select  class="form-control" name=data[sort]>
+          <option>身份证</option>
+        </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 身份证姓名：</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  name=data[name] id="lastname" placeholder="">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 身份证号码：</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name=data[number] id="lastname" placeholder="">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 身份证正面：</label>
+    <div class="col-sm-10">
+      <img src=<?php echo STATIC_PATH?>h/photo.jpg style="max-height:100px"  id="showpicindex"  />
+	  <br><input type="button" id="actionpicindex" value="点击上传">
+	  <br><font class="colorgray9f">支持jpeg、png等格式，照片大小不超过5M。</font>
+				     <input type="hidden" name=data[picdir1] id="formpicindex" /> 
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label"><font color=red>*</font> 身份证反面：</label>
+    <div class="col-sm-10">
+      <img src=<?php echo STATIC_PATH?>h/photo.jpg  style="max-height:100px"  id="showpiclist" />
+	  <br><input type="button" id="actionpiclist" value="点击上传">
+	  <br><font class="colorgray9f">支持jpeg、png等格式，照片大小不超过5M。</font>
+				     <input type="hidden" name=data[picdir2] id="formpiclist" /> 
+    </div>
+  </div>
+   <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox">&nbsp;&nbsp;&nbsp;我已阅读并接受 <a href="javascript:;">《美好星球平台服务协议》 </a>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group bordertopgray1 ptop20">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">提交</button>&nbsp;&nbsp;&nbsp;
+      <button type="button" class="btn btn-default">返回上一步</button>
+    </div>
+  </div>
+</form>
+
+
+	   
+   </div><!--inner huiyuan-->
+  </div>
+   
+ 
+<!--底部内容-->
+
+<?php
+include parent::load_tpl("footer");
+?>
+ <script src="<?php echo STATIC_PATH?>h/jquery-1.8.3.min.js"></script>  

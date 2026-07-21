@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+ <head lang="zh-CN"> 
+  <meta charset="UTF-8" /> 
+<META CONTENT="项目组：邝伟林 杨林" NAME="Author">
+<TITLE><?php echo $data["webtitle"]?></TITLE>
+<META CONTENT="<?php echo $data["keywords"]?>" NAME="Keywords">
+<META CONTENT="<?php echo $data["short"]?>" NAME="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>bootstrap3/css/bootstrap.min.css" /> 
+  <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script> 
+  <script src="<?php echo STATIC_PATH?>bootstrap3/js/bootstrap.min.js"></script> 
+ 
+  <!--[if lt IE 9]>
+      <script src="<?php echo STATIC_PATH?>js/html5shiv.min.js"></script>
+      <script src="<?php echo STATIC_PATH?>js/respond.min.js"></script>
+    <![endif]--> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/custom.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/padding.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/margin.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/bg.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/media.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/a.css" /> 
+ 
+ </head> 
+ <body> 
+ 
+<?php include parent::load_tpl("header");?>
+  <!--LOGO+导航+按钮结束--> 
+ 
+<div class="linenav">
+<div class="container">
+<div class="row">
+<?php 
+foreach($this->navArr["subnav"][$parentidArr[1]] as $a){
+ $sort=$a["sort"];
+ $cataid=$a["cataid"]; 
+?>
+   <a href="?c=Content&cataid=<?php echo $cataid?>" class="mright20 <?php if($_GET["cataid"]==$cataid):echo "active";endif;?>"><?php echo $sort?></a> 
+   
+<?php
+   }
+?> 
+
+</div>
+</div>
+</div> 
+<div class="container">
+<div class="row">
+   <div class="col-lg-8 mtop35">
+   
+ 
+	      <div class="clearfloat">
+      
+      <div class="content_right rt">
+        <h3><?php echo $data["title"]?></h3>
+        <div class="infor">
+          <span><img src="<?php echo STATIC_PATH?>images/bus_08.png" alt=""/><?php echo $data["source"]?></span>
+          <span><img src="<?php echo STATIC_PATH?>images/bus_09.png" alt=""/><?php echo $data["riqi"]?></span>
+          <span><img src="<?php echo STATIC_PATH?>images/bus_10.png" alt=""/><?php echo $data["hitnum"]?></span>
+        </div>
+		<div class=short>
+		<?php echo $data["cnt_short"]?> 
+		</div>
+        <div class="text lineheight180">
+		<?php echo $data["cnt"]?> 
+        </div>
+		
+		 <div class="mtop20">
+	 
+	 关键词：
+<?php
+if($data["keywords"]){
+$wArr = preg_split("/[\s,，]+/u", $data["keywords"]);
+$arr=array("default","primary","success","info","warning","danger");
+$i=0;
+$j=count($arr);
+foreach($wArr as $a){
+    echo "<span class='label label-".$arr[$i]."'>$a</span>";
+	if($i>=$j) $i=0;
+	$i++;
+}
+
+}
+?>  
+
+	 </div>
+	 <div class="mtop20 mbottom20   ptop50">
+	     <div class="favorate <?php echo $ifFavorate?"favorate-bg1":"favorate-bg0"?>" title="收藏"></div>
+	 </div>
+	 
+	 
+
+
+
+<div class="paging">
+          <div class="up">
+            <span class="glyphicon glyphicon-triangle-top"></span>
+			<?php 
+			if($preArr){
+			   echo "上一篇：<a href=?c=Content&cataid=$this->mycataid&id=".$preArr["id"].">".$preArr["title"]."</a>";
+			}else{
+			   echo "上一篇：已经是第一篇";
+			}
+			?>
+			
+            
+          </div>
+          <div class="down">
+            <span class="glyphicon glyphicon-triangle-bottom"></span>
+            <?php 
+			if($nextArr){
+			   echo "下一篇：<a href=?c=Content&cataid=$this->mycataid&id=".$nextArr["id"].">".$nextArr["title"]."</a>";
+			}else{
+			   echo "下一篇：已经是最后一篇";
+			}
+			?>
+          </div>
+        </div>
+      </div>
+	  
+	   <div class="welcome_contact">
+	   
+        <input type="hidden" class="hid" value="<?php echo $_SESSION["HID"]?$_SESSION["HID"]:0;?>" />
+        <input type="hidden" class=hname value="<?php echo $_SESSION["HNAME"]?$_SESSION["HNAME"]:""?>" /> 
+	   <?php
+	     if(isset($_SESSION["HID"])){
+		 
+		 
+	   ?>
+            <h5>写下评论</h5>
+            <div class="form_box">
+              <textarea   placeholder="评论内容" class=content ></textarea>
+              <a href="javaScript:;" class="button clickme">提交</a>
+            </div>
+			<?php
+			}else{
+			echo "<h5>请&nbsp;&nbsp;<a href=?c=h&a=login&cataid=".$_GET["cataid"]."&pid=".$_GET["id"].">登录</a> 后发表您的评论</h5>";
+			}
+			?>
+			
+			<?php
+			foreach($feedArr as $a){
+			$picdir=$a["picdir"];
+			$name=$a["name"];
+			$content=$a["content"];
+			$riqi=$a["riqi"];
+			 
+			?>
+ 
+     <div class="media ptop5 pbottom15"> 
+      <a class="media-left" href="#"> <img class="media-object img100-media" src="<?php echo $picdir?>" alt=" " /> </a> 
+      <div class="media-body"  style="position:relative;min-height:90px;border:#f00 0px solid;"> 
+       <h4 class="media-heading font16"><?php echo $name?></h4> <font class="colorgray9f"><?php echo $content?></font>
+       <div class="   ptop30 pbottom5   positionabsolutebottom colorgray9f">2分钟前</div>
+    
+	 </div> 
+	 </div>  
+	 <?php }?> 
+          </div>
+
+
+    </div>
+	   
+	  
+	 
+   </div>
+   <div class="col-lg-4">
+      <div class="bordergray1 mtop35 p10">
+	   <div class="row">
+	      <div class="col-lg-10 col-xs-10 column font12   ">
+        热门推荐 
+      </div> 
+      <div class="col-lg-2 col-xs-2 column  textalignright  "> 
+       <a href="" class="grayred font12">&gt;</a> 
+      </div> 
+	  
+	  </div>
+	  
+	 	<?php 
+		$i=0;
+		 $curcataid=$_GET["cataid"];
+	foreach($hotArr as $a){
+	    $picdir=$a["picdir_list"];
+		$title=cutStr($a["title"],17);
+		$id=$a["id"]; 
+		$short=$a["short"]; 
+		$short=cutStr($short,17);
+		
+	?>
+	  
+      <div class="media borderbottomgray1 ptop5 pbottom15 "> 
+      <a class="media-left" href="?c=Content&cataid=<?php echo $curcataid;?>&id=<?php echo $id?>" title="<?php echo  $a["title"];?>"> <img class="media-object img50-media " src="<?php echo $picdir?>" alt=" " /> </a> 
+      <div class="media-body"> 
+       <a class="media-left" href="?c=Content&cataid=<?php echo $curcataid;?>&id=<?php echo $id?>" title="<?php echo  $a["title"];?>"><h4 class="media-heading font16">
+	   <?php echo $title?></h4></a><font class="colorgray9f"><?php echo $short?></font>
+      </div> 
+     </div>  
+	   <?php 
+	   }
+	   ?>   
+	 
+	 
+	</div>
+   </div>
+  </div>
+ </div>
+<!--中间主体区域结束--> 
+
+<?php include parent::load_tpl("footer");?>
+
+ 
+
+<script>	
+   $(function(){
+	$(".clickme").click(function(){
+    
+				    
+					content=$(".content").val(); 
+					hid=$(".hid").val(); 
+					hname=$(".hname").val(); 
+					if(content==""){alert("请输入评论内容");return;}
+					data={ "content":content,"hid":hid,"hname":hname,"pname":"<?php echo $data["title"]?>","pid":"<?php echo $data["id"]?>","cataid":"<?php echo $_GET["cataid"]?>"};
+					 
+             $.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=Content&a=ajax_feedback",
+        		    data:{"data":data},
+        		    success:function(json){
+        		    	if(json.success==0){
+						   alert("提交成功 !"); 
+						   window.location.reload();
+        		    	}
+        		    }
+              }) 
+	    
+   }) 
+   
+   //点击收藏
+   $(".favorate").click(function(){
+    
+					hid=$(".hid").val(); 
+					hname=$(".hname").val(); 
+     if(hid!=0){
+	 
+                    data={"hid":hid,"hname":hname,"pname":"<?php echo $data["title"]?>","pid":"<?php echo $data["id"]?>","cataid":"<?php echo $_GET["cataid"]?>"};
+							 
+             $.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=Content&a=ajax_favorate",
+        		    data:{"data":data},
+        		    success:function(json){
+        		    	if(json.success==0){ 
+						   $(".favorate").addClass("favorate-bg1").removeClass("favorate-bg0");
+        		    	}
+        		    }
+              }) 
+			  
+	 }else{
+	              if(confirm("登录再收藏？")){ 
+				    window.location.href="?c=h&a=login&cataid="+<?php echo $_GET["cataid"]?>+"&pid="+<?php echo $_GET["id"]?>;
+				  }
+	 }
+					
+   });
+    }) 
+	   </script>
+ </body>
+</html>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

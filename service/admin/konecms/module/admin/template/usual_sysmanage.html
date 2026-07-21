@@ -1,0 +1,113 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+<div class="warpper">
+    <div class="title">
+        后台配置
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+                   
+				   
+				   
+                <form method="post" class=okform action=# enctype="multipart/form-data">
+                    <table cellpadding=10>
+                        
+                        <tr align=center>
+                            <td class=ltd><span class="require-field">*</span>&nbsp;每页条数: &nbsp;&nbsp;&nbsp;</td>
+                            <td align=left>
+                                <input type=text class=input id=percount name=data[percount] value="<?php echo $data["percount"]?>" />&nbsp;&nbsp;<span></span>
+                                
+                            </td>
+                        </tr>
+                        <tr align=center>
+                            <td class=ltd><span class="require-field">*</span>&nbsp;会话时长:&nbsp;&nbsp;&nbsp; </td>
+                            <td align=left>
+                                <input type=text class=input id=sessiontime name=data[sessiontime] value="<?php echo $data["sessiontime"]?>"  />&nbsp;&nbsp;<span><font color=gray>秒无任何操作后，系统自动退出</font></span>
+                            </td>
+                        </tr>
+                        
+                        
+
+                    </table>
+					 <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn">  
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">      
+                </form>
+				
+                      
+                          
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() {
+	 
+		$("#percount").blur(function(){
+		    percount=$.trim($(this).val()); 
+		    if(percount==""||isNaN(percount)||percount<=0||percount.indexOf('.')!=-1){
+		        $(this).siblings("span").html("<font color=red>请输入大于0的整数</font>");
+				return false;
+		    }else{
+			    $(this).siblings("span").html("<font color=green>输入正确</font>");
+			}
+		}); 
+		$("#percount").focus(function(){ 
+		        $(this).siblings("span").text("");
+		});
+		
+		
+		$("#sessiontime").blur(function(){
+		    sessiontime=$.trim($(this).val()); 
+		    if(sessiontime==""||isNaN(sessiontime)||sessiontime<=0||sessiontime.indexOf('.')!=-1||sessiontime>3600){
+		        $(this).siblings("span").html("<font color=red>请输入大于0且小于3600的整数</font>");
+				return false;
+		    }else{
+			    $(this).siblings("span").html("<font color=green>输入正确</font>");
+			}
+		}); 
+		$("#sessiontime").focus(function(){ 
+		        $(this).siblings("span").text("");
+		});
+		
+		
+		
+	 $(".dosubmit").click(function(){
+	 
+	        percount=$.trim($("#percount").val()); 
+		    if(percount==""||isNaN(percount)||percount<=0||percount.indexOf('.')!=-1){
+		        $("#percount").siblings("span").html("<font color=red>请输入大于0的整数</font>");
+				return false;
+		    } 
+		    sessiontime=$.trim($("#sessiontime").val()); 
+		    if(sessiontime==""||isNaN(sessiontime)||sessiontime<=0||sessiontime.indexOf('.')!=-1||sessiontime>3600){
+		        $("#sessiontime").siblings("span").html("<font color=red>请输入大于0且小于3600的整数</font>");
+				return false;
+		    }
+			
+		   $(".mysubmit").click();
+		});
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        }) 
+
+    })
+</script>
+</body>
+</html>

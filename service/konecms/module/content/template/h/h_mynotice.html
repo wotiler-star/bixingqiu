@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+ <head lang="zh-CN"> 
+  <meta charset="UTF-8" /> 
+<META CONTENT="项目组：邝伟林 杨林" NAME="Author">
+<TITLE>系统消息</TITLE> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>bootstrap3/css/bootstrap.min.css" /> 
+  <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script> 
+  <script src="<?php echo STATIC_PATH?>bootstrap3/js/bootstrap.min.js"></script> 
+ 
+  <!--[if lt IE 9]>
+      <script src="<?php echo STATIC_PATH?>js/html5shiv.min.js"></script>
+      <script src="<?php echo STATIC_PATH?>js/respond.min.js"></script>
+    <![endif]--> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/custom.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/padding.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/margin.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/bg.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/media.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/a.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/h.css"/>
+ </head> 
+ <body> 
+ 
+<!--头部导航-->
+
+<?php include parent::load_tpl("header");?>
+<!--头部导航-->
+ 
+<div class="content_inner project">
+  <div class="container">
+  
+  <?php include parent::load_tpl("h/hbanner");?>
+  <!-- 课程详情的内容区域-->
+   <!-- 会员注册-->
+  <div class="huiyuan">
+      <div class="huiyuan_inner">
+          <div class="in clearfix " style="overflow: visible">
+              <!-- -->
+              <div class="member-inner-box col-md-12 col-sm-12 col-xs-12">
+                  <!-- 左侧导航盒子-->
+                  <div class="member-nav-box">
+                      <?php include $this->load_tpl("h/hleft")?>
+                  </div>
+
+                  <!-- 右侧内容盒子-->
+				   <div class=" right-box">
+                      <!-- 右侧标题-->
+                      <div class="right-top">
+                          <h2>系统通知</h2>
+                      </div>
+                      <!-- 右侧内容区域-->
+                      <div class="wdcd right-inner">
+                         
+						 
+	 	<?php 
+		$i=0;
+	foreach($data as $a){
+	    $picdir=$a["picdir_list"];
+		$title=cutStr($a["title"],17);
+		$id=$a["id"]; 
+		$short=$a["short"]; 
+	?>
+	  
+      <div class="media borderbottomgray1 ptop5 pbottom15 "> 
+      <a class="media-left" href="?c=h&a=mynotice_detail&id=<?php echo $id;?>" title="<?php echo  $a["title"];?>"> <img class="media-object img50-media " src="<?php echo $picdir?>" alt=" " /> </a> 
+      <div class="media-body"> 
+       <a class="media-left" href="?c=h&a=mynotice_detail&id=<?php echo $id;?>" title="<?php echo  $a["title"];?>"><h4 class="media-heading font16">
+	   <?php echo $title?></h4></a><font class="colorgray9f"><?php echo $short?></font>
+      </div> 
+     </div>  
+	   <?php 
+	   }
+	   ?> 
+
+						   
+						   
+						   
+                      </div>
+                  </div><!--right box-->
+
+				  
+                  </div>
+                  </div><!--right box-->
+
+              </div>
+          </div>
+      </div>
+  </div>
+   
+ 
+<!--底部内容-->
+
+<?php
+include parent::load_tpl("footer");
+?>
+ <script src="<?php echo STATIC_PATH?>h/jquery-1.8.3.min.js"></script>  

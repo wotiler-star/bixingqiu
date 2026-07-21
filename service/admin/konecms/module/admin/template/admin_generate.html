@@ -1,0 +1,218 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+<script src="<?php echo STATIC_PATH?>js/pwdmod.js"></script>
+ 
+
+<div class="warpper">
+    <div class="title">
+        添加管理员
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>由字母+数字+特殊符号+6位及以上组成的密码为强安全性密码。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+                    <form action="" method="post" name="" enctype="" id="category_info_form">
+                        <div class="switch_info">
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;账号 ：</div>
+                                <div class="label_value">
+                                    <input type="text" name=data[adminname] id=adminname class="text" placeholder="请输入账号" /> <span></span>
+                                </div>
+
+                            </div>
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;密码 ：</div>
+                                <div class="label_value">
+<input type="password" name=data[pwd] id=pwd  class="text" placeholder="请输入密码"  onKeyUp="pwStrength(this.value)" onBlur="pwStrength(this.value)" /> <span></span>
+ <table class=pwdmod> 
+	<tr bgcolor="#eeeeee" align=center> 
+		<td width="105" id="strength_L">弱</td> 
+		<td width="105" id="strength_M">中</td> 
+		<td width="105" id="strength_H">强</td> 
+	</tr> 
+</table>
+                                </div>
+
+                            </div>
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;组名：</div>
+                                <div class="label_value">
+                                    <select name="data[gid]" >
+                                    <?php
+                                       if($gteamArr){
+                                          foreach($gteamArr as $a){
+                                              echo "<option value=".$a["id"].">".$a["title"]."</option>";
+                                          }
+                                       }else{
+                                          echo "<option value=0>请先添加组名</option>";
+                                        }
+
+                                    ?> 
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">真实姓名：</div>
+                                <div class="label_value">
+                                    <input type="text" name=data[name]  class="text"/>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">所属部门：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[department]  />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">联系电话：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[tel] />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">联系地址：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[addr] />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">个人邮箱：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[email] />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">QQ：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[qq] />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">微信号：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[wechat] />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">身份证号 ：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[sfz] />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">账号有效期：</div>
+                                <div class="label_value">
+                                    <div class="time">
+                                        <input type="text"  class="w125 text" data-beatpicker="true"
+                                               name="data[riqi_start]" />
+                                        <span>~</span>
+                                        <input type="text"  class="w125  text" data-beatpicker="true"
+                                               name="data[riqi_expire]" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">绑定IP ：</div>
+                                <div class="label_value">
+        <input class="control-input"  name=data[ifip]  style="vertical-align: middle;margin-right: 5px" type="checkbox"/>
+		<input type="text" class="text" disabled="true"  name=data[ip] />
+                                </div>
+                            </div>
+                           <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn"> 
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() { 
+		$("#adminname").blur(function(){
+		    adminname=$.trim($(this).val());
+		    if(adminname==""){
+		        $(this).siblings("span").html("<font color=red>请输入账号</font>");
+				return false;
+		    }
+			// 唯一性检查 
+			$.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=admin&a=ajax_check_adminname",
+        		    data:{"adminname":adminname},
+        		    success:function(json){
+        		    	if(json.success=='0'){
+        		    		$("#adminname").siblings("span").html("<font color=green>输入正确 ！</font>"); 
+        		    	}else{
+        		    		$("#adminname").siblings("span").html("<font color=red>该管理员已经存在，不允许重复！</font>"); 
+						}
+        		    }
+        		})
+				
+		}); 
+		$("#adminname").focus(function(){ 
+		     $(this).siblings("span").text("");
+		});
+		$("#pwd").focus(function(){ 
+		     $(this).siblings("span").text("");
+		});
+	 $(".dosubmit").click(function(){
+	 
+		    adminname=$.trim($("#adminname").val());
+		    if(adminname==""){
+		        $("#adminname").siblings("span").html("<font color=red>请输入账号</font>");
+				return false;
+		    }
+			
+		    pwd=$.trim($("#pwd").val());
+		    if(pwd==""){
+		        $("#pwd").siblings("span").html("<font color=red>请输入密码</font>");
+				return false;
+		    }
+			
+		   $(".mysubmit").click();
+     });
+		
+		
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".select-jia").click(function(){
+            var dom=$(".screening")
+            var clone_dom=dom.clone()
+            clone_dom.find(".select-jia").removeClass("select-jia").addClass("select-jian")
+            $(this).parents(".label_value").append(clone_dom.eq(0))
+            $(".select-jian").click(function(){
+                console.log(121)
+                $(this).parents(".screening").remove()
+            })
+        })
+        $(".control-input").click(function () {
+            $(this).prop("checked")
+            if ($(this).prop("checked")) {
+                $(this).siblings("input").attr("disable", false)
+                $(this).siblings("input").removeAttr("disabled");
+            } else {
+                $(this).siblings("input").attr("disabled", "disabled");
+            }
+        })
+
+    })
+</script>
+</body>
+</html>

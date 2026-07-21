@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+ <head lang="zh-CN"> 
+  <meta charset="UTF-8" /> 
+<META CONTENT="项目组：邝伟林 杨林" NAME="Author">
+<TITLE><?php echo $metaArr["webtitle"]?></TITLE>
+<META CONTENT="<?php echo $metaArr["keywords"]?>" NAME="Keywords">
+<META CONTENT="<?php echo $metaArr["short"]?>" NAME="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>bootstrap3/css/bootstrap.min.css" /> 
+  <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script> 
+  <script src="<?php echo STATIC_PATH?>bootstrap3/js/bootstrap.min.js"></script> 
+ 
+  <!--[if lt IE 9]>
+      <script src="<?php echo STATIC_PATH?>js/html5shiv.min.js"></script>
+      <script src="<?php echo STATIC_PATH?>js/respond.min.js"></script>
+    <![endif]--> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/custom.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/padding.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/margin.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/bg.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/media.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/a.css" /> 
+ </head> 
+ <body>
+<?php include parent::load_tpl("header");?>
+  <!--LOGO+导航+按钮结束--> 
+ 
+<div class="linenav">
+<div class="container">
+<div class="row">
+<?php 
+foreach($this->navArr["subnav"][$parentidArr[1]] as $a){
+ $sort=$a["sort"];
+ $cataid=$a["cataid"]; 
+?>
+<a href="?c=Content&cataid=<?php echo $cataid?>" class="mright20 <?php if($_GET["cataid"]==$cataid):echo "active";endif;?>"><?php echo $sort?></a> 
+<?php
+   }
+?> 
+
+</div>
+</div>
+</div> 
+<div class="container">
+<div class="row">
+   <div class="col-lg-8 mtop35">
+   
+ 
+	 
+	 	<?php 
+	foreach($data as $a){
+	$picdir=$a["picdir_list"];
+	$title=$a["title"];
+	$id=$a["id"];
+	$source=$a["source"]; 
+	$riqi=$a["riqi"];
+	$short=cutStr($a["short"],60);
+	 
+	 
+	?>
+	
+          <div class="listBox clearfix">
+            <div class="p_left lf">
+              <a href="?c=Content&cataid=<?php echo $this->mycataid?>&id=<?php echo $id?>"><img src="<?php echo $picdir?>" alt=""/></a>
+            </div>
+            <div class="p_right lf">
+              <div class="p_infor">
+                <span><img src="<?php echo STATIC_PATH?>images/bus_08.png" alt=""/><?php echo $source?></span>
+                <span><img src="<?php echo STATIC_PATH?>images/bus_09.png" alt=""/><?php echo $riqi?></span>
+              </div>
+              <h3><a href="?c=Content&cataid=<?php echo $this->mycataid?>&id=<?php echo $id?>"><?php echo $title?></a></h3>
+              <p><?php echo $short?></p>
+            </div>
+          </div>
+	<?php
+	}
+	?>  
+          <div class='mypage  clearfix' >
+                       
+                          <?php echo $page?>
+                       
+       </div>
+	   
+	 
+	 
+	 
+   </div>
+   <div class="col-lg-4">
+      <div class="bordergray1 mtop35 p10">
+	   <div class="row">
+	      <div class="col-lg-10 col-xs-10 column font12   ">
+        热门推荐 
+      </div> 
+      <div class="col-lg-2 col-xs-2 column  textalignright  "> 
+       <a href="" class="grayred font12">&gt;</a> 
+      </div> 
+	  
+	  </div>
+	  
+	  	<?php 
+		$i=0;
+		 $curcataid=$_GET["cataid"];
+	foreach($hotArr as $a){
+	    $picdir=$a["picdir_list"];
+		$title=cutStr($a["title"],17);
+		$id=$a["id"]; 
+		$short=$a["short"]; 
+		$short=cutStr($short,17);
+		
+	?>
+	  
+      <div class="media borderbottomgray1 ptop5 pbottom15 "> 
+      <a class="media-left" href="?c=Content&cataid=<?php echo $curcataid;?>&id=<?php echo $id?>" title="<?php echo  $a["title"];?>"> <img class="media-object img50-media " src="<?php echo $picdir?>" alt=" " /> </a> 
+      <div class="media-body"> 
+       <a class="media-left" href="?c=Content&cataid=<?php echo $curcataid;?>&id=<?php echo $id?>" title="<?php echo  $a["title"];?>"><h4 class="media-heading font16">
+	   <?php echo $title?></h4></a><font class="colorgray9f"><?php echo $short?></font>
+      </div> 
+     </div>  
+	   <?php 
+	   }
+	   ?> 
+	   
+	   
+	  
+	 
+	 
+	</div>
+   </div>
+  </div>
+ </div>
+<!--中间主体区域结束--> 
+
+<?php include parent::load_tpl("footer");?>
+ </body>
+</html>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

@@ -1,0 +1,266 @@
+.livenews {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    padding-top: 0.76rem;
+    font-size: 0.14rem;
+    padding-bottom: 1rem;
+    .main {
+        width: 11.7rem;
+        margin: 0.3rem auto;
+        height: auto;
+        .activity {
+            width: 100%;
+            margin: 0 auto 0.3rem;
+            display: block;
+            img {
+                width: 100%;
+            }
+        }
+        .left-content {
+            float: left;
+            width: 8rem;
+            .lazy {
+                margin-top: 0.2rem;
+                width: 100%;
+                height: 0.5rem;
+                line-height: 0.5rem;
+                border-radius: 8px;
+                display: block;
+                background: #F5F5F5;
+                border: #F5F5F5 1px solid;
+                text-align: center;
+                color: #777;
+                float: left;
+                cursor: pointer;
+                &:hover {
+                    background: #fff;
+                    border-color: #DCDCDC;
+                }
+            }
+            .title {
+                float: left;
+                padding: 0.1rem 0.2rem 0;
+                background: #fff;
+                margin: 0 0 0.2rem 0;
+                .active {
+                    color: #1482f0;
+                }
+                li {
+                    a {
+                        text-decoration: none;
+                        color: #333;
+                        &:hover {
+                            color: #1482f0;
+                        }
+                    }
+                    display: inline-block;
+                    float: left;
+                    font-size: 0.18rem;
+                    margin-right: 0.45rem;
+                    cursor: pointer;
+                }
+            }
+            #active {
+                .item-icons {
+                    .round {
+                        background-color: #ef5250;
+                    }
+                    .time-left {
+                        background: #ef5250;
+                        color: #FFF;
+                        &:before {
+                            border-right-color: #ef5250;
+                        }
+                    }
+                }
+                a {
+                    h1 {
+                        color: #ef5250;
+                    }
+                }
+            }
+            .listBox {
+                float: left;
+                box-sizing: border-box;
+                height: auto;
+                border-bottom: 1px solid #ebebeb;
+                padding-bottom: 0.2rem;
+                padding-top: 0.2rem;
+                width: 100%;
+                .item-icons {
+                    display: block;
+                    height: 0.2rem;
+                    .round {
+                        float: left;
+                        margin: 0.05rem 0 0.05rem 0;
+                        width: 0.1rem;
+                        height: 0.1rem;
+                        border-radius: 50%;
+                        background-color: #878787;
+                    }
+                    .time-left {
+                        float: left;
+                        margin-left: 0.15rem;
+                        padding-right: 0.05rem;
+                        position: relative;
+                        background-color: #f0f0f0;
+                        height: 100%;
+                        color: #212121;
+                        font-size: 0.16rem;
+                        line-height: 0.2rem;
+                        &:before {
+                            content: '';
+                            position: absolute;
+                            left: -0.2rem;
+                            top: 0;
+                            display: block;
+                            border: 0.1rem solid transparent;
+                            border-right-color: #f0f0f0;
+                            float: left;
+                        }
+                    }
+                }
+                a {
+                    text-decoration: none;
+                    h1 {
+                        font-size: 0.16rem;
+                        color: #212121;
+                        font-weight: 700;
+                        padding-top: 0.32rem;
+                        padding-bottom: 0.2rem;
+                        margin: 0;
+                    }
+                    p {
+                        display: block;
+                        width: 100%;
+                        overflow: hidden;
+                        text-align: justify;
+                        font-size: 0.14rem;
+                        line-height: 0.26rem;
+                        color: #757575;
+                        cursor: pointer;
+                        margin: 0;
+                    }
+                }
+                .judge-profit {
+                    text-align: right;
+                    margin-top: 0.18rem;
+                    a {
+                        padding: 0.03rem 0.05rem 0;
+                        background: #f1f1f1;
+                        text-decoration: none;
+                        display: inline-block;
+                        color: rgba(0, 0, 0, .56);
+                        margin-left: 0.35rem;
+                        border-radius: 0.04rem;
+                        position: relative;
+                        &:hover {
+                            color: #e32c28;
+                            background: rgba(227, 44, 40, .08);
+                            transition: all .3s ease;
+                        }
+                        &:nth-child(2):hover {
+                            color: #14954b;
+                            background: rgba(20, 149, 75, .1);
+                            transition: all .3s ease;
+                        }
+                        .span {
+                            display: none;
+                            font-weight: bold;
+                            position: absolute;
+                            top: -0.3rem;
+                            left: 0.3rem;
+                            text-align: center;
+                            color: #c4192d;
+                        }
+                        .span2 {
+                            display: none;
+                            font-weight: bold;
+                            position: absolute;
+                            top: -0.3rem;
+                            left: 0.3rem;
+                            text-align: center;
+                            color: #14954b;
+                        }
+                        i {
+                            font-size: 0.18rem;
+                            vertical-align: middle;
+                            margin-right: 0.05rem;
+                        }
+                        span {
+                            margin-right: 0.05rem;
+                            cursor: pointer;
+                            font-size: 14px;
+                        }
+                        b {
+                            font-weight: normal;
+                        }
+                    }
+                }
+            }
+        }
+        .right-content {
+            width: 3.58rem;
+            height: auto;
+            float: right;
+            .recomend {
+                width: 3.18rem;
+                padding: 0.2rem;
+                float: right;
+                border: 1px solid #EEE;
+                h3 {
+                    margin-top: 0;
+                }
+                .listBox {
+                    cursor: pointer;
+                    width: 100%;
+                    height: 1rem;
+                    color: #424242;
+                    padding: 0.2rem 0;
+                    border-top: 1px solid #eee;
+                    display: block;
+                    &:nth-of-type(1) {
+                        border: none;
+                    }
+                    img {
+                        display: inline-block;
+                        float: left;
+                        width: 0.9rem;
+                        height: 0.65rem;
+                    }
+                    span {
+                        float: right;
+                        width: 1.8rem;
+                        height: 0.4rem;
+                        font-size: 0.16rem;
+                        line-height: 0.2rem;
+                        color: #212121;
+                        margin-bottom: 0.07rem;
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        /** 对象作为伸缩盒子模型显示 **/
+                        -webkit-box-orient: vertical;
+                        /** 设置或检索伸缩盒对象的子元素的排列方式 **/
+                        -webkit-line-clamp: 2;
+                        /** 显示的行数 **/
+                        overflow: hidden;
+                        /** 隐藏超出的内容 **/
+                        &:hover {
+                            color: #1482f0;
+                        }
+                    }
+                    p {
+                        display: inline-block;
+                        float: right;
+                        width: 1.8rem;
+                        margin: 0;
+                        font-size: 0.13rem;
+                        color: #828a92;
+                    }
+                }
+            }
+        }
+    }
+}

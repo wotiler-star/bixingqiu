@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">  
+<META CONTENT="text/html; charset=utf-8" HTTP-EQUIV="Content-Type" /> 
+<META CONTENT="北京大成亨通网络科技有限公司 www.kuangit.com  " NAME="Author">
+<TITLE>全站搜索结果</TITLE>
+<META CONTENT="全站搜索结果" NAME="Keywords">
+<META CONTENT="全站搜索结果" NAME="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>/css/bootstrap.css"/>
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>/css/swiper.min.css"/>
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>/css/animate.min.css"/>
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>/css/my.css"/>
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>/css/media.css"/>
+   
+  <!--[if lt IE 9]>
+  <script src="<?php echo STATIC_PATH?>/js/html5shiv.min.js"></script>
+  <script src="<?php echo STATIC_PATH?>/js/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<!--头部导航-->
+
+<?php include parent::load_tpl("header");?><!--主内容-->
+<div class="inner_banner inner_banner_01">
+  <img src="<?php echo STATIC_PATH?>images/ziliao_02.jpg" alt="" class="img_pc"/>
+  <img src="<?php echo STATIC_PATH?>images/ziliao_02_02.jpg" alt="" class="img_ph"/>
+  <div class="line"></div>
+  <div class="title">
+    <h3>全站搜索</h3> 
+    <p><?php echo $this->usualArr["kouhao"]?></p>
+  </div>
+</div>
+<div class="content_inner project">
+  <div class="container">
+    <div class="search">
+      <img src="<?php echo STATIC_PATH?>images/m_05.png" alt=""/>
+      <div class="search_box mysearch">
+        <div class="form-group  has-feedback"> 
+          <input type="text" class="form-control w"  /> 
+        </div>
+        <a href="javascript:;" class="search_it clickme">搜索一下</a>
+      </div>
+    </div>
+    <div class="project_list download">
+      <h3><span>搜索结果</span></h3>
+      <div class="row">
+        <div class="col-xs-12 col-md-9">
+          <ul>
+		  
+		   <?php
+		   if($mydata){
+			    foreach($mydata as $key=>$arr){ 
+				   foreach($arr as $a){
+				     $title=$a["title"];
+				     $id=$a["id"];
+				     $cataid=$a["cataid"];
+				     $sort=$a["sort"];
+				     $dataurl=$a["dataurl"];
+				  
+				   
+				     
+			  ?>
+            <li>
+			<?php
+			if($key=='i'){
+			if($sort=="资料下载"){
+			   echo "<a href=$dataurl>[$sort]";
+			}else{
+			   echo "<a target=blank  href=?c=Content&cataid=$cataid&id=$id>[$sort]";
+			}
+			
+			}else{ 
+			   echo "<a target=blank href=?c=p&a=detail&id=$id>[$sort]";
+			}
+			?>  
+                <?php echo $title?>
+              </a>
+            </li>
+			<?php
+			}
+			 }
+			 }else{
+			 echo "<li><a>暂无</a></li>";
+			 }
+			?> 
+          </ul>
+           
+        </div>
+        <div class="hidden-xs hidden-sm col-md-3">
+          <div class="ad">
+            <img src="<?php echo STATIC_PATH?>images/g_13.jpg" alt=""/>
+            <img src="<?php echo STATIC_PATH?>images/g_16.jpg" alt=""/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="information">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6 col-md-3">
+        <img src="<?php echo STATIC_PATH?>images/g_21.png" alt=""/>
+        <p>地址：<?php echo $this->usualArr["addr"]?></p>
+      </div>
+      <div class="col-xs-6 col-md-3">
+        <img src="<?php echo STATIC_PATH?>images/g_23.png" alt=""/>
+        <p>电话：<br/><?php echo $this->usualArr["tel"]?></p>
+      </div>
+      <div class="col-xs-6 col-md-3">
+        <img src="<?php echo STATIC_PATH?>images/g_25.png" alt=""/>
+        <p>邮箱<br/><?php echo $this->usualArr["email"]?></p>
+      </div>
+      <div class="col-xs-6 col-md-3">
+        <img src="<?php echo STATIC_PATH?>images/g_27.png" alt=""/>
+        <p><img src="<?php echo $this->usualArr["picdir_gzh"]?>" alt=""/></p>
+      </div>
+    </div>
+  </div>
+</div>
+<!--底部内容-->
+
+<?php
+include parent::load_tpl("footer");
+?>
+<script src="<?php echo STATIC_PATH?>/js/jquery-1.11.3.js"></script>
+<script src="<?php echo STATIC_PATH?>/js/bootstrap.js"></script>
+<script src="<?php echo STATIC_PATH?>/js/swiper-3.4.2.min.js"></script>
+<script src="<?php echo STATIC_PATH?>/js/swiper.animate.min.js"></script>
+<script src="<?php echo STATIC_PATH?>/js/jquery.pagination.js"></script>
+<script src="<?php echo STATIC_PATH?>/js/my.js"></script>
+
+		<script>	
+   $(function(){
+	$(".mysearch .clickme").click(function(){ 
+					w=$(".mysearch .w").val();  
+					if(w==""){alert("请输入搜索关键词");return;}
+					window.location.href="?c=so&w="+w;
+	    
+   }) 
+    }) 
+	   </script> 
+<script>
+document.onkeydown=function(event){
+e = event ? event :(window.event ? window.event : null);
+if(e.keyCode==13){ 
+	 	w=$(".mysearch .w").val();  
+					if(w==""){alert("请输入搜索关键词");return;}
+					window.location.href="?c=so&w="+w;
+}
+}
+</script> 
+
+	    
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

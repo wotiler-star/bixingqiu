@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+ <head lang="zh-CN"> 
+  <meta charset="UTF-8" /> 
+<META CONTENT="项目组：邝伟林 杨林" NAME="Author">
+<TITLE>会员中心</TITLE> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>bootstrap3/css/bootstrap.min.css" /> 
+  <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script> 
+  <script src="<?php echo STATIC_PATH?>bootstrap3/js/bootstrap.min.js"></script> 
+ 
+  <!--[if lt IE 9]>
+      <script src="<?php echo STATIC_PATH?>js/html5shiv.min.js"></script>
+      <script src="<?php echo STATIC_PATH?>js/respond.min.js"></script>
+    <![endif]--> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/custom.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/padding.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/margin.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/bg.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/media.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/a.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/h.css"/>
+ </head> 
+ <body> 
+ 
+<!--头部导航-->
+
+<?php include parent::load_tpl("header");?>
+<!--主内容-->
+ 
+<div class="content_inner project">
+ 
+  <div class="container">
+  <?php include parent::load_tpl("h/hbanner");?>
+
+  
+  
+  <!-- 课程详情的内容区域-->
+   <!-- 会员注册-->
+  <div class="huiyuan">
+      <div class="huiyuan_inner">
+          <div class="in clearfix " style="overflow: visible">
+              <!-- -->
+            
+                  <!-- 左侧导航盒子-->
+                  <div class="member-nav-box">
+                  <?php include $this->load_tpl("h/hleft")?>
+				  </div>
+
+                  <!-- 右侧内容盒子-->
+                  <div class=" right-box">
+                      <!-- 右侧标题-->
+                      <div class="right-top">
+                          <h2>账户信息</h2>
+                      </div>
+                      <!-- 右侧内容区域-->
+                      <div class="xgmm right-inner">
+
+                          <form action="#" method="post">
+                              <ul class="zcxx-form col-md-6">
+          <li>
+           <span >用户名：</span>
+           <?php echo $this->hArr["hname"]?>
+          </li>
+          <li>
+           <span>手机号：</span>
+           <?php echo $this->hArr["phone"]?>
+          </li>
+		   
+          <li>
+           <span>注册日期：</span>
+           <?php echo $this->hArr["riqi"]?>
+          </li>
+           <li>
+            <label>
+             <span>昵称：</span>
+             <input class="bordergray1" type="text" name=data[name] value="<?php echo $this->hArr["name"]?>" />
+            </label>
+           </li>
+		 
+           <li>
+           <label >
+            <span>简介：</span>
+            <input type="text" class="bordergray1"  name=data[short] value="<?php echo $this->hArr["short"]?>" />
+           </label>
+           </li>
+           <li>
+           <label >
+            <span>邮箱：</span>
+            <input type="email" class="bordergray1"   name=data[email] value="<?php echo $this->hArr["email"]?>" />
+           </label>
+           </li>
+           <li>
+           <label >
+            <span>地址：</span>
+            <input type="text" class="bordergray1"  name=data[addr] value="<?php echo $this->hArr["addr"]?>" />
+           </label>
+           </li>
+           <li class="center">
+            <button type="submit" class="btn buy-btn" />确定</button>
+            <button type="reset" class="btn buy-btn" />重置</button>
+           </li>
+         </ul>
+		 
+                              <div class=" col-md-6 center">
+                                  <div>
+                                      <p style="width:175px;margin: auto;padding:20px;">
+									   
+		<?php
+		   if($this->hArr["picdir"]){
+		      echo "<img id=show_single src=".$this->hArr["picdir"]." style='width:135px;height:135px;' />";
+		   }else{
+		      echo "<img id=show_single  src=".STATIC_PATH ."h/head-img.png  style='width:135px;height:135px;' />";
+		   }
+		?>
+             
+                                      </p>
+                                  </div>
+                                  <div class="zcxx-head-box">
+                                      <p>
+                                          <span>选择头像：</span>
+                                          <label>
+                                              <a class="buy-btn" id="upload_single">更换头像</a> 
+                                          </label>
+
+                                      </p>
+                                      <p>友情提示：更换头像后，头像可能需要过一段时间才会生效。</p>
+                                  </div>
+
+		<link rel="stylesheet" href="<?php echo SITE_PATH?>source/kindeditor-4.1.7/themes/default/default.css" />
+		<script src="<?php echo SITE_PATH?>source/kindeditor-4.1.7/kindeditor-all.js"></script>
+		<script src="<?php echo SITE_PATH?>source/kindeditor-4.1.7/lang/zh_CN.js"></script>
+		
+                                  <script>
+                                      KindEditor.ready(function(K) {
+                                          var editor = K.editor({
+                                              allowFileManager : true
+                                          });
+
+                                          //单图上传:首页
+                                          K('#upload_single').click(function() {
+                                              editor.loadPlugin('image', function() {
+                                                  editor.plugin.imageDialog({
+                                                      clickFn : function(url, title, width, height, border, align) { 
+                                                          K("#show_single").attr("src",url);
+                                                          K("#show_single2").attr("src",url);
+ $.ajax({
+    cache:"FALSE",
+    type:"POST",
+     url:"?c=h&a=ajax_set_photo",
+ dataType:"json",
+    data:{  
+    	"picdir":url
+    	},
+ timeout:15000 
+  });//ajax 
+  
+                                                          editor.hideDialog();
+                                                      }
+                                                  });
+                                              });
+                                          });
+                                      });//kindeditor-4
+                                  </script>
+                              </div>
+                          </form>
+                      </div>
+                  </div><!--right box-->
+
+             
+          </div>
+      </div>
+  </div>
+  </div>
+  </div>
+ 
+<?php
+include parent::load_tpl("footer");
+?>
+ <script src="<?php echo STATIC_PATH?>h/jquery-1.8.3.min.js"></script>  

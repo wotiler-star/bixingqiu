@@ -1,0 +1,94 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+
+    <script src="<?php echo STATIC_PATH?>js/jquery.tree.js"></script>
+<div class="warpper">
+    <div class="title">
+        目录管理
+    </div>
+    <div class="content">
+        <div class="tabs_info">
+            <ul>
+                <li class="curr"><a href="">目录管理</a></li>
+            </ul>
+        </div>
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <DIV class="rCon-sort">
+                <div class="page_cbox">
+                <div class="c_page">
+                    <div id="menu">
+                        <ul id="files">
+						<?php echo $str?>
+                        </ul>
+                    </div>
+				</div>
+            </div>
+        </DIV>
+    </div>
+</div>
+<script>
+    $(function(){
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+    })
+</script>
+<!--树形折叠-->
+<script type="text/javascript">
+    $(function () {
+ 
+        $('#files').tree({
+//            expanded: 'li:first'
+        });
+        $(".menu-hover input[type='checkbox']").click(function(){
+            if($(this).is(":checked")){
+                $(this).parents("div").siblings("ul").find("input[type='checkbox']").prop("checked",true)
+            }
+            if(!$(this).is(":checked")){
+                $(this).parents("div").siblings("ul").find("input[type='checkbox']").prop("checked",false)
+            }
+        })
+        $(".pall").click(function(){
+            $(".menu-hover input[type='checkbox']").prop("checked",true)
+        })
+
+			//单项删除
+	$(".del").click(function () {
+		if (confirm("是否提交")) { 
+			cataid = $(this).attr("delid");
+			$.ajax({
+				cache : "FALSE",
+				type : "POST",
+				url : "?c=catalog&a=ajax_del_catalog",
+				dataType : "json",
+				data : {
+					"cataid" : cataid,
+					 
+				},
+				timeout : 15000,
+				success : function (json) {
+					if (json.success == 0) {
+						location.reload(true);
+						return true;
+					} else {
+						alert("删除操作失败");
+						return false;
+					}
+				} //success
+			}); //ajax
+		} //confirm
+	});
+	
+    });
+</script>
+</body>
+</html>

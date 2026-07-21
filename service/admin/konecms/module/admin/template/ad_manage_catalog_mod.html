@@ -1,0 +1,86 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+ 
+<div class="warpper">
+    <div class="title">
+        修改位置
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+                    <form action="#" method="post"  id="myform">
+                        <div class="switch_info">
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;广告位置：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[sort] id=need  value="<?php echo $data["sort"]?>" /> <span></span>
+                                </div>
+                            </div>
+                         
+                           <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn"> 
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<script>
+    $(function() {
+	 
+	
+		$("#need").blur(function(){
+		    need=$.trim($(this).val());
+		    if(need==""){
+		        $(this).siblings("span").html("<font color=red>请输入位置名称</font>");
+				return false;
+		    }
+		})
+		$("#need").focus(function(){ 
+		     $(this).siblings("span").text("");
+		});
+	    $(".dosubmit").click(function(){ 
+		    need=$.trim($("#need").val());
+		    if(need==""){
+		        $("#need").siblings("span").html("<font color=red>请输入位置名称</font>");
+				return false;
+		    }
+			
+		   $(".mysubmit").click();
+        }); 
+		
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".select-jia").click(function(){
+            var dom=$(".screening")
+            var clone_dom=dom.clone()
+            clone_dom.find(".select-jia").removeClass("select-jia").addClass("select-jian")
+            $(this).parents(".label_value").append(clone_dom.eq(0))
+            $(".select-jian").click(function(){
+                console.log(121)
+                $(this).parents(".screening").remove()
+            })
+        })
+
+    })
+</script>
+</body>
+</html>

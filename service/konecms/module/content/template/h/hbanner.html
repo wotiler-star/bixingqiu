@@ -1,0 +1,21 @@
+    <div class="p_center">
+    
+    <div class="person_name">
+	<?php
+		   if($this->hArr["picdir"]){
+		      echo "<img  src=".$this->hArr["picdir"]." style='width:100px;height:100px;border-radius:50%' />";
+		   }else{
+		      echo "<img    src=".STATIC_PATH ."h/head-img.png  style='width:100px;height:100px;border-radius:50%' />";
+		   }
+		?>  
+		
+      <div class="name"><?php echo $this->hArr["name"]?></div>
+      <div class="short"><?php echo $this->hArr["short"]?></div>
+   <div class="tongji">
+	  <div class="numleft"><span>评论数量</span><p><?php echo $this->num_feedback?></p></div>  
+	  <div class="numleft"><span>文章数量</span><p><?php echo $this->num_i?></p></div>  
+	  <div class="numright"><span>收藏文章</span><p><?php echo $this->num_favorate?></p></div> 
+    </div>
+    
+  </div>
+  </div> 

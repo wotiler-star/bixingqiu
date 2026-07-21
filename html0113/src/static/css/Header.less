@@ -1,0 +1,198 @@
+html,
+body {
+    font-size: 100px;
+    margin: 0;
+    padding: 0;
+}
+
+.navBox {
+    width: 100%;
+    overflow: hidden;
+    .interlayer {
+        background: #FFF;
+        box-shadow: 0 0.02rem 0.04rem 0 rgba(72, 72, 72, 0.21);
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1099;
+        width: 100%;
+        .content {
+            width: 11.70rem;
+            height: 0.76rem;
+            margin: 0 auto;
+            line-height: 0.76rem;
+            .logBox {
+                float: left;
+                a {
+                    display: block;
+                    height: 100%;
+                    line-height: 0.76rem;
+                    img {
+                        height: 0.4rem;
+                    }
+                }
+            }
+            .middle {
+                float: left;
+                margin-left: 0.25rem;
+                a {
+                    font-size: 0.16rem;
+                    text-decoration: none;
+                    color: #333;
+                    margin-left: 0.26rem;
+                    padding-bottom: 0.05rem;
+                    &:hover {
+                        color: #F29700;
+                    }
+                }
+                .active {
+                    color: #F29700;
+                    border-bottom: 3px solid #F29700;
+                }
+            }
+            .navFinally {
+                margin-left: 0.26rem;
+                float: left;
+                position: relative;
+                span {
+                    font-size: 0.3rem;
+                    line-height: 0.18rem;
+                    color: #D8D8D8;
+                    height: 0.42rem;
+                    width: 0.82rem;
+                    padding: 0 0.15rem 0.2rem 0px;
+                    cursor: pointer;
+                }
+                div {
+                    position: absolute;
+                    top: 0.65rem;
+                    right: -0.4rem;
+                    background: #FFF;
+                    z-index: 1200;
+                    padding: 0.1rem;
+                    border-radius: 0.03rem;
+                    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+                    display: none;
+                    a {
+                        display: block;
+                        font-size: 0.14rem;
+                        line-height: 0.26rem;
+                        min-width: 100px;
+                        text-align: center;
+                        text-decoration: none;
+                        color: #000;
+                        &:hover {
+                            color: #F29700;
+                        }
+                    }
+                }
+                &:hover div {
+                    display: block;
+                }
+            }
+            .navRight {
+                display: block;
+                float: right;
+                position: relative;
+                .form,
+                .mobile,
+                .search {
+                    float: right;
+                    margin-right: 0.2rem;
+                    overflow: hidden;
+                    cursor: pointer;
+                    i {
+                        margin-top: 0.25rem;
+                        margin-right: 0.05rem;
+                        float: left;
+                        display: block;
+                        font-size: 0.24rem;
+                        color: #999;
+                    }
+                    span {
+                        float: left;
+                        display: block;
+                        font-size: 0.16rem;
+                        color: #999;
+                    }
+                }
+                .mobile:hover .qrCode {
+                    display: block;
+                }
+                .form:hover .contributeBox {
+                    display: block;
+                }
+                .qrCode {
+                    display: none;
+                    position: absolute;
+                    top: 0.7rem;
+                    right: 1rem;
+                    background: #FFF;
+                    z-index: 1210;
+                    padding: 0.2rem;
+                    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+                    border-radius: 0.03rem;
+                    img {
+                        width: 1.2rem;
+                        height: 1.2rem;
+                    }
+                }
+                .contributeBox {
+                    display: none;
+                    margin: 0;
+                    width: 1rem;
+                    padding: 0.1rem 0;
+                    position: absolute;
+                    top: 0.7rem;
+                    right: 0.4rem;
+                    background: #FFF;
+                    z-index: 1210;
+                    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+                    border-radius: 0.03rem;
+                    a {
+                        display: block;
+                        width: 100%;
+                        box-sizing: border-box;
+                        color: #333;
+                        padding: 0 0.15rem;
+                        text-align: center;
+                        text-decoration: none;
+                        font-size: 0.14rem;
+                        overflow: hidden;
+                        height: 0.4rem;
+                        line-height: 0.4rem;
+                        margin: 0;
+                        &:hover {
+                            background: #EEE;
+                        }
+                    }
+                }
+                .search-pop {
+                    margin-right: 1.35rem;
+                    input {
+                        float: left;
+                        line-height: 0.8rem;
+                        width: 4rem;
+                        height: 0.34rem;
+                        margin: 0.16rem 0.1rem 0px 0.1rem;
+                        border-bottom: 1px solid rgb(220, 220, 220);
+                        border-left: none;
+                        border-right: none;
+                        border-top: none;
+                        outline: none;
+                    }
+                }
+                a {
+                    float: right;
+                    margin-left: 0.2rem;
+                    img {
+                        width: 0.32rem;
+                        height: 0.32rem;
+                        display: inline-block;
+                        border-radius: 50%;
+                    }
+                }
+            }
+        }
+    }
+}

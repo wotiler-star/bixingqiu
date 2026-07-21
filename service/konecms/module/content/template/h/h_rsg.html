@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <title>会员注册</title>
+	
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/base.css">
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/style.css"> 
+	
+</head>
+<body>
+
+    <div class="bg"></div>
+    <div class="container">
+        <div class="line bouncein">
+            <div class="xs6 xm4 xs3-move xm4-move">
+                <div style="height:150px;"></div>
+                <div class="media media-y margin-big-bottom">
+                </div>
+            <form action="#" method="post"  class=rsgfrm>
+                    <div class="panel loginbox">
+                        <div class="text-center margin-big padding-big-top">
+                            <h1>会员注册</h1>
+                        </div>
+                        <div class="panel-body" style="padding:30px; padding-bottom:10px; padding-top:10px;">
+                            <div class="form-group">
+                                <div class="field field-icon-right">
+                                    <input class="input input-big name" type="text"  placeholder="请输入您的手机号" name="hname" value="">
+                                    <span class="icon icon-user margin-small"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field field-icon-right">
+                                    <input class="input input-big pwd" name="pwd" value="" type="password" placeholder="设置密码" >
+                                    <span class="icon icon-key margin-small"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field field-icon-right">
+                                    <input class="input input-big pwd" name="pwd2" type="password" placeholder="确认密码" >
+                                    <span class="icon icon-key margin-small"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field">
+                                    <input class="input input-big yzm" name="yzm" placeholder="填写右侧图形验证码" type="text">
+                                    <img src="yzm.php" alt="" class="passcode" style="height:43px;cursor:pointer;" onclick="this.src=this.src+'?'" width="100" height="32">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding:30px;">
+                            <input id="button" class="button button-block bg-main text-big input-big clickme" value="注册" type="button">
+							<br>已有账号？请&nbsp;<a href=?c=h&a=login><font color=red>登录</font></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</body></html>
+
+ <script src="<?php echo STATIC_PATH?>h/jquery-1.8.3.min.js"></script>  
+ <script src="<?php echo STATIC_PATH?>h/form.js"></script>  
+
+ <script>
+document.onkeydown=function(event){
+e = event ? event :(window.event ? window.event : null);
+if(e.keyCode==13){
+
+	    e.preventDefault();
+		
+       var hname=$.trim($(".rsgfrm [name='hname']").val());  
+       var pwd= $(".rsgfrm [name='pwd']").val(); 
+       var pwd2= $(".rsgfrm [name='pwd2']").val();
+       var yzm=$.trim($(".rsgfrm [name='yzm']").val());   
+       
+		
+	   if($(".rsgfrm .callpwd").length){
+			 data={"hname":hname,"pwd":pwd,"msg":msg,"yzm":yzm};
+			 ajax_url="?c=h&a=ajax_callpwd";
+			 msg="成功找回密码，请登录";
+		}else{ 
+			 data={"hname":hname,"pwd":pwd,"yzm":yzm };
+			 ajax_url="?c=h&a=ajax_rsg";
+			 msg="注册成功，请登录"; 
+	    
+		}
+       
+	    if(   
+			 isNaN(hname) ||hname.length!=11
+	   ){
+		   alert("请正确输入手机号！");
+		   return false;
+		}  
+       if(yzm=="") {
+		   alert("请输入图形验证码！");
+		   return false;
+		} 
+		
+       if(pwd.length<6) {
+		   alert("密码必须大于6位数 ！");
+		   return false;
+		}
+       if(pwd!=pwd2) {
+		   alert("两次密码输入不一样！");
+		   return false;
+		}
+		 
+			$.ajax({
+        cache:"FALSE",
+        type:"POST",
+         url:ajax_url,
+     dataType:"json",
+        data:{ 
+		     "data":data
+				},
+	 timeout:15000,
+     success:function(json){
+             if(json.success==0){
+				 alert(msg); 
+			     window.location.href="?c=h&a=login";
+				 return true;
+             }else{
+				 alert(json.msg);
+				 return false;
+			 }
+        }//success
+      });//ajax
+	  
+	  
+	
+}//13
+}
+</script> 
+ 

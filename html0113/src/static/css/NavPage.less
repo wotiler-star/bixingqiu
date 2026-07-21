@@ -1,0 +1,361 @@
+.navPage {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  padding-top: 0.76rem;
+  font-size: 0.14rem;
+  background: #F7F8FA;
+  .main {
+    width: 12rem;
+    margin: 0.6rem auto;
+    height: auto;
+    .title {
+      display: block;
+      float: left;
+      width: 100%;
+      height: auto;
+      margin-bottom: 0.3rem;
+      h3 {
+        display: inline-block;
+        float: left;
+        margin: 0;
+        color: #222;
+        font-weight: 700;
+        font-size: 0.16rem;
+      }
+      .post_websit {
+        text-decoration: none;
+        border: 1px solid #f39700;
+        border-radius: 0.03rem;
+        width: 0.78rem;
+        height: 0.26rem;
+        float: right;
+        margin-right: 0.16rem;
+        cursor: pointer;
+        padding: 0.02rem 0.02rem 0 0.02rem;
+        &:hover {
+          background: rgb(231, 155, 55);
+        }
+        &:hover span {
+          color: #FFF;
+        }
+        &:hover i {
+          background: url("https://resource.jinse.com/phenix/img/post-up-white.png?v=1154") no-repeat;
+          background-size: 0.12rem 0.12rem;
+        }
+        span {
+          font-size: 0.12rem;
+          color: rgb(228, 162, 72);
+          display: inline-block;
+        }
+        i {
+          margin: 0.04rem 0.03rem 0 0.06rem;
+          border-radius: 100%;
+          width: 0.12rem;
+          height: 0.12rem;
+          float: left;
+          display: inline-block;
+          background: url("https://resource.jinse.com/phenix/img/post-up@2x.png?v=1154") no-repeat;
+          background-size: 0.12rem 0.12rem;
+          vertical-align: middle;
+        }
+      }
+      .icon {
+        cursor: pointer;
+        float: right;
+        text-align: center;
+        span {
+          float: left;
+          border-radius: 2px 0 0 2px;
+          i {
+            display: inline-block;
+            height: 0.27rem;
+            width: 0.27rem;
+            border-radius: 2px 0 0 2px;
+            background: url("https://resource.jinse.com/phenix/img/dhicon.svg")-0.91rem -0.045rem no-repeat;
+            background-color: #DEDEDE;
+            &:hover {
+              background-color: #F48D00;
+            }
+          }
+
+          .active {
+            background-color: #F48D00 !important;
+          }
+          &:nth-child(2) {
+            i {
+              border-radius: 0 2px 2px 0;
+              background: url("https://resource.jinse.com/phenix/img/dhicon.svg")-1.31rem -0.05rem no-repeat;
+              background-color: #DEDEDE;
+            }
+          }
+        }
+      }
+    }
+    .tabnav-contents {
+      display: none;
+      width: 100%;
+      background: #FFF;
+      float: left;
+      padding: 0.25rem 0;
+      margin-bottom: 0.3rem;
+      box-sizing: border-box;
+      .tabnav-title {
+        margin: 0 0.25rem 0.3rem;
+        height: 0.375rem;
+        line-height: 0.375rem;
+        padding-bottom: 0.1rem;
+        border-bottom: 1px solid #E1E1E1;
+        font-size: 0.16rem;
+        color: #222222;
+        span {
+          float: left;
+          display: inline-block;
+          width: 0.3rem;
+          height: 0.3rem;
+          vertical-align: middle;
+          margin-top: -0.03rem;
+        }
+        .mechanism {
+          margin-top: 0.03rem;
+          background: url("https://resource.jinse.com/phenix/img/icon.svg?v=1")-0.23rem -4.635rem no-repeat;
+        }
+        h4 {
+          font-size: 0.14rem;
+          color: #222;
+          margin: 0;
+        }
+      }
+      #active {
+        max-height: 100%;
+        background-color: #f9f9f9;
+        .tabnav-drop-down {
+          img {
+            transform: rotate(-90deg);
+
+          }
+        }
+      }
+      .listBox {
+        float: left;
+        width: 100%;
+        box-sizing: border-box;
+        display: block;
+        padding: 0 0.25rem;
+        max-height: 1rem;
+        background-color: #fff;
+        height: auto !important;
+        overflow: hidden;
+        position: relative;
+        &:hover {
+          background: #f9f9f9;
+        }
+        .s {
+          display: inline-block;
+          color: #666;
+          width: 0.68rem;
+          line-height: 0.44rem;
+          float: left;
+          font-weight: 400;
+          img {
+            margin-top: 17px;
+            float: right;
+          }
+        }
+        .tabnav-mousemove {
+          width: 10.4rem;
+          float: left;
+          height: auto;
+          margin-left: 0.34rem;
+          a {
+            text-decoration: none;
+            line-height: 0.5rem;
+            font-size: 0.16rem;
+            color: #222222;
+            display: inline-block;
+            margin-right: 0.35rem;
+            float: left;
+            position: relative;
+            &:hover span {
+              color: #4285F4;
+            }
+            img {
+              width: 0.14rem;
+              height: 0.14rem;
+              vertical-align: middle;
+              margin: -0.05rem 0.03rem 0 0;
+              border: 1px solid #dcdcdc;
+              border-radius: 0.05rem;
+            }
+            span {
+              font-size: 0.16rem;
+              color: #222222;
+            }
+            &:hover .nameBox {
+              display: block;
+            }
+            .nameBox {
+              display: none;
+              position: absolute;
+              top: 0.6rem;
+              left: -0.55rem;
+              z-index: 999;
+              background: rgba(34, 34, 34);
+              color: rgba(255, 255, 255);
+              width: 2rem;
+              text-align: center;
+              border-radius: 0.1rem;
+              i {
+                position: absolute;
+                top: -0.09rem;
+                width: 0;
+                left: 0.92rem;
+                height: 0;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-bottom: 10px solid rgba(34, 34, 34);
+              }
+              p {
+                line-height: 0.25rem;
+                color: #FFF;
+                margin: 0;
+                display: inline-block;
+                font-size: 0.16rem;
+              }
+            }
+          }
+        }
+        .tabnav-drop-down {
+          position: absolute;
+          top: 0.13rem;
+          right: 0.2rem;
+          cursor: pointer;
+          img {
+            transform: rotate(90deg);
+            width: 0.09rem;
+          }
+        }
+      }
+    }
+    .tabnav-content {
+      width: 100%;
+      background: #fff;
+      height: auto;
+      overflow: hidden;
+      .list-content {
+        width: 12rem;
+        margin: 0 auto;
+        background: #FFF;
+        overflow: hidden;
+        .listBox {
+          box-sizing: border-box;
+          width: 100%;
+          float: left;
+          padding: 0.2rem;
+          margin-bottom: 0.3rem;
+          .tabnav-title {
+            height: 0.47rem;
+            line-height: 0.47rem;
+            padding: 0 0 0.07rem 0;
+            border-bottom: 1px solid #E1E1E1;
+            font-size: 0.16rem;
+            color: #222222;
+            margin-bottom: 0.3rem;
+            .active{
+              border-bottom: 2px solid #f29700;
+            }
+            li {
+              margin-right: 0.3rem;
+              font-size: 0.14rem;
+              font-weight: 700;
+              display: inline-block;
+              float: left;
+              color: #888888;
+              cursor: pointer;
+              &:nth-child(1){
+                color: #222;
+              }
+              i {
+                background: url("https://resource.jinse.com/phenix/img/icon.svg?v=1")-0.23rem -4.635rem no-repeat;
+                display: inline-block;
+                width: 0.3rem;
+                height: 0.3rem;
+                vertical-align: middle;
+                margin-right: 0.05rem;
+                margin-top: -0.03rem;
+              }
+            }
+          }
+          .main-content{
+            padding: 0.1rem 0;
+            margin: 0;
+            float: left;
+            width: 100%;
+            box-sizing: border-box;
+            max-height: 4.14rem;
+            overflow: hidden;
+            a{
+              text-decoration: none;
+              border: 1px solid #eeeeee;
+              width: 2.68rem;
+              height: 1.08rem;
+              margin: 0 0.23rem 0.3rem 0;
+              float: left;
+              padding: 0.18rem;
+              color: #333;
+              box-sizing: border-box;
+              &:hover{
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(45, 50, 55, 0.2);
+                top: -2px;
+                position: relative;
+                transition: all .2s ease-out;
+              }
+              &:nth-child(4n){
+                margin-right: 0;
+              }
+              img{
+                width: 0.63rem;
+                height: 0.63rem;
+                float: left;
+                border: 1px solid #dcdcdc;
+                border-radius: 0.08rem;
+                overflow: hidden;
+                margin-top: -1px;
+                background: #fff;
+              }
+              p{
+                font-size: 0.14rem;
+                margin:0 0 0.07rem 0.1rem;
+                width: 1.54rem;
+                display: block;
+                float: left;
+                &:nth-child(3){
+                  color: #999;
+                  overflow: hidden;
+                }
+              }
+            }
+          }
+          .footer{
+            width: 2.38rem;
+            height: 0.38rem;
+            line-height: 0.38rem;
+            text-align: center;
+            border: 1px solid #e1e1e1;
+            border-radius: 0.04rem;
+            display: block;
+            margin: 0.2rem auto; 
+            background: #ffffff;
+            color: #777;
+            cursor: pointer;
+            &:hover{
+              background: #F39700;
+              color: #FFF;
+            }
+          }
+        }
+      }
+    }
+  }
+}

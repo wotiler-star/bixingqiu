@@ -1,0 +1,30 @@
+.search-import {
+  width: 100%;
+  height: 0.54rem;
+}
+.search-import .search-input {
+  background: url(../image/search-btn-b49b277930.png) #fff left no-repeat;
+  background-position: 0.15rem;
+  width: 100%;
+  height: 100%;
+  padding-left: 0.48rem;
+  border: 1px #e5e5e5 solid;
+  color: #757575;
+}
+.search-import .search-input:hover {
+  border: 1px #bdbdbd solid;
+}
+.search-contet-top {
+  height: 0.7rem;
+  line-height: 0.7rem;
+  overflow: hidden;
+}
+.search-contet-top .result-num {
+  font-size: 14px;
+  color: #757575;
+  float: left;
+}
+.search-contet-top .result-num span {
+  color: #e61e1e;
+  padding: 0 0.07rem;
+}

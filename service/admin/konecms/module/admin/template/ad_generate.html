@@ -1,0 +1,170 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>  
+		<link rel="stylesheet" href="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/themes/default/default.css" />
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/kindeditor-all.js"></script>
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/lang/zh_CN.js"></script>
+		<script>
+			KindEditor.ready(function(K) {
+				var editor = K.editor({
+					allowFileManager : true
+				});
+ 
+			   //单图上传
+				K('#upload_single').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#picdir_single').val(url);
+								$("#show_single").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+			   //单图上传
+				K('#upload_single2').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#picdir_single2').val(url);
+								$("#show_single2").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+
+			 
+			});
+		</script>
+<div class="warpper">
+    <div class="title">
+        添加广告
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+                    <form action="#" method="post" name="" enctype="" id="category_info_form">
+                        <div class="switch_info">
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;广告位置 ：</div>
+                                <div class="label_value">
+                                    <select name="data[sort]" id=need>
+									<option value=0>请选择------</option>
+                                       <?php
+									      foreach($data as $a){
+									         echo "<option value=".$a["sort"].">".$a["sort"]."</option>";
+									     } 
+									   ?>
+                                    </select>
+                                    <span></span>
+                                </div>
+                            </div> 
+                            
+                            <div class="item">
+                                <div class="label">标题：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[title] />
+                                </div>
+                            </div> 
+                            <div class="item">
+                                <div class="label">链接：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[url] />
+                                </div>
+                            </div> 
+							
+                            <div class="item">
+                                <div class="label">图像（PC）：</div>
+                                <div class="label_value">
+                                    
+										    <div class="one"><img src="1.jpg" width=100 alt="" id="show_single"></div>
+                                            <input type="button" id="upload_single" value="点击上传">
+											<input type="hidden" name=data[picdir] id="picdir_single" /> 
+											
+                                    <div class="notic"> </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">图像(手机)：</div>
+                                <div class="label_value">
+                                    
+										    <div class="one"><img src="1.jpg" width=100 alt="" id="show_single2"></div>
+                                            <input type="button" id="upload_single2" value="点击上传">
+											<input type="hidden" name=data[picdir_wap] id="picdir_single2" /> 
+											
+                                    <div class="notic"> </div>
+                                </div>
+                            </div>
+                             
+							
+                            <div class="item">
+                                <div class="label">排序ID：</div>
+                                <div class="label_value">
+                                    <input type="text" name=data[orderid] value="<?php echo $orderArr["orderid"]+1;?>" class="text"/>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">描述：</div>
+                                <div class="label_value">
+                                    <textarea  name=data[short] cols=50 rows=5></textarea>
+                                </div>
+                            </div>
+                           
+                           <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn"> 
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">
+	
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() {
+	 
+	
+		$("#need").blur(function(){
+		    need=$.trim($(this).val());
+		    if(need=="0"){
+		        $(this).siblings("span").html("<font color=red>请选择广告位置</font>");
+				return false;
+		    }
+		})
+		$("#need").focus(function(){ 
+		     $(this).siblings("span").text("");
+		});
+	    $(".dosubmit").click(function(){ 
+		    need=$.trim($("#need").val());
+		    if(need=="0"){
+		        $("#need").siblings("span").html("<font color=red>请选择广告位置</font>");
+				return false;
+		    }
+			
+		   $(".mysubmit").click();
+        }); 
+		
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        }) 
+
+    })
+</script>
+</body>
+</html>

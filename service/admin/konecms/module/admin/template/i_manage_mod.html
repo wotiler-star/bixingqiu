@@ -1,0 +1,457 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+		<link rel="stylesheet" href="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/themes/default/default.css" />
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/kindeditor-all.js"></script>
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/lang/zh_CN.js"></script>
+		<script>
+			KindEditor.ready(function(K) {
+				var editor = K.editor({
+					allowFileManager : true
+				});
+				
+	    
+				//可视化编辑器
+				editor = K.create('textarea[name="cnt"]', {
+					resizeType : 1,
+					// allowPreviewEmoticons : true,
+					allowImageUpload : true, 
+					allowFileManager : true
+				});
+				editor = K.create('textarea[name="cnt_short"]', {
+					resizeType : 1,
+					// allowPreviewEmoticons : true,
+					allowImageUpload : true, 
+					allowFileManager : true
+				});
+				editor = K.create('textarea[name="cnt_phone"]', {
+					resizeType : 1,
+					// allowPreviewEmoticons : true,
+					allowImageUpload : true, 
+					allowFileManager : true
+				});
+				editor = K.create('textarea[name="cnt_short_phone"]', {
+					resizeType : 1,
+					// allowPreviewEmoticons : true,
+					allowImageUpload : true, 
+					allowFileManager : true
+				});
+				 
+				//上传文档
+				K('#uploadfile').click(function() {
+					editor.loadPlugin('insertfile', function() {
+						editor.plugin.fileDialog({
+							fileUrl : K('#dataurl').val(),
+							clickFn : function(url, title) {
+								K('#dataurl').val(url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+ 
+	  
+			   //单图上传-首页
+				K('#actionpicindex').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpicindex').val(url);
+								K("#showpicindex").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+				
+			   //单图上传-列表页
+				K('#actionpiclist').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpiclist').val(url);
+								K("#showpiclist").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+				
+				
+				
+			   //单图上传-详情页页
+				K('#actionpic').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpic').val(url);
+								K("#showpic").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+         
+		 
+				
+			});
+		</script>
+<div class="warpper">  
+    <div class="title">
+        修改文档
+    </div>
+	  <form action="#" method="post" name="" enctype="multipart/form-data" class=myform id="category_info_form">
+    <div class="content">
+        <div class="tabs_info">
+            <ul>
+                <li class="curr"><a href="javascript:">通用信息</a></li>
+                <li><a href="javascript:">分类设置</a></li>
+                <li><a href="javascript:">属性设置</a></li>
+                <li><a href="javascript:">文档内容</a></li>
+                <li><a href="javascript:">其他信息</a></li>
+            </ul>
+        </div>
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+                  
+                        <div class="switch_info">
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;文档标题：</div>
+                                <div class="label_value">
+                                    <input class="text ititle" id="docs-content" type="text" name=data[title] value="<?php echo $data["title"]?>" />
+									<input id="picker" name=data[tcolor] value="<?php echo $data["tcolor"]?>"  type="text" />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">&nbsp;副标题：</div>
+                                <div class="label_value">
+                                    <input style="width: 180px" class="text" type="text" name=data[subtitle]  value="<?php echo $data["subtitle"]?>"/>
+                                    <span>角标：</span>
+                                    <input style="width: 100px" class="text" type="text" name=data[cornertitle] value="<?php echo $data["cornertitle"]?>" />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;文档目录：</div>
+                                <div class="label_value">
+                                    <div class="screening">
+                                        <select class="select" name="data[cataid]" id="article-select">
+                                        <option value="<?php echo $data["cataid"]?>"><?php echo $data["sort"]?></option>
+                                         <?php echo  $this->select_catalog?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">&nbsp;文档设置：</div>
+                                <div class="label_value label-ul">
+                                    <ul>
+                                        <li><input <?php if(!$data["ifhot"]) echo " checked";?> type=checkbox name=data[ifhot]>  <b>推荐</b></li>
+                                        <li><input <?php if(!$data["ifone"]) echo " checked";?>  type=checkbox name=data[ifone]> <b>头条</b></li>
+                                        <li><input <?php if(!$data["ifhead"]) echo " checked";?>  type=checkbox name=data[ifhead]> <b>置顶</b></li>
+                                        <li><input <?php if(!$data["ifindex"]) echo " checked";?>   type=checkbox name=data[ifindex]> <b>首页</b></li>
+                                        <li><input <?php if(!$data["ifhidden"]) echo " checked";?>  type=checkbox name=data[ifhidden]> <b>隐藏</b></li>
+                                        <li><input <?php if(!$data["ifonly"]) echo " checked";?>  type=checkbox name=data[ifonly]> <b>唯一</b></li>
+                                        <li><input <?php if(!$data["ifbold"]) echo " checked";?>  type=checkbox name=data[ifbold]> <b>加粗</b></li>
+                                        <li><input <?php if(!$data["ifgun"]) echo " checked";?>  type=checkbox name=data[ifgun]> <b>轮播</b></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">作者：</div>
+                                <div class="label_value">
+                                    <input style="width: 100px" class="text" type="text" name=data[author]  value="<?php echo $data["author"]?>"/>
+                                    <span>来源：</span>
+                                    <input style="width: 100px" class="text" type="text" name=data[source] value="<?php echo $data["source"]?>" />
+                                    <span>来源网址：</span>
+                                    <input style="width: 200px" class="text" type="text" name=data[sourceurl]  value="<?php echo $data["sourceurl"]?>"/>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">跳转网址：</div>
+                                <div class="label_value">
+                                    <input class="text" type="text"  name=data[redirect]  value="<?php echo $data["redirect"]?>"/>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">资源文件：</div>
+                                <div class="label_value"> 
+			                          <input type="text" id="dataurl" name=data[dataurl] value="<?php echo $data["dataurl"]?>" readonly /> 
+							          <input type="button" id="uploadfile" value="选择文件" />
+									  &nbsp;&nbsp;&nbsp;或输入文件名:&nbsp;&nbsp;&nbsp;<input type=input class="text" name=data[dataurl_fname] value="<?php echo $data["dataurl_fname"]?>"/> (包含文件格式后缀)
+                                
+                                </div>
+                            </div>
+							 
+ 
+                            <div class="item">
+                                <div class="label">封面图（首页）：</div>
+                                <div class="label_value">
+										    <div class="one">
+				 <img src="<?php if($data["picdir_index"]) echo $data["picdir_index"];else echo "konecms/module/admin/template/static/images/addpic.png";?>" width=30 alt="" id="showpicindex">
+										  </div>
+                                            <input type="button" id="actionpicindex" value="点击上传">
+											<input type="hidden" name=data[picdir_index] value="<?php echo $data["picdir_index"]?>" id="formpicindex" /> 
+
+                                    <div class="notic"></div>
+                                </div>
+                            </div> 			
+                            <div class="item">
+                                <div class="label">封面图（列表页）：</div>
+                                <div class="label_value">
+								
+										    <div class="one">
+											<img src="<?php if($data["picdir_list"]) echo $data["picdir_list"];else echo "konecms/module/admin/template/static/images/addpic.png";?>" width=30 alt="" id="showpiclist">
+										  </div>
+                                            <input type="button" id="actionpiclist" value="点击上传">
+											<input type="hidden" name=data[picdir_list] value="<?php echo $data["picdir_list"]?>" id="formpiclist" /> 
+
+                                    <div class="notic"></div>
+                                </div>
+                            </div>
+			 
+                            <div class="item">
+                                <div class="label">封面图（详情页）：</div>
+                                <div class="label_value">
+										    <div class="one">
+											<img src="<?php if($data["picdir"]) echo $data["picdir"];else echo "konecms/module/admin/template/static/images/addpic.png";?>" width=30 alt="" id="showpic">
+										  </div>
+                                            <input type="button" id="actionpic" value="点击上传">
+											<input type="hidden" name=data[picdir] value="<?php echo $data["picdir"]?>" id="formpic" /> 
+
+                                    <div class="notic"></div>
+                                </div>
+                            </div> 			
+							
+							
+							
+                        </div>
+                    
+                </div>
+            </div>
+				
+					
+<div style="display: none" class="common-content">
+                <div class=catabox> 
+				<?php
+				   if($cataArr){
+				      foreach($cataArr as $a){
+					      $title_=$a["title"];
+					      $cataid_=$a["cataid"];
+					      $fieldname_=$a["fieldname"];
+					      $mylist_=$a["mylist"]; 
+						  $v_=$fieldname_.$cataid_;
+						  $myvArr_=explode("*",$data[$fieldname_]);
+						  echo "<div class=item>";
+						  echo "<div class='label_value'>";
+						  echo "<div class='screening'>";
+						    echo "<font color=blue>$title_</font>";
+					     
+					      if(!$mylist_){ 
+						      echo " <input type=checkbox name=$fieldname_"."[]";
+							  if(in_array($v_,$myvArr_)) echo " checked ";
+							  echo " value=$v_>";
+						  } 
+						  echo "<br>";
+						  echo $mylist_;
+					     
+						  echo "</div>";
+                          echo "</div>";
+                          echo "</div> ";
+					  }
+				   }else{
+				         echo "请先添加目录。";
+				   }
+				?>
+                             
+   </div> 
+			
+</div> 			
+<div style="display: none" class="common-content">
+               
+                <div> 
+				<?php
+				   if($shuxArr){
+				      foreach($shuxArr as $a){
+					      $title_=$a["title"];
+					      $cataid_=$a["cataid"];
+					      $fieldname_=$a["fieldname"];
+					      $mylist_=$a["mylist"]; 
+						  $v_=$fieldname_.$cataid_;
+						  $myvArr_=explode("*",$data[$fieldname_]);
+						  echo "<div class=item>";
+						  echo "<div class='label_value'>";
+						  echo "<div class='screening'>";
+						    echo "<font color=blue>$title_</font>";
+					      
+						  echo "<br>";
+						  echo $mylist_;
+					     
+						  echo "</div>";
+                          echo "</div>";
+                          echo "</div> ";
+					  }
+				   }else{
+				         echo "无需进行属性设置";
+				   }
+				?>
+                             
+            </div>
+			
+  </div> 
+			
+
+	 <div style="display: none" class="common-content">
+                <div>正文：
+                    <textarea name=cnt  style="width:1100px;height:800px;"><?php echo $data["cnt"]?></textarea>			
+                </div>
+                 
+                <div>简要：
+                    <textarea name=cnt_short  style="width:1100px;height:800px;"><?php echo $data["cnt_short"]?></textarea>			
+                </div>
+                <div>正文(手机版)：
+                    <textarea name=cnt_phone  style="width:1100px;height:800px;"><?php echo $data["cnt_phone"]?></textarea>			
+                </div>
+                <div>简要(手机版)：
+                    <textarea name=cnt_short_phone  style="width:1100px;height:800px;"><?php echo $data["cnt_short_phone"]?></textarea>			
+                </div>
+            </div>
+			
+			
+            <div style="display: none" class="common-content">
+                <div class="mian-info">
+                        <div class="switch_info">
+                            <div class="item">
+                                <div class="label">&nbsp;网页标题 ：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[webtitle] value="<?php echo $data["webtitle"]?>" />
+                                </div>
+
+                            </div>
+                            <div class="item">
+                                <div class="label">&nbsp;关键词：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[keywords] value="<?php echo $data["keywords"]?>" />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">&nbsp;网页描述：</div>
+                                <div class="label_value">
+                                    <textarea name="data[short]" id="" cols="30" rows="10" class="text"><?php echo $data["short"]?></textarea>
+                                    <div class="notic"> </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">上传日期：</div>
+                                <div class="label_value">
+                                    <div class="time">
+                                        <input type="text" value="<?php echo $data["riqi"]?>"  class="is_p2" data-beatpicker="true"
+                                               name="data[riqi]" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">查看次数：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[hitnum] value="<?php echo $data["hitnum"]?>" />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">&nbsp;排序权重：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[orderid] value="<?php echo $data["orderid"]?>" />
+                                </div>
+                            </div>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+	
+   <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn">
+           <!--  <a href="javascript:void(0);" class="btn btn35 btn_blue">上一步，选择文档分类</a>
+            <a href="javascript:void(0);" class="btn btn35 blue_btn">下一步，填写文档属性</a> -->
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>完成，发布文档</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">
+	</form>
+</div>
+<script src="<?php echo STATIC_PATH?>js/select-color.js"></script>
+<script>
+    function tab(ss){
+        $(".common-content").eq($(ss).index()).show().siblings().hide()
+    }
+    $(function () {
+	    $(".dosubmit").click(function(){
+		    title=$.trim($(".ititle").val());
+		    if(title==""){
+		        alert("文档标题不能为空 ！");
+				return false;
+		    } 
+			
+			 var flag=0; 
+    		for(var i=0;i<=$(".catabox [type='checkbox']").length-1;i++){
+    			if($(".catabox [type='checkbox']").eq(i).prop("checked")){
+    				flag=1;
+    			} 
+    		}
+			 
+    		if(flag==0){  
+    			alert("分类设置不能为空 !");
+    			return;
+    		}  
+			
+			
+		    $(".mysubmit").click();
+		});
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".label-ul>ul>li").click(function () {
+            $(this).toggleClass("checked")
+        })
+        $(".tabs_info>ul>li").click(function(){
+            $(this).addClass("curr").siblings().removeClass("curr")
+            tab(this)
+        })
+        $("#picker").spectrum({
+            color:"#ccc",
+            showInput:true,
+            clickoutFiresChange: false,
+            showPalette: true,
+            palette: [["#000000","#434343","#666666","#cccccc","#d9d9d9","#ffffff","#980000","#ff0000","#ff9900","#ffff00","#00ff00","#00ffff","#4a86e8","#0000ff","#9900ff","#ff00ff","#e6b8af","#f4cccc","#fce5cd","#fff2cc","#d9ead3","#d0e0e3","#c9daf8","#cfe2f3","#d9d2e9","#ead1dc","#dd7e6b","#ea9999","#f9cb9c","#ffe599","#b6d7a8","#a2c4c9","#a4c2f4","#9fc5e8","#b4a7d6","#d5a6bd","#cc4125","#e06666","#f6b26b","#ffd966","#93c47d","#76a5af","#6d9eeb","#6fa8dc","#8e7cc3","#c27ba0","#a61c00","#cc0000","#e69138","#274e13","#0c343d","#1c4587","#1c4587","#20124d","#4c1130"]],
+            showSelectionPalette: true,
+            appendTo: "body",
+            cancelText: "取消",
+            chooseText: "选择",
+            preferredFormat: true,
+            showInitial: true,
+            hide:function(color){
+            updateBorders(color);
+            }
+
+        });
+        function updateBorders(c) {
+            var hexColor = "transparent";
+            if(c) {
+                hexColor = c.toHexString();
+            }
+            $("#docs-content").css("color", hexColor);
+        }
+    })
+
+</script>
+</body>
+</html>

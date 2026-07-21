@@ -1,0 +1,245 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+
+
+		<link rel="stylesheet" href="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/themes/default/default.css" />
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/kindeditor-all.js"></script>
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/lang/zh_CN.js"></script>
+		<script>
+			KindEditor.ready(function(K) {
+				var editor = K.editor({
+					allowFileManager : true
+				});
+	   
+				 
+			   //官方公众号
+				K('#actionpicgzh').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpicgzh').val(url);
+								K("#showpicgzh").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+				
+			   //手机网站
+				K('#actionpicm').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpicm').val(url);
+								K("#showpicm").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+			   //小程序码
+				K('#actionpicmini').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpicmini').val(url);
+								K("#showpicmini").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+			   //小程序码
+				K('#actionpiclogo').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#formpiclogo').val(url);
+								K("#showpiclogo").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+				
+				 
+			 
+  
+			});
+		</script> 	
+<div class="warpper">
+    <div class="title">
+        资料配置
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+                <form method="post" class=okform action=# enctype="multipart/form-data">
+                    <table cellpadding=10>
+                          
+                        <tr align=center>
+                            <td class=ltd>公司名称:</td>
+                            <td align=left>
+                                <input type=text class=input  name=data[company]  value="<?php echo $data["company"]?>"  />&nbsp;&nbsp;
+                                英文名称：<input type=text class=input name=data[encompany] value="<?php echo $data["encompany"]?>" />
+                            </td>
+                        </tr>
+
+                        <tr align=center>
+                            <td class=ltd>公司地址:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[dizhi] value="<?php echo $data["dizhi"]?>"/>&nbsp;&nbsp;
+                                英文名称：<input type=text class=input name=data[endizhi] value="<?php echo $data["endizhi"]?>" />
+                            </td>
+                        </tr>
+                        <tr align=center>
+                            <td class=ltd>企业口号:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[kouhao] value="<?php echo $data["kouhao"]?>"/>&nbsp;&nbsp;
+                                英文名称：<input type=text class=input name=data[enkouhao] value="<?php echo $data["enkouhao"]?>" />
+                            </td>
+                        </tr>
+
+                        <tr align=center>
+                            <td class=ltd>座机:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[tel] value="<?php echo $data["tel"]?>" />
+                            </td>
+                        </tr>
+
+                        <tr align=center>
+                            <td class=ltd>400电话:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[tel400] value="<?php echo $data["tel400"]?>" />
+                            </td>
+                        </tr>
+                        <tr align=center>
+                            <td class=ltd>手机:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[mobile] value="<?php echo $data["mobile"]?>" />
+                            </td>
+                        </tr>
+                        <tr align=center>
+                            <td class=ltd>联系人:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[lxr] value="<?php echo $data["lxr"]?>" />
+                            </td>
+                        </tr>
+                        <tr align=center>
+                            <td class=ltd>传真:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[fax] value="<?php echo $data["fax"]?>" />
+                            </td>
+                        </tr>
+                        <tr align=center>
+                            <td class=ltd>Q Q:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[qq] value="<?php echo $data["qq"]?>" />
+                            </td>
+                        </tr>
+                        <tr align=center>
+                            <td class=ltd>企业邮箱:</td>
+                            <td align=left>
+                                <input type=text class=input name=data[email] value="<?php echo $data["email"]?>" />
+                            </td>
+                        </tr>
+						
+		<tr align=center>
+                            <td class=ltd>LOGO:</td>
+                            <td align=left>
+                                  <div class="one">
+				 <img src="<?php if($data["picdir_logo"]) echo $data["picdir_logo"];else echo "konecms/module/admin/template/static/images/addpic.png";?>" width=30 alt="" id="showpiclogo">
+										  </div>
+                                            <input type="button" id="actionpiclogo" value="点击上传">
+											<input type="hidden" name=data[picdir_logo] value="<?php echo $data["picdir_logo"]?>" id="formpiclogo" /> 
+
+                                    <div class="notic"></div>
+									
+                            </td>
+                        </tr>	
+		
+		<tr align=center>
+                            <td class=ltd>公众号二维码:</td>
+                            <td align=left>
+                                  <div class="one">
+				 <img src="<?php if($data["picdir_gzh"]) echo $data["picdir_gzh"];else echo "konecms/module/admin/template/static/images/addpic.png";?>" width=30 alt="" id="showpicgzh">
+										  </div>
+                                            <input type="button" id="actionpicgzh" value="点击上传">
+											<input type="hidden" name=data[picdir_gzh] value="<?php echo $data["picdir_gzh"]?>" id="formpicgzh" /> 
+
+                                    <div class="notic"></div>
+									
+                            </td>
+                        </tr>		
+			
+		<tr align=center>
+                            <td class=ltd>手机网站二维码:</td>
+                            <td align=left>
+                                  <div class="one">
+				 <img src="<?php if($data["picdir_m"]) echo $data["picdir_m"];else echo "konecms/module/admin/template/static/images/addpic.png";?>" width=30 alt="" id="showpicm">
+										  </div>
+                                            <input type="button" id="actionpicm" value="点击上传">
+											<input type="hidden" name=data[picdir_m] value="<?php echo $data["picdir_m"]?>" id="formpicm" /> 
+
+                                    <div class="notic"></div> 
+                            </td>
+                        </tr>		 	
+			
+		<tr align=center>
+                            <td class=ltd>小程序码:</td>
+                            <td align=left>
+                                  <div class="one">
+				 <img src="<?php if($data["picdir_mini"]) echo $data["picdir_mini"];else echo "konecms/module/admin/template/static/images/addpic.png";?>" width=30 alt="" id="showpicmini">
+										  </div>
+                                            <input type="button" id="actionpicmini" value="点击上传">
+											<input type="hidden" name=data[picdir_mini] value="<?php echo $data["picdir_mini"]?>" id="formpicmini" /> 
+
+                                    <div class="notic"></div>
+									
+                            </td>
+                        </tr>		 
+                      
+                        
+
+                    </table>
+					
+					 <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn"> 
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">      
+					
+                </form>
+				
+                            
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() {
+	 $(".dosubmit").click(function(){
+		   $(".mysubmit").click();
+		});
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+		
+
+    })
+</script>
+</body>
+</html>

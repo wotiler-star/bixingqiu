@@ -1,0 +1,22 @@
+a.grayred{
+	color:gray;
+}
+a.grayred:hover{
+	color:red;
+}
+a.whitered{
+	color:white;
+}
+a.whitered:hover{
+	color:red;
+}
+a.btn{
+	padding:10px 20px;
+	background:blue;
+	color:#fff;
+	border:#cdcdcd 1px solid;
+}
+a.btn:hover{ 
+	background:white;
+	color:#999;
+}

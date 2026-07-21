@@ -1,0 +1,89 @@
+<!--顶部横线--> 
+  <div class="line"> 
+   <div class="container"> 
+    <div class="row clearfix"> 
+     <div class="col-lg-8 column">
+       投资有风险 入市须谨慎 
+     </div> 
+     <div class="col-lg-4 column textalignright"> 
+      <a>星球部落</a> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <!--顶部横线结束--> 
+  <!--LOGO+导航+按钮--> 
+  <div class="container"> 
+   <div class="row clearfix  ptop10 "> 
+    <div class="col-lg-2 col-sm-2 col-md-2 col-xs-6 column"> 
+     <a href="?"><img src="<?php echo STATIC_PATH?>images/logo-xs.jpg" class="img-responsive" /></a> 
+    </div> 
+    <div class="col-lg-10 col-sm-10 col-md-10 col-xs-6 mleft-20 column"> 
+     <nav class="navbar navbar-default bgwhite border0" role="navigation"> 
+      <div class="container-fluid"> 
+       <div class="navbar-header  "> 
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example-navbar-collapse"> <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> 
+       </div> 
+       <div class="collapse navbar-collapse" id="example-navbar-collapse"> 
+        <ul class="nav navbar-nav  "> 
+         <li><a href="?" <?php if(!isset($_GET["c"])):?> class="active"<?php endif;?>>首页</a></li> 
+		  <?php
+			     $i=0;
+				 //echo "<pre>";
+				 //print_r($this->navArr);
+				 
+			     foreach($this->navArr as $k=>$a){
+				 
+				     $psort=$a["psort"];
+				      $pi=$a["pi"];
+				      $pcataid0=$pcataid=$a["pcataid"];
+					  $subnav=$this->navArr["subnav"][$pcataid]; 
+					  $cataidArr[$pcataid][]=$pcataid; 
+					  
+					 foreach($subnav as $a_){
+					     $cataidArr[$pcataid][]=$a_["cataid"];
+					 }
+					 
+					 if($k!=="subnav"):
+					 echo "<li >";
+					 
+					 if(isset($subnav[0]["cataid"]))  $pcataid=$subnav[0]["cataid"];
+					 
+					  echo "<a href=";
+					  echo "?c=Content&cataid=$pcataid";
+					   if(isset($_GET["cataid"])&&in_array($_GET["cataid"],$cataidArr[$pcataid0])) echo "  class=active";
+					
+					 echo ">$psort</a>"; 
+                     echo "</li>";
+					 endif;
+					 $i++;
+				 }
+			  ?>
+                
+            </ul>
+        
+        <ul class="nav navbar-nav navbar-right"> 
+		<?php 
+		if(isset($_SESSION["HID"])){  
+		?>
+         <li><a href="?c=h"><span class="glyphicon glyphicon-user"></span> 会员中心</a></li> 
+         <li><a href="?c=h&a=loginoff"><span class="glyphicon glyphicon-log-in"></span> 安全退出</a></li> 
+		 <?php
+		 }else{
+		 ?>
+		 
+         <li><a href="?c=h&a=rsg"><span class="glyphicon glyphicon-user"></span> 注册</a></li> 
+         <li><a href="?c=h&a=login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li> 
+		 <?php
+		 }
+		 ?>
+        </ul> 
+       </div> 
+      </div> 
+     </nav> 
+     <!--nav--> 
+    </div> 
+   </div> 
+   <!--row--> 
+  </div> 
+  <!--container--> 

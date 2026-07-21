@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+ <head lang="zh-CN"> 
+  <meta charset="UTF-8" /> 
+<META CONTENT="项目组：邝伟林 杨林" NAME="Author">
+<TITLE>申请专栏 选择类别</TITLE> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>bootstrap3/css/bootstrap.min.css" /> 
+  <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script> 
+  <script src="<?php echo STATIC_PATH?>bootstrap3/js/bootstrap.min.js"></script> 
+ 
+  <!--[if lt IE 9]>
+      <script src="<?php echo STATIC_PATH?>js/html5shiv.min.js"></script>
+      <script src="<?php echo STATIC_PATH?>js/respond.min.js"></script>
+    <![endif]--> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/custom.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/padding.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/margin.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/bg.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/media.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/a.css" /> 
+  <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/h.css"/>
+ </head> 
+ <body> 
+ 
+<!--头部导航-->
+
+<?php include parent::load_tpl("header");?>
+<!--头部导航-->
+ 
+<div class="content_inner project">
+  <div class="container">
+  <?php include parent::load_tpl("h/hbanner");?>
+  <!-- 课程详情的内容区域-->
+   <!-- 会员注册-->
+  <div class="huiyuan mbottom30 pbottom10  ">
+  <div class="mtop10 ptop10 pbottom10 borderbottomgray1 font16">实名认证</div>
+  <div class="textaligncenter mtop20"><img src="<?php echo STATIC_PATH?>h/step1.jpg" /></div>
+  <div class="col-lg-4 textaligncenter"><a class="btn" href="?c=h&a=certStep2&sort=0">立即申请</a></div>
+  <div class="col-lg-4 textaligncenter"><a class="btn" href="?c=h&a=certStep2&sort=1">立即申请</a></div>
+  <div class="col-lg-4 textaligncenter"><a class="btn" href="?c=h&a=certStep2&sort=2">立即申请</a></div>
+         <div class="clearfix"></div>
+   </div>
+  </div>
+   
+ 
+<!--底部内容-->
+
+<?php
+include parent::load_tpl("footer");
+?>
+ <script src="<?php echo STATIC_PATH?>h/jquery-1.8.3.min.js"></script>  

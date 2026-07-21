@@ -1,0 +1,114 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+<script src="<?php echo STATIC_PATH?>js/pwdmod.js"></script>
+<div class="warpper">
+    <div class="title">
+        重设密码
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>由字母+数字+特殊符号+6位及以上组成的密码为强安全性密码。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+				
+                <form  class=okform id=myform method="post" action="#" >
+                    <table  width=550>
+                        <tr>
+                            <td class=ltd width=80>账号:</td>
+                            <td ><input type="text" class=input  value="<?php echo $info["adminname"]?>" readonly /></td>
+                        </tr>  
+                        <tr style="height:100px!important">
+                            <td class=ltd align=top>新密码:</td>
+                            <td > 
+                               
+<input type="password" name=data[pwd] id=pwd  class="text" placeholder="请输入密码"  onKeyUp="pwStrength(this.value)" onBlur="pwStrength(this.value)" /> <span></span>
+ <table class=pwdmod> 
+	<tr bgcolor="#eeeeee" align=center> 
+		<td width="105" id="strength_L">弱</td> 
+		<td width="105" id="strength_M">中</td> 
+		<td width="105" id="strength_H">强</td> 
+	</tr> 
+</table>
+                            </td>
+                        </tr> 
+                        <tr height=65 align=center>
+                            <td class=ltd >
+                               
+                            <div class="item">
+                                <div class="label">&nbsp;</div>
+                                <div class="label_value info_btn">
+                                     
+                                </div>
+                            </div>
+                            </td>
+                            <td align=left>
+                            </td>
+                        </tr>
+
+
+                    </table>
+					<div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn"> 
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">
+                </form> 
+				 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() {
+	
+		$("#pwd").focus(function(){ 
+		     $(this).siblings("span").text("");
+		});
+	 $(".dosubmit").click(function(){ 
+		    pwd=$.trim($("#pwd").val());
+		    if(pwd==""){
+		        $("#pwd").siblings("span").html("<font color=red>请输入密码</font>");
+				return false;
+		    }
+			
+		   $(".mysubmit").click();
+     });
+	 
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".select-jia").click(function(){
+            var dom=$(".screening")
+            var clone_dom=dom.clone()
+            clone_dom.find(".select-jia").removeClass("select-jia").addClass("select-jian")
+            $(this).parents(".label_value").append(clone_dom.eq(0))
+            $(".select-jian").click(function(){
+                console.log(121)
+                $(this).parents(".screening").remove()
+            })
+        })
+        $(".control-input").click(function () {
+            $(this).prop("checked")
+            if ($(this).prop("checked")) {
+                $(this).siblings("input").attr("disable", false)
+                $(this).siblings("input").removeAttr("disabled");
+            } else {
+                $(this).siblings("input").attr("disabled", "disabled");
+            }
+        })
+
+    })
+</script>
+</body>
+</html>

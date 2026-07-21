@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>欢迎</title>
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/style.css"/>
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/BeatPicker.css"/>
+    <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script>
+    <script src="<?php echo STATIC_PATH?>js/BeatPicker.min.js"></script>
+    <script src="<?php echo STATIC_PATH?>js/my.js"></script>
+</head>
+<body>
+<div class="tab">
+    <div class="rTitle">
+        <table border=0 cellpadding=0 cellspacing=0>
+            <tr>
+                <td width=22 align=center></td>
+                <td align=left>
+                    <div style="text-align: right">
+                        <img src=<?php echo STATIC_PATH?>images/dp.png />&nbsp;&nbsp;<a href=sortUpdateI.php>欢迎</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <DIV class="rCon">
+        <div class="page_btnbox">
+            <a href="" class="active">欢迎</a>
+        </div>
+        <div class="page_cbox">
+            <div class="c_page">
+                <div class="welcome">
+                    <!-- <div class="wel-1 clearfix">
+                        <div class="w-l">
+                            <ul>
+                                <li class="li1">
+                                    <div class="lt">
+                                        <img src="<?php echo STATIC_PATH?>images/w-1.png" alt=""/>
+                                    </div>
+                                    <div class="rt">
+                                        <div class="w-money">￥0.00</div>
+                                        <div class="w-text">今日销售总额</div>
+                                    </div>
+                                </li>
+                                <li class="li2">
+                                    <div class="lt">
+                                        <div class="w-money">0</div>
+                                        <div class="w-text">今日订单总数</div>
+                                    </div>
+                                    <div class="rt">
+                                        <img src="<?php echo STATIC_PATH?>images/w-2.png" alt=""/>
+                                    </div>
+                                </li>
+                                <li class="li3">
+                                    <div class="lt">
+                                        <img src="<?php echo STATIC_PATH?>images/w-3.png" alt=""/>
+                                    </div>
+                                    <div class="rt">
+                                        <div class="w-money">0</div>
+                                        <div class="w-text">今日评论数</div>
+                                    </div>
+                                </li>
+                                <li class="li4">
+                                    <div class="lt">
+                                        <div class="w-money">61</div>
+                                        <div class="w-text">今日访问量</div>
+                                    </div>
+                                    <div class="rt">
+                                        <img src="<?php echo STATIC_PATH?>images/w-4.png" alt=""/>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="w-r">
+                            <div class="section_order_select">
+                                <ul class="clearfix">
+                                    <li>
+                                        <a href="">
+                                            <i class="ice ice_w"></i>
+                                            <div class="t">未确认订单</div>
+                                            <span class="number">19</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="ice ice_d"></i>
+                                            <div class="t">待支付订单</div>
+                                            <span class="number">1</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="ice ice_n"></i>
+                                            <div class="t">待发货订单</div>
+                                            <span class="number">5</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="ice ice_f"></i>
+                                            <div class="t">已成交订单数</div>
+                                            <span class="number">0</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="ice ice_y"></i>
+                                            <div class="t">新缺货登记</div>
+                                            <span class="number">0</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <i class="ice ice_b"></i>
+                                            <div class="t">用户退款申请</div>
+                                            <span class="number">0</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="contentWarp">
+                                <div class="section user_section">
+                                    <div class="sc_title">
+
+                                        <h3><i></i>平台会员信息</h3>
+                                        <cite>（单位：个）</cite>
+                                    </div>
+                                    <div class="sc_warp clearfix">
+                                        <div class="user_item user_today_new">
+                                            <div class="num">1</div>
+                                            <span class="tit">今日新增</span>
+                                        </div>
+                                        <div class="user_item user_yest_new">
+                                            <div class="num">0</div>
+                                            <span class="tit">昨日新增</span>
+                                        </div>
+                                        <div class="user_item user_month_new">
+                                            <div class="num">1</div>
+                                            <span class="tit">本月新增</span>
+                                        </div>
+                                        <div class="user_item user_total">
+                                            <div class="num">23</div>
+                                            <span class="tit">会员总数</span>
+                                        </div>
+                                        <p class="clear"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div> -->
+                    
+					<div class="wel-2">
+                        <div class="section system_section">
+                            <div class="system_section_con">
+                                <div class="sc_title">
+                                    <h3><i></i>系统信息</h3>
+                                    <span class="stop jia"></span>
+                                </div>
+                                <div class="sc_warp">
+                                    <table cellpadding="0" cellspacing="0" class="system_table">
+                                        <tbody><tr>
+                                            <td class="gray_bg">服务器操作系统:</td>
+                                            <td>Linux (114.55.34.251)</td>
+                                            <td class="gray_bg">Web 服务器:</td>
+                                            <td>nginx/1.10.2</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="gray_bg">PHP 版本:</td>
+                                            <td>5.3.29</td>
+                                            <td class="gray_bg">MySQL 版本:</td>
+                                            <td>5.1.73</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="gray_bg">安全模式:</td>
+                                            <td>否</td>
+                                            <td class="gray_bg">安全模式GID:</td>
+                                            <td>否</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="gray_bg">Socket 支持:</td>
+                                            <td>是</td>
+                                            <td class="gray_bg">时区设置:</td>
+                                            <td>Asia/Shanghai</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="gray_bg">GD 版本:</td>
+                                            <td>GD2 ( JPEG GIF PNG)</td>
+                                            <td class="gray_bg">Zlib 支持:</td>
+                                            <td>是</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="gray_bg">IP 库版本:</td>
+                                            <td>20071024</td>
+                                            <td class="gray_bg">文件上传的最大大小:</td>
+                                            <td>40M</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="gray_bg">程序版本:</td>
+                                            <td>v1.9.5 RELEASE 20161228</td>
+                                            <td class="gray_bg">运行日期:</td>
+                                            <td>2016-06-07</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="gray_bg">编码:</td>
+                                            <td>UTF-8</td>
+                                            <td class="gray_bg"></td>
+                                            <td></td>
+                                        </tr>
+                                        </tbody></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="<?php echo STATIC_PATH?>js/showdialog.js"></script>
+<script type="text/javascript">
+    function DivShow(){showDialog.show({id: 'layer', bgcolor: '#000'})}
+    function loadIframeSrc(){setTimeout("DivShow()", 500)}
+    $(".f1.checkall").click(function () {
+        $('input[name="ifhot"]').attr("checked", true);
+        $('input[name="ifok"]').attr("checked", true);
+        $('input[name="delid"]').attr("checked", true);
+    })
+    $(".f1.notcheckall").click(function () {
+        $('input[name="ifhot"]').attr("checked", false);
+        $('input[name="ifok"]').attr("checked", false);
+        $('input[name="delid"]').attr("checked", false);
+    })
+    $(".stop").click(function(){
+        $(this).parents(".wel-2").toggleClass("open")
+        $(".wel-2 .stop").toggleClass("jian")
+        $(".wel-2 .sc_warp").slideToggle(1000)
+    })
+</script>
+</body>
+</html>

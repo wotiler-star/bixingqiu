@@ -1,0 +1,200 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+<div class="warpper">
+    <div class="title">
+        专栏会员
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+				
+                
+                <form  class=okform method="post" action="#" >
+                    <table  cellpadding=10>
+						   <tr height=120>
+                            <td colspan=2><h1>认证信息</h1></td>
+                        
+                        </tr> 
+						
+						 
+                        <tr>
+                            <td class=ltd>申请类型:</td>
+                            <td width=250><?php  if($sort=="geren") echo "个人";if($sort=="qiye") echo "企业";if($sort=="meiti") echo "媒体";?></td>
+                        </tr> 
+						
+					 
+						
+						<?php
+						if($sort=="qiye"):
+						
+						?>
+                       
+                        <tr>
+                            <td class=ltd>企业名称:</td>
+                            <td width=250><?php echo $data2["qyname"]?></td>
+                        </tr> 
+                        <tr>
+                            <td class=ltd>营业执照号:</td>
+                            <td width=250><?php echo $data2["qynumber"]?></td>
+                        </tr> 
+						
+                        <tr>
+                            <td class=ltd>营业执照:</td>
+                            <td width=250><img src="<?php echo $data2["picdir3"]?>" style="max-width:200px" /></td>
+                        </tr> 
+						
+						<?php
+						endif;
+						?>
+						
+						
+						<?php
+						if($sort=="meiti"):
+						
+						?>
+                        <tr>
+                            <td class=ltd>组织名称:</td>
+                            <td width=250><?php echo $data2["mtname"]?></td>
+                        </tr> 
+                        <tr>
+                            <td class=ltd>机构代码:</td>
+                            <td width=250><?php echo $data2["mtnumber"]?></td>
+                        </tr> 
+						
+                        <tr>
+                            <td class=ltd>营业执照:</td>
+                            <td width=250><img src="<?php echo $data2["picdir3"]?>" style="max-width:200px" /></td>
+                        </tr> 
+						
+						<?php
+						endif;
+						?>
+						
+						   <tr height=120>
+                            <td colspan=2><h1>主体信息</h1></td>
+                        
+                        </tr>  
+                        <tr>
+                            <td class=ltd>证件类型:</td>
+                            <td width=250><?php echo $data2["sort"]?></td>
+                        </tr> 
+                        <tr>
+                            <td class=ltd>身份证名称:</td>
+                            <td width=250><?php echo $data2["name"]?></td>
+                        </tr> 
+
+                        <tr>
+                            <td class=ltd>身份证正面:</td>
+                            <td width=250><img src="<?php echo $data2["picdir1"]?>" style="max-width:200px" /></td>
+                        </tr> 
+                        <tr>
+                            <td class=ltd>身份证反面:</td>
+                            <td width=250><img src="<?php echo $data2["picdir2"]?>" style="max-width:200px" /></td>
+                        </tr> 
+						
+					 
+						
+						   <tr height=120>
+                            <td colspan=2><h1>会员信息</h1></td>
+                        
+                        </tr> 
+						
+                        <tr>
+                            <td class=ltd>用户名:</td>
+                            <td width=250><input type="text" class=input  value="<?php echo $data["hname"]?>" readonly /></td>
+                        </tr> 
+                        <tr>
+                            <td class=ltd>手机号:</td>
+                            <td > 
+                                <input type="text" class=input   name="data[phone]"  value="<?php echo $data["phone"]?>"  />
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td class=ltd>注册日期:</td>
+                            <td > 
+                                <input type="text" class=input   name="data[riqi]"  value="<?php echo $data["riqi"]?>"  />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class=ltd>昵称:</td>
+                            <td > 
+                                <input type="text" class=input   name="data[name]"  value="<?php echo $data["name"]?>"  />
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td class=ltd>邮箱:</td>
+                            <td > 
+                                <input type="text" class=input   name="data[email]"  value="<?php echo $data["email"]?>"  />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class=ltd>地址:</td>
+                            <td > 
+                                <input type="text" class=input   name="data[addr]"  value="<?php echo $data["addr"]?>"  />
+                            </td>
+                        </tr>
+                          
+                        
+                        <tr height=65 align=center>
+                            <td class=ltd >
+                               
+                            <div class="item">
+                                <div class="label">&nbsp;</div>
+                                <div class="label_value info_btn">
+                                    <input type="submit" value=" 确定 " class="button" id="submitBtn"> 
+                                </div>
+                            </div>
+                            </td>
+                            <td align=left>
+                            </td>
+                        </tr>
+
+
+                    </table>
+                </form> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() {
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".select-jia").click(function(){
+            var dom=$(".screening")
+            var clone_dom=dom.clone()
+            clone_dom.find(".select-jia").removeClass("select-jia").addClass("select-jian")
+            $(this).parents(".label_value").append(clone_dom.eq(0))
+            $(".select-jian").click(function(){
+                console.log(121)
+                $(this).parents(".screening").remove()
+            })
+        })
+        $(".control-input").click(function () {
+            $(this).prop("checked")
+            if ($(this).prop("checked")) {
+                $(this).siblings("input").attr("disable", false)
+                $(this).siblings("input").removeAttr("disabled");
+            } else {
+                $(this).siblings("input").attr("disabled", "disabled");
+            }
+        })
+
+    })
+</script>
+</body>
+</html>

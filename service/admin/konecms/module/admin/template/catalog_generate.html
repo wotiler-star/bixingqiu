@@ -1,0 +1,413 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+		<link rel="stylesheet" href="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/themes/default/default.css" />
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/kindeditor-all.js"></script>
+		<script src="<?php echo SITE_PATH?>../source/kindeditor-4.1.7/lang/zh_CN.js"></script>
+<script>
+			KindEditor.ready(function(K) {
+				var editor = K.editor({
+					allowFileManager : true
+				});
+  
+			   //单图上传
+				K('#upload_single').click(function() {
+					editor.loadPlugin('image', function() {
+						editor.plugin.imageDialog({
+							clickFn : function(url, title, width, height, border, align) {
+								K('#picdir_single').val(url);
+								$("#show_single").attr("src",url);
+								editor.hideDialog();
+							}
+						});
+					});
+				});
+ 
+			});
+		</script>
+<div class="warpper">  
+    <div class="title">
+        添加目录
+    </div>
+	  <form action="#" method="post" name="" enctype="multipart/form-data" class=myform id="category_info_form">
+    <div class="content">
+        <div class="tabs_info">
+            <ul>
+                <li class="curr"><a href="javascript:">通用信息</a></li>
+                <li><a href="javascript:">选择模板</a></li>
+                <li><a href="javascript:">SEO设置</a></li>
+                <li><a href="javascript:">广告设置</a></li>
+                <li><a href="javascript:">其他信息</a></li>
+            </ul>
+        </div>
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>标识“<span style="color: red">*</span>”的选项为必填项，其余为选填项。</li>
+                <li>请按提示信息填写每一个字段。</li>
+            </ul>
+        </div>
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="mian-info">
+                  
+                        <div class="switch_info">
+                              <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;目录名称：</div>
+                                <div class="label_value">
+                                    <textarea name="data[sort]" id="sort" cols="30" rows="3" class="text"></textarea>&nbsp;<span class=mytishi></span>
+                                    
+                                    <div class="notic">  
+									<input type=radio class="pi" name=data[pi] value='i' checked > 文档  &nbsp;
+								 
+									<input type=checkbox class=ifnav name=data[ifnav]  checked /> 导航  &nbsp;
+									<input type=checkbox class=ifm name=data[ifm]    /> 属性  &nbsp;  
+                                   </div>
+                                </div>
+                            </div>
+							 <div class="item myfieldname" style="display:none">
+                                <div class="label"><span class="require-field"></span>&nbsp;<span class="require-field">*</span>字段名称：</div>
+                                <div class="label_value">
+                                    <input type="text" id=fieldname  class="text" name=data[fieldname] />&nbsp;<span class=mytishi></span>
+                                </div>
+                            </div>
+							
+							
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;上级目录 ：</div>
+                                <div class="label_value">
+                                    <select name="data[parentid]" id="parentid">
+									<option value=0>顶级目录</option>
+                                       <?php echo $select_catalog?>
+                                    </select>
+                                </div>
+
+                            </div>
+							 
+                            <div class="item">
+                                <div class="label"><span class="require-field">*</span>&nbsp;目录属性：</div>
+                                <div class="label_value">
+								
+									<input type=radio  name=data[shux] value='0' checked > 列表  &nbsp;
+									<input type=radio   name=data[shux] value='1'   > 单页  &nbsp;
+                                 
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">目录封面：</div>
+                                <div class="label_value"> 
+										    <div class="one"><img src="<?php echo STATIC_PATH?>images/addpic.png" width=50 alt="" id="show_single"></div>
+                                            <input type="button" id="upload_single" value="点击上传">
+											<input type="hidden" name=data[picdir] id="picdir_single" />
+                                    <div class="notic"></div>
+                                </div>
+                            </div>
+							
+                        </div>
+                    
+                </div>
+            </div>
+					
+<div style="display: none" class="common-content">
+                 
+			 <div class="mian-info">
+                  
+                        <div class="switch_info">
+                                   <div class="item">
+                                <div class="label">模板名称(列表)：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[tplnamelist] value="newsList" /> *默认继承父类模板
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">模板名称(详情)：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[tplnamedetail] value="newsDetail"  />  *默认继承父类模板
+                                </div>
+                            </div>
+							
+                        </div>
+                    
+                </div>
+  </div>  
+  
+  <div style="display: none" class="common-content">
+                 
+			 <div class="mian-info">
+                  
+                        <div class="switch_info">
+                               
+                            <div class="item">
+                                <div class="label">网页标题：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[webtitle]/>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">关键词：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[keywords] />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">目录描述：</div>
+                                <div class="label_value">
+                                    <textarea name="data[short]" id="" cols="30" rows="10" class="text"></textarea>
+                                </div>
+                            </div>
+							
+                        </div>
+                    
+                </div>
+  </div>  
+    
+  <div style="display: none" class="common-content">
+                 
+			 <div class="mian-info">
+                  
+                        <div class="switch_info">
+                               
+                            <div class="item">
+                                <div class="label">头条个数：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[num_one] value=0 />
+									&nbsp;<input type='radio' name=data[one_set] value=0  checked>&nbsp;标准匹配
+									&nbsp;<input type='radio' name=data[one_set] value=1 >&nbsp;严格匹配
+									&nbsp;<input type='radio' name=data[one_set] value=2 >&nbsp;宽松匹配
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">推荐个数：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[num_hot] value=0  />
+									&nbsp;<input type='radio' name=data[hot_set] value=0  checked>&nbsp;标准匹配
+									&nbsp;<input type='radio' name=data[hot_set] value=1 >&nbsp;严格匹配
+									&nbsp;<input type='radio' name=data[hot_set] value=2 >&nbsp;宽松匹配
+                                </div>
+                            </div> 
+                            <div class="item">
+                                <div class="label">置顶个数：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[num_head] value=0  />
+									&nbsp;<input type='radio' name=data[head_set] value=0  checked>&nbsp;标准匹配
+									&nbsp;<input type='radio' name=data[head_set] value=1 >&nbsp;严格匹配
+									&nbsp;<input type='radio' name=data[head_set] value=2 >&nbsp;宽松匹配
+                                </div>
+                            </div> 
+                            <div class="item">
+                                <div class="label">热点个数：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[num_redian]  value=0 />
+									&nbsp;<input type='radio' name=data[redian_set] value=0  checked>&nbsp;标准匹配
+									&nbsp;<input type='radio' name=data[redian_set] value=1 >&nbsp;严格匹配
+									&nbsp;<input type='radio' name=data[redian_set] value=2 >&nbsp;宽松匹配
+                                </div>
+                            </div> 
+							
+                        </div>
+                    
+                </div>
+  </div> 
+  
+    <div style="display: none" class="common-content">
+                 
+			 <div class="mian-info">
+                  
+                        <div class="switch_info">
+                               
+                           
+                            <div class="item">
+                                <div class="label">英文名称：</div>
+                                <div class="label_value">
+                                    <textarea name="data[ensort]" id="" cols="30" rows="5" class="text"></textarea>
+                                    <div class="notic"></div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">手机名称：</div>
+                                <div class="label_value">
+                                    <textarea name="data[sort_mobile]" id="" cols="30" rows="5" class="text"></textarea>
+                                    <div class="notic">不存在独立的手机名称时，此处无需填写。</div>
+                                </div>
+                            </div>
+                       
+                            <div class="item">
+                                <div class="label">排序依据：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[orderby] value="orderid desc" /> *asc 升序, desc降序
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label">每页条数：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[pagecount] value=6 />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="label"><span class="require-field"></span>&nbsp;外链：</div>
+                                <div class="label_value">
+                                    <input type="text" class="text" name=data[url] />
+                                </div>
+                            </div>
+                           
+							
+                            <div class="item">
+                                <div class="label">权重：</div>
+                                <div class="label_value">
+                                    <input type="text" name=data[orderid] class="text" value=<?php echo $orderid?> />*值越小越靠前
+                                </div>
+                            </div>
+							
+                        </div>
+                    
+                </div>
+  </div> 
+  
+  
+   
+        </div>
+    </div>
+	
+   <div class="goods_footer">
+        <div class="goods_btn_fixed goods_btn">
+           <!--  <a href="javascript:void(0);" class="btn btn35 btn_blue">上一步，选择文档分类</a>
+            <a href="javascript:void(0);" class="btn btn35 blue_btn">下一步，填写文档属性</a> -->
+            <a href="javascript:void(0);" class="btn btn35 blue_btn  dosubmit"><i class="sc_icon goods_complete_icon"></i>完成，确认提交</a>
+        </div>
+    </div> 
+	<input type=submit class=mysubmit style="visibility:hidden">
+	</form>
+</div>
+<script>
+    function tab(ss){
+        $(".common-content").eq($(ss).index()).show().siblings().hide()
+    }
+    $(function() {
+	
+		//目录名称
+		$("#sort").blur(function(){
+		    sort=$.trim($(this).val());
+		    if(sort==""){
+		        $(this).siblings("span").html("<font color=red>请输入目录名称</font>");
+				return false;
+		    }
+			//目录名称唯一性检查
+			parentid=$("#parentid").val();
+			$.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=catalog&a=ajax_check_catalog",
+        		    data:{"parentid":parentid,"sort":sort},
+        		    success:function(json){
+        		    	if(json.success=='0'){
+        		    		$("#sort").siblings("span").html("<font color=green>输入正确 ！</font>"); 
+        		    	}else{
+        		    		$("#sort").siblings("span").html("<font color=red>该目录名称已经存在，不允许重复！</font>"); 
+						}
+        		    }
+        		})
+				
+		}); 
+		$("#sort").focus(function(){ 
+		        $(this).siblings("span").text("");
+		});
+		
+		//字段名称
+		//是否加载字段名称输入表单 
+        $(".ifm").click(function () {
+            $(this).prop("checked")
+            if ($(this).prop("checked")) {
+			    $(".myfieldname").css("display","block");
+			}else{
+			    $(".myfieldname").css("display","none");
+			}
+		});
+		$("#fieldname").blur(function(){
+		    fieldname=$.trim($(this).val());
+		    if(fieldname==""){
+		        $(this).siblings("span").html("<font color=red>请输入字段名称</font>");
+				return false;
+		    }
+			var myReg = /^[a-zA-Z0-9_]{0,}$/;
+            if (!myReg.test(fieldname)) { 
+		        $(this).siblings("span").html("<font color=red>字段名称必须以英文字母开头由英文或数字组成</font>");
+				return false; 
+			 }
+                             
+			//目录名称唯一性检查
+			pi=$(".pi:checked").val();
+			$.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=catalog&a=ajax_check_fieldname",
+        		    data:{"pi":pi,"fieldname":fieldname},
+        		    success:function(json){
+        		    	if(json.success=='0'){
+        		    		$("#fieldname").siblings("span").html("<font color=green>输入正确 ！</font>");
+        		    	}else{
+        		    		$("#fieldname").siblings("span").html("<font color=red>该字段名称已经存在，不允许重复！</font>");
+						}
+        		    }
+        		})
+				
+		}); 
+		$("#fieldname").focus(function(){ 
+		        $(this).siblings("span").text("");
+		});
+	//提交
+	 
+	 $(".dosubmit").click(function(){
+	 
+		    sort=$.trim($("#sort").val());
+		    if(sort==""){
+		        $("#sort").siblings("span").html("<font color=red>请输入目录名称</font>");
+				return false;
+		    }
+			
+		     
+            if ($(".ifm").prop("checked")) { 
+		        fieldname=$.trim($("#fieldname").val());
+		        if(fieldname==""){
+		            $("#fieldname").siblings("span").html("<font color=red>请输入字段名称</font>");
+				    return false;
+		        }
+			var myReg = /^[a-zA-Z0-9_]{0,}$/;
+            if (!myReg.test(fieldname)) { 
+		            $("#fieldname").siblings("span").html("<font color=red>字段名称必须以英文字母开头由英文或数字组成</font>");
+				    return false; 
+			 }
+			}
+			 
+		 $(".mysubmit").click();
+	 
+	});
+		
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".select-jia").click(function(){
+            var dom=$(".screening")
+            var clone_dom=dom.clone()
+            clone_dom.find(".select-jia").removeClass("select-jia").addClass("select-jian")
+            $(this).parents(".label_value").append(clone_dom.eq(0))
+            $(".select-jian").click(function(){
+                console.log(121)
+                $(this).parents(".screening").remove()
+            })
+        })
+		 
+        $(".label-ul>ul>li").click(function () {
+            $(this).toggleClass("checked")
+        })
+        $(".tabs_info>ul>li").click(function(){
+            $(this).addClass("curr").siblings().removeClass("curr")
+            tab(this)
+        })
+		
+
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>平台管理系统</title>
+    <script src="<?php echo STATIC_PATH?>js/jquery-1.11.3.js"></script>
+    <script src="<?php echo STATIC_PATH?>js/my.js"></script>
+    <link href="<?php echo STATIC_PATH?>css/admin_welcome.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/style.css"/>
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>css/font-awesome.min.css"/>
+    <script src="<?php echo STATIC_PATH?>js/param.js"></script>
+    <script src="<?php echo STATIC_PATH?>js/dialog.js"></script>
+    <link href="<?php echo STATIC_PATH?>css/dialog.css" rel="stylesheet" type="text/css"/>
+    <script>
+        $(function () {
+            $(".header-tab>ul>li").click(function () {
+                $("#myiframe").attr("src", $(this).attr("to"));
+                $(".nav_page>ul>li:first-child").addClass("checked").siblings().removeClass("checked")
+                $(".nav_page .sub-menu>ul>li:first-child").addClass("checked").siblings().removeClass("checked")
+            })
+            $('.nav_page .sub-menu>ul>li').click(function () {
+                $("#myiframe").attr("src", $(this).attr("to"));
+            });
+            $('.header_text>a').click(function () {
+                $("#myiframe").attr("src", $(this).attr("to"));
+            });
+            $('.nav_page .tit').click(function () {
+                $("#myiframe").attr("src", $(this).attr("to"));
+                $(".nav_page .sub-menu>ul>li:first-child").addClass("checked").siblings().removeClass("checked")
+            });
+            $('.nav_head').click(function () {
+                $(this).next('.page_content').slideDown(300).parents('.nav_page').siblings().find('.page_content').slideUp(300);
+            });
+			
+			
+			$('.kwl2017>li').click(function(){
+			var x=$(this).index()*(-70);
+			$(this).children('.sub-menu').css('marginTop',x+'px')
+			});
+			
+			
+        })
+    </script>
+
+</head>
+<body>
+<!-- ----------------------------------headerframe----------->
+<div class="headerframe">
+    <div class="header_text lt">
+        <!-- <a to="?c=index&a=sysinfo" href="javascript:"><img src="<?php echo STATIC_PATH?>images/logo2.png" alt=""/></a> -->
+        <div class="foldsider"><i class="icon icon-indent-left"></i></div>
+    </div>
+    <div class="header-tab lt">
+        <ul>
+		<?php
+		 
+		    $pingtaiArr=array("adminList","adminGen","pwdmod","gteamList","gteamGen","adList","adGen","adCataList","adCataGen","web","contact","sysmanage");  
+			$wendanArr=array("iList","iGen");
+			$shangpingArr=array("pList","pGen");
+			$muluArr=array("cataList","cataGen");
+			$shujuArr=array("feedback");
+			$hArr=array("h");
+			  
+		?>
+		 <?php
+		     if(in_array("*",$this->gteamArr)||array_intersect($pingtaiArr,$this->gteamArr)):
+		 ?>
+		 
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=admin&a=manage";
+						}elseif(in_array("adminList",$this->gteamArr)||in_array("pwdmod",$this->gteamArr)){
+						     $url="?c=admin&a=manage";
+						}elseif(in_array("adminGen",$this->gteamArr)){
+						     $url="?c=admin&a=generate";
+						}elseif(in_array("gteamList",$this->gteamArr)){
+						     $url="?c=admin&a=manage_gteam";
+						}elseif(in_array("gteamGen",$this->gteamArr)){
+						     $url="?c=admin&a=generate_gteam";
+						} elseif(in_array("adList",$this->gteamArr)){
+						     $url="?c=ad&a=manage";
+						}elseif(in_array("adGen",$this->gteamArr)){
+						     $url="?c=ad&a=generate";
+						} elseif(in_array("adCataList",$this->gteamArr)){
+						     $url="?c=ad&a=manage_catalog";
+						}elseif(in_array("adCataGen",$this->gteamArr)){
+						     $url="?c=ad&a=generate_catalog";
+						} elseif(in_array("web",$this->gteamArr)){
+						     $url="?c=usual&a=web";
+						} elseif(in_array("contact",$this->gteamArr)){
+						     $url="?c=usual&a=contact";
+						}  elseif(in_array("sysmanage",$this->gteamArr)){
+						     $url="?c=usual&a=sysmanage";
+						} 
+						?>
+						
+            <li to="<?php echo $url?>"><span>平台</span></li> 
+			<?php 
+			endif;
+			?>
+		 <?php
+		     if(in_array("*",$this->gteamArr)||array_intersect($wendanArr,$this->gteamArr)):
+		 ?>
+		 
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=i&a=manage";
+						}elseif(in_array("iList",$this->gteamArr)){
+						     $url="?c=i&a=manage";
+						}elseif(in_array("iGen",$this->gteamArr)){
+						     $url="?c=i&a=generate";
+						} 
+						?>
+						
+            <li to="<?php echo $url?>"><span>文档</span></li> 
+				<?php 
+			endif;
+			?>
+		 
+		 <?php
+		     if(in_array("*",$this->gteamArr)||array_intersect($muluArr,$this->gteamArr)):
+		 ?> 
+		 <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=catalog&a=manage";
+						}elseif(in_array("cataList",$this->gteamArr)){
+						     $url="?c=catalog&a=manage";
+						}elseif(in_array("cataGen",$this->gteamArr)){
+						     $url="?c=catalog&a=generate";
+						} 
+						?>
+            <li to="<?php echo $url?>"><span>目录</span></li> 
+			
+			<?php 
+			endif;
+			?>
+		 <?php
+		     if(in_array("*",$this->gteamArr)||array_intersect($shujuArr,$this->gteamArr)):
+		 ?>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=comment&a=feedback";
+						}elseif(in_array("feedback",$this->gteamArr)){
+						     $url="?c=comment&a=feedback";
+						} 
+						?>
+            <li to="<?php echo $url?>"><span>数据</span></li> 
+			
+			<?php 
+			endif;
+			?>
+			
+			
+		 <?php
+		     if(in_array("*",$this->gteamArr)||array_intersect($hArr,$this->gteamArr)):
+		 ?>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=h&a=manage";
+						}elseif(in_array("h",$this->gteamArr)){
+						     $url="?c=h&a=manage";
+						} 
+						?>
+            <li to="<?php echo $url?>"><span>会员</span></li> 
+			
+			<?php 
+			endif;
+			?>
+			
+		 <?php
+		     if(in_array("*",$this->gteamArr)||array_intersect($hArr,$this->gteamArr)):
+		 ?>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=site&a=manage";
+						}elseif(in_array("h",$this->gteamArr)){
+						     $url="?c=site&a=manage";
+						} 
+						?>
+            <li to="<?php echo $url?>"><span>导航</span></li> 
+			
+			<?php 
+			endif;
+			?>
+			
+			
+        </ul>
+    </div>
+    <div class="header_right_text rt">
+        <div class="admin-header-right">
+            <div class="manager">
+                <dl>
+                    <dt class="name"><?php echo $adminArr["adminname"]?></dt>
+                    <dd class="group"><?php echo $adminArr["gname"]?></dd>
+                </dl>
+			<span class="avatar">
+				<img src="<?php echo STATIC_PATH?>images/admin.png">
+			</span>
+                <i class="arrow" id="admin-manager-btn"></i>
+                <div class="manager-menu">
+                    <div class="title">
+                        <h4>最后登录</h4>
+                        <!-- <a href="?c=admin&a=pwd2" class="edit_pwd">修改密码</a> -->
+                    </div>
+                    <div class="login-date">
+                        <strong><?php echo $adminArr["riqi_login"]?></strong>
+                        <span>(IP:<?php echo $adminArr["login_ip"]?>)</span>
+                    </div>
+                   <!--  <div class="title mt10">
+                        <h4>常用操作</h4>
+                        <a href="javascript:;" class="add_nav">添加菜单</a>
+                    </div>
+                    <div class="quick_link">
+                        <ul>
+                        </ul>
+                    </div> -->
+                </div>
+            </div>
+            <div class="operate">
+                <ul> 
+                    <li><a href="../../" target="_blank" class="home" title="新窗口打开首页"><span></span></a></li>
+ 
+                    <li><a href="?a=loginoff" class="prompt" title="安全退出管理中心"><span></span></a></li></ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<!-------------------------------------mainframe------------->
+<div class="mainframe home">
+    <div class="left ">
+        <div class="nav">
+		
+<!-- 平台开始-->
+<?
+	if(in_array("*",$this->gteamArr)||array_intersect($pingtaiArr,$this->gteamArr)):
+?>
+<div class="nav_page checked">
+    <ul class="kwl2017">
+                      
+		 <?
+		
+		     if(in_array("*",$this->gteamArr)||in_array("pwdmod",$this->gteamArr)||in_array("adminGen",$this->gteamArr)||in_array("adminList",$this->gteamArr)||in_array("gteamGen",$this->gteamArr)||in_array("gteamList",$this->gteamArr)):
+		 ?>              	
+                    <li>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=admin&a=manage";
+						}elseif(in_array("adminList",$this->gteamArr)||in_array("pwdmod",$this->gteamArr)){
+						     $url="?c=admin&a=manage";
+						}elseif(in_array("adminGen",$this->gteamArr)){
+						     $url="?c=admin&a=generate";
+						}elseif(in_array("gteamList",$this->gteamArr)){
+						     $url="?c=admin&a=manage_gteam";
+						}elseif(in_array("gteamGen",$this->gteamArr)){
+						     $url="?c=admin&a=generate_gteam";
+						}
+						?>
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-quanxian"></i>
+                                <h4>权限</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu">
+                            <ul>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("adminList",$this->gteamArr)||in_array("pwdmod",$this->gteamArr)):?>
+                                <li to="?c=admin&a=manage" class="checked">
+                                    <i></i>
+                                    <a href="javascript:">管理员列表</a>
+                                </li>
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("adminGen",$this->gteamArr)):?>
+                                <li to="?c=admin&a=generate">
+                                    <i></i>
+                                    <a href="javascript:">添加管理员</a>
+                                </li>
+							<?php endif;?>
+								
+							<?php if(in_array("*",$this->gteamArr)||in_array("gteamList",$this->gteamArr)):?>
+							 <li to="?c=admin&a=manage_gteam">
+                                    <i></i>
+                                    <a href="javascript:">角色列表</a>
+                                </li>
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("gteamGen",$this->gteamArr)):?>
+                               
+                                <li to="?c=admin&a=generate_gteam">
+                                    <i></i>
+                                    <a href="javascript:">添加角色</a>
+                                </li>
+							<?php endif;?>
+							
+                            </ul>
+                        </div>
+                    </li> 		 
+		<?php endif;?>
+		
+		<?
+		     if(in_array("*",$this->gteamArr)||in_array("adGen",$this->gteamArr)||in_array("adList",$this->gteamArr)||in_array("adCataGen",$this->gteamArr)||in_array("adCataList",$this->gteamArr)):
+		?> 
+                    <li>
+					
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=ad&a=manage";
+						}elseif(in_array("adList",$this->gteamArr)){
+						     $url="?c=ad&a=manage";
+						}elseif(in_array("adGen",$this->gteamArr)){
+						     $url="?c=ad&a=generate";
+						}elseif(in_array("adCataList",$this->gteamArr)){
+						     $url="?c=ad&a=manage_catalog";
+						}elseif(in_array("adCataGen",$this->gteamArr)){
+						     $url="?c=ad&a=generate_catalog";
+						}
+						?>
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-wenzhang"></i>
+                                <h4>广告</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu" >
+                            <ul>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("adList",$this->gteamArr)):?>
+                                <li to="?c=ad&a=manage">
+                                    <i></i>
+                                    <a href="javascript:">广告管理</a>
+                                </li>
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("adGen",$this->gteamArr)):?>
+                                <li to="?c=ad&a=generate">
+                                    <i></i>
+                                    <a href="javascript:">添加广告</a>
+                                </li>
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("adCataGen",$this->gteamArr)):?>
+                                <li to="?c=ad&a=generate_catalog">
+                                    <i></i>
+                                    <a href="javascript:">添加位置</a>
+                                </li>
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("adCataList",$this->gteamArr)):?>
+                                <li to="?c=ad&a=manage_catalog" class="checked">
+                                    <i></i>
+                                    <a href="javascript:">位置管理</a>
+                                </li>
+							<?php endif;?>
+							
+                            </ul>
+                        </div>
+                    </li>
+
+		 <?php endif;?>
+		 
+		 <?
+		     if(in_array("*",$this->gteamArr)||in_array("web",$this->gteamArr)||in_array("contact",$this->gteamArr)||in_array("sysmanage",$this->gteamArr)):
+		 ?> 
+                    <li>
+					
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=usual&a=web";
+						}elseif(in_array("web",$this->gteamArr)){
+						     $url="?c=usual&a=web";
+						}elseif(in_array("contact",$this->gteamArr)){
+						     $url="?c=usual&a=contact";
+						} elseif(in_array("sysmanage",$this->gteamArr)){
+						     $url="?c=usual&a=sysmanage";
+						} 
+						?>
+						
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-shezhi"></i>
+                                <h4>设置</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu">
+                          
+                            <ul>
+							<?php if(in_array("*",$this->gteamArr)||in_array("web",$this->gteamArr)):?>
+                                <li to="?c=usual&a=web" >
+                                    <i></i>
+                                    <a href="javascript:">网站配置</a>
+                                </li> 
+							<?php endif;?>
+								
+							<?php if(in_array("*",$this->gteamArr)||in_array("contact",$this->gteamArr)):?>
+                                <li to="?c=usual&a=contact">
+                                    <i></i>
+                                    <a href="javascript:">资料配置</a>
+                                </li>  
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("sysmanage",$this->gteamArr)):?>
+                                <li to="?c=usual&a=sysmanage">
+                                    <i></i>
+                                    <a href="javascript:">后台配置</a>
+                                </li>  
+							<?php endif;?>
+                                 
+                                 
+                            </ul>
+							
+							 
+                        </div>
+                    </li>
+					
+		 <?php endif;?>
+    </ul>
+</div>
+<?php endif;?>
+<!--平台结束-->	  
+
+<!--文档开始--> 
+<?
+	if(in_array("*",$this->gteamArr)||array_intersect($wendanArr,$this->gteamArr)):
+?>
+<div class="nav_page">
+    <ul class="kwl2017">
+                    <li>
+					
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=i&a=manage";
+						}elseif(in_array("iList",$this->gteamArr)){
+						     $url="?c=i&a=manage";
+						}elseif(in_array("iGen",$this->gteamArr)){
+						     $url="?c=i&a=generate";
+						} 
+						?>
+						
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-wenzhang"></i>
+                                <h4>文档</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu"  >
+                            <ul>
+							<?php if(in_array("*",$this->gteamArr)||in_array("iList",$this->gteamArr)):?>
+                                <li to="?c=i&a=manage">
+                                    <i></i>
+                                    <a href="javascript:">文档列表</a>
+                                </li>
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("iGen",$this->gteamArr)):?>
+                                <li to="?c=i&a=generate">
+                                    <i></i>
+                                    <a href="javascript:">添加文档</a>
+                                </li>
+							<?php endif;?>
+							
+                            </ul>
+                        </div>
+                    </li>
+    </ul>
+</div>	   
+<?php endif;?>
+<!--文档结束-->
+ 
+
+<!--目录开始-->			
+<?
+	if(in_array("*",$this->gteamArr)||array_intersect($muluArr,$this->gteamArr)):
+?>
+<div class="nav_page">
+    <ul class="kwl2017">
+                    <li>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=catalog&a=manage";
+						}elseif(in_array("cataList",$this->gteamArr)){
+						     $url="?c=catalog&a=manage";
+						}elseif(in_array("cataGen",$this->gteamArr)){
+						     $url="?c=catalog&a=generate";
+						} 
+						?>
+						
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-wenzhang"></i>
+                                <h4>目录</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu"  >
+                            <ul>
+                       
+							<?php if(in_array("*",$this->gteamArr)||in_array("cataList",$this->gteamArr)):?>
+                                <li to="?c=catalog&a=manage" class="checked">
+                                    <i></i>
+                                    <a href="javascript:">目录列表</a>
+                                </li>
+							<?php endif;?>
+							
+							<?php if(in_array("*",$this->gteamArr)||in_array("cataGen",$this->gteamArr)):?>
+                                <li to="?c=catalog&a=generate">
+                                    <i></i>
+                                    <a href="javascript:">添加目录</a>
+                                </li>
+							<?php endif;?>
+							
+                            </ul>
+                        </div>
+                    </li>
+					 
+	 </ul>
+</div>
+<?php endif;?>			
+<!--目录结束-->	
+
+<!--站点留言开始-->	
+<?
+	if(in_array("*",$this->gteamArr)||array_intersect($shujuArr,$this->gteamArr)):
+?>
+<div class="nav_page">
+    <ul class="kwl2017">
+                    <li>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=comment&a=feedback";
+						}elseif(in_array("feedback",$this->gteamArr)){
+						     $url="?c=comment&a=feedback";
+						}
+						?>
+						
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-wenzhang"></i>
+                                <h4>站点留言</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu"  >
+                            <ul>
+                       
+							<?php if(in_array("*",$this->gteamArr)||in_array("feedback",$this->gteamArr)):?>
+                                <li to="?c=comment&a=feedback" class="checked">
+                                    <i></i>
+                                    <a href="javascript:">文章评论</a>
+                                </li>
+								<?php endif;?>
+                                
+                            </ul>
+                        </div>
+                    </li>
+	</ul>
+</div>	  
+             
+<?php endif;?>
+<!--站点留言结束-->
+
+
+<!--会员开始-->	
+<?
+	if(in_array("*",$this->gteamArr)||array_intersect($shujuArr,$this->gteamArr)):
+?>
+<div class="nav_page">
+    <ul class="kwl2017">
+                    <li>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=h&a=manage";
+						}elseif(in_array("h",$this->gteamArr)){
+						     $url="?c=h&a=manage";
+						}
+						?>
+						
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-wenzhang"></i>
+                                <h4>会员管理</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu"  >
+                            <ul>
+                       
+							<?php if(in_array("*",$this->gteamArr)||in_array("h",$this->gteamArr)):?>
+                                <li to="?c=h&a=manage" class="checked">
+                                    <i></i>
+                                    <a href="javascript:">会员管理</a>
+                                </li>
+								<?php endif;?>
+                                
+                            </ul>
+                        </div>
+                    </li>
+					
+					
+                    <li>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=h&a=manage_vip";
+						}elseif(in_array("vip",$this->gteamArr)){
+						     $url="?c=h&a=manage_vip";
+						}
+						?>
+						
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-wenzhang"></i>
+                                <h4>专栏管理</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu"  >
+                            <ul>
+                       
+							<?php if(in_array("*",$this->gteamArr)||in_array("vip",$this->gteamArr)):?>
+                                <li to="?c=h&a=manage_vip" class="checked">
+                                    <i></i>
+                                    <a href="javascript:">专栏会员</a>
+                                </li>
+								<?php endif;?>
+                                
+                            </ul>
+                        </div>
+                    </li>
+					
+					
+	</ul>
+</div>	  
+             
+<?php endif;?>
+<!--会员结束-->
+
+<!--导航开始-->	
+<?
+	if(in_array("*",$this->gteamArr)||array_intersect($shujuArr,$this->gteamArr)):
+?>
+<div class="nav_page">
+    <ul class="kwl2017">
+                    <li>
+					    <?php
+						if(in_array("*",$this->gteamArr)){
+						     $url="?c=site&a=manage";
+						}elseif(in_array("site",$this->gteamArr)){
+						     $url="?c=site&a=manage";
+						}
+						?>
+						
+                        <div class="tit" to="<?php echo $url?>">
+                            <div>
+                                <i class="icon-wenzhang"></i>
+                                <h4>导航管理</h4>
+                            </div>
+                        </div>
+                        <div class="sub-menu"  >
+                            <ul>
+                       
+							<?php if(in_array("*",$this->gteamArr)||in_array("h",$this->gteamArr)):?>
+                                <li to="?c=site&a=manage" class="checked">
+                                    <i></i>
+                                    <a href="javascript:">导航管理</a>
+                                </li>
+								<?php endif;?>
+                                
+                            </ul>
+                        </div>
+                    </li>
+	</ul>
+</div>	  
+             
+<?php endif;?>
+<!--导航结束-->
+
+        </div>
+        <div class="nav-home">
+            <div class="nav_page checked">
+                <ul>
+                    <li class="checked">
+                        <div to="#" class="tit">
+                            <div>
+                                <i class="icon-shouye"></i>
+                                <h4>首页</h4>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--left-->
+    <div class="right">
+        <iframe src="?c=index&a=sysinfo" id="myiframe" width="100%" height="100%" frameborder="0" marginheight="0"
+                marginwidth="0"></iframe>
+        <div class="bac bac1">
+            <div><span class="close">×</span>
+                <table>
+                    <tr>
+                        <td style="width: 100px;text-align: right">原密码：</td>
+                        <td><input type="password"/></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px;text-align: right">新密码：</td>
+                        <td><input type="password"/></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px;text-align: right">确认新密码：</td>
+                        <td><input type="password"/></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px;text-align: right"></td>
+                        <td><input type="button" class="ok" value="提交"/></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="bac out">
+            <div>
+                <h3 style="text-align: center">您确定要退出吗？</h3>
+
+                <div style="text-align: center">
+                    <input style="margin: 10px 5px" class="ok" type="button" value="确定"/>
+                    <input style="margin: 10px 5px" class="ok quxiao" type="button" value="取消"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-------------------------------------footerframe---------- ---->
+<div class="footerframe">
+    技术 创造 konecms v1.0
+</div>
+<script>
+    $(".xiu").click(function () {
+        $(".bac1").fadeIn(500)
+    })
+    $(".bac1 .close").click(function () {
+        $(".bac1").fadeOut(500)
+    })
+    $(".tui").click(function () {
+        $(".out").fadeIn(500)
+    })
+    $(".quxiao").click(function () {
+        $(".out").fadeOut(500)
+    })
+    $(".header-tab>ul>li").click(function () {
+        $(this).addClass("checked").siblings().removeClass("checked")
+        $(".nav_page").eq($(this).index()).show().siblings().hide()
+        $(".mainframe").removeClass("home")
+    })
+    $(".header_text>a>img").click(function () {
+        $(".mainframe").addClass("home")
+        $(".header-tab>ul>li").removeClass("checked")
+    })
+    $(".nav_page>ul>li").click(function () {
+        $(this).addClass("checked").siblings().removeClass("checked")
+    })
+    $(".nav_page .sub-menu>ul>li").click(function () {
+        $(this).addClass("checked").siblings().removeClass("checked")
+    })
+    //    顶部icon切换
+    $(".foldsider>.icon").click(function () {
+        if ($(this).hasClass("icon-indent-left")) {
+            $(this).removeClass("icon-indent-left").addClass("icon-indent-right")
+            $(".mainframe").addClass("fold")
+
+        } else if ($(this).hasClass("icon-indent-right")) {
+            $(this).removeClass("icon-indent-right").addClass("icon-indent-left")
+            $(".mainframe").removeClass("fold")
+        }
+    })
+//    顶部下拉
+    $(".manager").hover(function(){
+        if ($("#admin-manager-btn").hasClass("arrow-close")) {
+            $("#admin-manager-btn").removeClass("arrow-close").addClass("arrow")
+
+        } else if ($("#admin-manager-btn").hasClass("arrow")) {
+            $("#admin-manager-btn").removeClass("arrow").addClass("arrow-close")
+        }
+        $(".manager-menu").slideToggle()
+    })
+    $(".admin-header-right .operate li .msg").hover(function(){
+        $("#msg_Container").slideToggle()
+    })
+</script>
+</body>
+</html>

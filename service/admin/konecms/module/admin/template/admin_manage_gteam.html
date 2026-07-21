@@ -1,0 +1,256 @@
+<?php
+defined('KONE_ADMIN') or exit('You have no right to access this page');
+include $this->load_tpl('header');
+?>
+<div class="warpper">
+    <div class="title">
+        角色列表
+    </div>
+    <div class="content">
+        <div class="explanation" id="explanation">
+            <div class="ex_tit"><i class="sc_icon"></i><h4>操作提示</h4><span id="explanationZoom" title="收起提示"></span>
+            </div>
+            <ul>
+                <li>当您选择删除某个角色时，请务必仔细检查该组是否有下属管理员。</li> 
+                <li><a href="?c=admin&a=manage_gteam" class=seeAll>点击此处</a> 查看全部</li>
+            </ul>
+        </div>
+		<?php 
+				echo "<input type=hidden class=pageurl value=$pageurl />";
+				if($soArr){
+             echo "<div class=so><ul>";  
+				     foreach($soArr as $a){
+					     $mytitle=$a["mytitle"];
+						 $myv=$a["myv"];
+						 $myk=$a["myk"];
+						 echo "<li >$mytitle:&nbsp;&nbsp;&nbsp;<span class=soli><font style='color:#f00'>$myv</font>&nbsp;&nbsp;&nbsp;&nbsp;<font class=delSo k=$myk>X</font></span></li>";
+					 }
+					 
+			 echo "</ul></div>"; 
+				}
+				
+		?> 
+        <div class="flexilist">
+            <div class="common-content">
+                <div class="article">
+                    <form action="">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th width="50">
+                                    <div class="checkbox-all"></div>
+                                </th>
+                                <th width="50">
+                                    行号
+                                </th> 
+                                <th >组名</th> 
+                                <th width="130" style="text-align: center">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+							<?php $i=1;foreach($listArr as $a){?>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"  lineid=<?php echo $a["id"]?>></div>
+                                </td>
+                                <td class="td2"><span><?php echo $i++?></span></td>
+                                
+                                <td><a href="?<?php echo $url?>&page=<?php echo $curpage?>&id=<?php echo $a['id']?>" class="listTitle"><?php echo $a["title"]?></a></td>
+                                
+                                <td>
+                                    <div class="a3">
+                                        <a href="?<?php echo $url?>&page=<?php echo $curpage?>&id=<?php echo $a['id']?>" class="btn_edit"><i class="icon icon-edit"></i>编辑</a>
+                                        <a href="javascript:;" class="btn_trash" id=<?php echo $a['id']?>><i class="icon icon-trash"></i>移除</a> 
+                                    </div>
+                                </td>
+                            </tr>
+							<?php }?>
+                            </tbody>
+                      <?php 
+include $this->load_tpl('tfooter');
+?>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div>
+
+<form method="post" action="?c=admin&a=manage_gteam">
+        <div class="gj_search">
+            <div class="search-gao-list" id="searchBarOpen">
+                <i class="icon icon-zoom-in"></i>高级搜索
+            </div>
+            <div class="search-gao-bar" style="right:-350px;">
+                <div class="handle-btn" id="searchBarClose"><i class="icon icon-zoom-out"></i>收起边栏</div>
+                <div class="title"><h3>高级搜索</h3></div>
+                <div class="searchContent w300">
+                    <div class="layout-box"> 
+                        <dl class="w140">
+                            <dt>关键字搜索</dt>
+                            <dd>
+                                <input type="text" name="w" size="15" class="text gjc w130 mr0" autocomplete="off"/>
+                            </dd>
+                        </dl>
+                        <!-- 关键字 end-->
+
+                    </div>
+                </div>
+                <div class="bot_btn soheight1">
+                    <input type="submit" class="btn red_btn" name="" value="提交查询"/>
+                <input type="button" class="btn blue_btn"   value="查看全部" onClick="javascript:window.location.href='?c=admin&a=manage_gteam'"/> 
+                </div>
+            </div>
+        </div>
+    </form>
+<script>
+    function tab(ss) {
+        $(".common-content").eq($(ss).index()).show().siblings().hide()
+    }
+    $(function () {
+	
+		//单个删除
+    	$(".btn_trash").click(function(){
+		if(confirm("确认删除？")){
+    		id=$(this).attr("id");
+    		$.ajax({
+    		    type:"post",
+    		    dataType:"json",
+    		    url:"?c=admin&a=ajax_del_gteam",
+    		    data:{"id":id},
+    		    success:function(json){
+    		    	if(json.success==0){
+    		    		location.reload();
+    		    	}
+    		    }
+    		})
+			}
+    	});
+		
+		
+		//删除单个搜索条件
+		
+    	$(".delSo").click(function(){
+		    pageurl=$(".pageurl").val();
+			k=$(this).attr("k");
+			 $.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=admin&a=ajax_del_so_gteam",
+        		    data:{"k":k,"pageurl":pageurl},
+        		    success:function(json){
+        		    	if(json.success==0){
+        		    		window.location.href="?"+json.url;
+        		    	}
+        		    }
+        		})
+		})
+		
+		//页面跳转
+    	$("#gotoPage").change(function(){
+    		page=$(this).val();
+    		url="?"+$("#pageurl").val()+"&page="+page;
+    		 
+    		window.location.href=url
+    	});
+		
+		//批量操作
+    	$(".dopiliang").click(function(){
+    		action=$("#piliang").val();
+    		var ids = '';
+    		for(var i=0;i<=$(".checkbox").length-1;i++){
+    			if($(".checkbox").eq(i).html()!=''){
+    				ids+=$(".checkbox").eq(i).attr('lineid')+',';
+    			}
+    		}
+    		if(ids!=''){ 
+    			ids=ids.substring(0,ids.length-1); 
+    		}else{
+    			alert("没有选中的项！");
+    			return;
+    		} 
+			if(action=="_"){
+    			alert("请选择操作类型！");
+    			return;
+			}
+    		if(action=="del"){
+                //批量删除
+                 
+        		$.ajax({ 
+        		    type:"post",
+        		    dataType:"json",
+        		    url:"?c=admin&a=ajax_dels_gteam",
+        		    data:{"ids":ids},
+        		    success:function(json){
+        		    	if(json.success==0){
+        		    		location.reload();
+        		    	}
+        		    }
+        		})
+    		} 
+    	});
+		
+        $("#explanationZoom").click(function () {
+            $(".explanation").toggleClass("jia")
+        })
+        $(".label-ul>ul>li").click(function () {
+            $(this).toggleClass("checked")
+        })
+        $(".tabs_info>ul>li").click(function () {
+            $(this).addClass("curr").siblings().removeClass("curr")
+            tab(this)
+        })
+        $(".biaoqian").click(function () {
+            $(this).toggleClass("switch")
+        })
+        $(".checkbox").click(function () {
+            if ($(this).html() == "") {
+                $(this).html("√")
+                $(this).css("background", "#62B3FF")
+                $(this).parents("tr").css("background", "#FFFEE0")
+            } else if ($(this).html() == "√") {
+                $(this).html("")
+                $(this).css("background", "#fff")
+                $(this).parents("tr").css("background", "#fff")
+            }
+            for (var i = 0; i < $(".checkbox").length; i++) {
+                if ($(".checkbox").eq(i).html() == "") {
+                    $(".checkbox-all").html("")
+                    $(".checkbox-all").css("background", "#fff")
+                } else if ($(".checkbox").eq(i).html() == "√") {
+                    $(".checkbox-all").html("√")
+                    $(".checkbox-all").css("background", "#62b3ff")
+                }
+            }
+        })
+        $(".checkbox-all").click(function () {
+            if ($(this).html() == "") {
+                $(this).html("√")
+                $(this).css("background", "#62B3FF")
+                $(".checkbox").html("√")
+                $(".checkbox").css("background", "#62B3FF")
+                $(".checkbox").parents("tr").css("background", "#FFFEE0")
+            } else if ($(this).html() == "√") {
+                $(this).html("")
+                $(this).css("background", "#fff")
+                $(".checkbox").html("")
+                $(".checkbox").css("background", "#fff")
+                $(".checkbox").parents("tr").css("background", "#fff")
+            }
+        }) 
+		
+        //        高级搜索
+        $(".search-gao-list").click(function () {
+            $(this).animate({right: "-40"}, 300)
+            $(".search-gao-bar").delay(300).animate({right: 0}, 500)
+        })
+        $(".search-gao-bar>.handle-btn").click(function () {
+            $(this).parents(".search-gao-bar").animate({right: "-350"}, 500)
+            $(".search-gao-list").delay(500).animate({right: 0}, 500)
+        })
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <title>会员登录</title>
+	
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/base.css">
+    <link rel="stylesheet" href="<?php echo STATIC_PATH?>h/style.css"> 
+	
+</head>
+<body>
+
+    <div class="bg"></div>
+    <div class="container">
+        <div class="line bouncein">
+            <div class="xs6 xm4 xs3-move xm4-move">
+                <div style="height:150px;"></div>
+                <div class="media media-y margin-big-bottom">
+                </div>
+            <form action="#" method="post" class="loginfrm">
+                    <div class="panel loginbox">
+                        <div class="text-center margin-big padding-big-top">
+                            <h1>会员登录</h1>
+                        </div>
+                        <div class="panel-body" style="padding:30px; padding-bottom:10px; padding-top:10px;">
+                            <div class="form-group">
+                                <div class="field field-icon-right">
+                                    <input class="input input-big name" name="hname" type="text"  placeholder="登录账号" type="text">
+                                    <span class="icon icon-user margin-small"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field field-icon-right">
+                                    <input class="input input-big pwd" name="pwd" type="password" placeholder="登录密码" >
+                                    <span class="icon icon-key margin-small"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field">
+                                    <input class="input input-big yzm" name="yzm" placeholder="填写右侧的验证码" type="text">
+                                    <img src="yzm.php" alt="" class="passcode" style="height:43px;cursor:pointer;" onclick="this.src=this.src+'?'" width="100" height="32">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding:30px;">
+                            <input id="button" class="button button-block bg-main text-big input-big clickme" value="登录" type="button">
+							<br>没有账号？请&nbsp;<a href=?c=h&a=rsg><font color=red>注册</font></a>
+                        </div>
+                    </div>
+					
+					
+			<?php if(isset($_GET["dlist"])):?>
+		            <input type=hidden class=dlist value="<?php echo $_GET["v"]?>">
+		    <?php endif;?>
+			 
+			<?php if(isset($_GET["cataid"])):?>
+		            <input type=hidden class=cataid value="<?php echo $_GET["cataid"]?>">
+		    <?php endif;?>
+				
+			<?php if(isset($_GET["pid"])):?>
+		            <input type=hidden class=pid value="<?php echo $_GET["pid"]?>">
+		    <?php endif;?>
+			
+			
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</body></html>
+
+ <script src="<?php echo STATIC_PATH?>h/jquery-1.8.3.min.js"></script>   
+ <script src="<?php echo STATIC_PATH?>h/form.js"></script>   
+ 
+ 
+ <script>
+document.onkeydown=function(event){
+e = event ? event :(window.event ? window.event : null);
+if(e.keyCode==13){
+
+
+      hname=$(".loginfrm [name='hname']").val();
+      pwd=$(".loginfrm [name='pwd']").val();
+      yzm=$.trim($(".loginfrm [name='yzm']").val());   
+	  dlist="";   
+	  cataid="";  
+	  pid=""; 
+	  v="";
+	 
+	  
+	  if($(".loginfrm [type='hidden']").hasClass("dlist")){
+		  dlist="1";
+		  v=$(".dlist").val();
+	  } 
+	  if($(".loginfrm [type='hidden']").hasClass("cataid")){
+		  cataid="1";
+		  mycataid=$(".cataid").val();
+	  } 
+	  if($(".loginfrm [type='hidden']").hasClass("pid")){
+		  pid="1";
+		  myid=$(".pid").val();
+	  } 
+	  
+       if(yzm=="") {
+		   alert("请输入图形验证码！");
+		   return false;
+		} 
+		
+	  
+	  if(hname!=""&&pwd!=""){
+	  data={"hname":hname,"pwd":pwd,"yzm":yzm}; 
+	  $.ajax({
+	      type:"post",
+		  dataType:"json",
+		  url:"?c=h&a=ajax_login",
+		  data:{"data":data},
+		  success:function(json){
+			  
+		      if(json.success=='0'){
+			     
+				if(dlist!=""){
+				    window.location.href="?c=Content&cataid="+v;
+					return true;
+				}  
+				
+				if(cataid!=""&&pid!=""){
+				    window.location.href="?c=Content&cataid="+mycataid+"&id="+myid;
+					return true;
+				}  
+				
+				    window.location.href="?c=h";
+				 
+			    
+			  }else{
+				   if(json.success=='1'){
+			          alert("密码错误 ！");
+				   }else if(json.success=='2'){
+			          alert("账号错误 ！");
+				   }else{
+					   alert("图形验证码错误 ！");
+				   }
+			  }
+		  }
+	  });
+	  
+	  }else{
+		  alert("账号或密码不能为空 ！");
+	  }
+	  
+	  
+	
+}//13
+}
+</script> 
+ 
+ 
