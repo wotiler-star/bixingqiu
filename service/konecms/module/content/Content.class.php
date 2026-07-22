@@ -149,7 +149,7 @@ class Content extends admin_base
     {
         // 获取数据
         if (isset($_GET["id"])):
-        $id=$_GET["id"];
+        $id = isset($_GET["id"]) ? intval($_GET["id"]) : 0;
         $where = "cataid like '%cataid".$this->mycataid."%' and id <>$id";
         $aboutArr = $this->conn->select("*", $where, "id desc",6);
         
@@ -187,7 +187,7 @@ class Content extends admin_base
             // 上一页下一页
             if (isset($_GET["id"])) {
                 $mywhere=$this->genWhere($mycataidArr);
-                $idNow = $_GET["id"];
+                $idNow = isset($_GET["id"]) ? intval($_GET["id"]) : 0;
                 $where="id<$idNow".$mywhere;
                 $preArr = $this->conn->get_one("id,title,picdir_list", $where, "id desc");
     
@@ -617,6 +617,7 @@ class Content extends admin_base
         $where = "ifok='0' and ifauthor='0'";
         $cols="*";
         $data = $this->conn_h->select($cols, $where, "riqi desc");
+        foreach ($data as &$row) unset($row["pwd"]); // 安全加固：不返回密码哈希
         echo json_encode($data);
         // include parent::load_tpl("h/h_myfeedback");
     }
@@ -629,6 +630,7 @@ class Content extends admin_base
         $where = "ifok='0' and ifauthor='0'";
         $cols="*";
         $zhuanjiaArr=$this->conn_h->select($cols,$where,"hitnum desc",5);
+        foreach ($zhuanjiaArr as &$row) unset($row["pwd"]); // 安全加固：不返回密码哈希
 
         if($_POST["data"]["hid"]){
             $myhid=$_POST["data"]["hid"];
@@ -657,6 +659,7 @@ class Content extends admin_base
         $where = "ifok='0' and ifauthor='0' and ifhot='0'";
         $cols="*";
 	  $zhuanjiaArr=$this->conn_h->select($cols,$where,"hitnum desc",6);
+	  foreach ($zhuanjiaArr as &$row) unset($row["pwd"]); // 安全加固：不返回密码哈希
 
 	  $i=0; 
 	  
@@ -782,6 +785,7 @@ class Content extends admin_base
             $this->conn_h->update(array("hitnum" => "+=1"), "id=$hid");
             //会员信息
             $hArr=$this->conn_h->get_one("*","id=$hid");
+            unset($hArr["pwd"]); // 安全加固：不向前端返回密码哈希，避免敏感信息泄露
             $sort=$hArr["sort"];
             switch($sort){
                 case 'geren':

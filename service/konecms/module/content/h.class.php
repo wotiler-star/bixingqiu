@@ -166,11 +166,11 @@ class h extends admin_base
         $subArr=$this->conn_catalog->select("cataid,sort",$where);
         
         //是否为专栏作家
-        $where_="ifauthor='0' and  id=".$_GET["hid"];
+        $where_="ifauthor='0' and  id=".intval($_GET["hid"]);
         $ifauthor=$this->conn_h->get_one("*",$where_);
         
         //是否有文章
-        $where = "ifhidden='1' and hid= ".$_GET["hid"];   
+        $where = "ifhidden='1' and hid= ".intval($_GET["hid"]);   
         if(isset($_POST["data"]["status"])){
             $v=$_POST["data"]["status"];
             switch($v){
@@ -190,7 +190,7 @@ class h extends admin_base
         }
 
         if(isset($_POST["data"]["cataid"])&&$_POST["data"]["cataid"]!="10"){
-               $cataid=$_POST["data"]["cataid"];
+               $cataid = $this->conn->escape($_POST["data"]["cataid"]);
             $v_ = "cataid" . $cataid;
             $where .=  " and find_in_set( '$v_',cataid) ";
         }
@@ -376,7 +376,7 @@ class h extends admin_base
     {
         $this->curA="f";
       
-        $where = "hid= ".$_GET["hid"];         
+        $where = "hid= ".intval($_GET["hid"]);        
         $cols="*";
         $data = $this->conn_feedback->i($cols, $where, "riqi desc", "", 25, "","",12);
         echo json_encode($data);
@@ -389,7 +389,7 @@ class h extends admin_base
     function myfavorate()
     {
         $this->curA="fav"; 
-        $where = "hid=". $_GET["hid"]; 
+        $where = "hid=". intval($_GET["hid"]); 
         $cols="*";
         $data = $this->conn_favorate->i($cols, $where, "riqi desc", "", 25, "","",12);
           
@@ -425,26 +425,29 @@ class h extends admin_base
     function pwd2()
     {
         $this->curA="p";
-        $hid=$_SESSION["HID"];
-        $where = "id=" . $_SESSION["HID"];
+        $hid = (int)$_SESSION["HID"];
         if (isset($_POST["data"])) {
-            // 1. 加密
-            $pwd = $_POST["data"]["pwd"];
-            $pwd2 = $_POST["data"]["pwd2"];
-            $pwd3 = $_POST["data"]["pwd3"];
-            
-            $where="id=$hid and pwd=md5('". $pwd ."')";
-            $data=$this->conn_h->get_one("id",$where);
-            !$data&&showmessage(L("原密码输入有误 ！"), "?c=h&a=pwd2");
-            
-            
-            $_POST["data"]["pwd"] = md5($_POST["data"]["pwd2"]);
+            $oldPwd = (string)$_POST["data"]["pwd"];
+            $newPwd = (string)$_POST["data"]["pwd2"];
+
+            // 取出存储的哈希，用 password_verify 校验原密码（兼容 md5/bcrypt，并避免原代码的 SQL 注入）
+            $row = $this->conn_h->get_one("pwd", "id=$hid");
+            $stored = $row ? $row["pwd"] : '';
+            if (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0) {
+                $ok = password_verify($oldPwd, $stored);
+            } else {
+                $ok = (strcasecmp($stored, md5($oldPwd)) === 0);
+            }
+            !$ok && showmessage(L("原密码输入有误 ！"), "?c=h&a=pwd2");
+
+            // 设置新密码（bcrypt）
+            $_POST["data"]["pwd"] = password_hash($newPwd, PASSWORD_BCRYPT);
             unset($_POST["data"]["pwd2"]);
             unset($_POST["data"]["pwd3"]);
-            $this->conn_h->update($_POST["data"], $where);
+            $this->conn_h->update($_POST["data"], "id=$hid");
             $this->conn_h->affected_rows() ? showmessage(L("do_ok"), "?c=h&a=pwd2") : showmessage(L("do_fail"), "?c=h&a=pwd2");
         }
-        
+
         include parent::load_tpl("h/h_pwd2");
     }
 
@@ -489,47 +492,51 @@ class h extends admin_base
     {
         if (isset($_POST["data"]["hname"])) {
 
-         //   if (strtolower($_POST["data"]["yzm"]) != $_SESSION["randNum"]) { 
-           //         $myArr["success"] = 3;
-            //    } else {
-            
-            $where = "hname='" . $_POST["data"]["hname"] . "' and pwd='" . md5($_POST["data"]["pwd"]) . "'";
-            // 是否有效
-              $where .= " and ifok='0'";
-            
-            $data = $this->conn_h->get_one("*", $where);
-            
-            $url = "";
+            $hname = $this->conn_h->escape($_POST["data"]["hname"]);
+            $rawPwd = isset($_POST["data"]["pwd"]) ? (string)$_POST["data"]["pwd"] : '';
+
+            // 仅按账号查询，密码不参与 WHERE（兼容易被注入的写法，并兼容新旧哈希）
+            $data = $this->conn_h->get_one("*", "hname='" . $hname . "' and ifok='0'");
+
             if ($data) {
-                // 设置登录信息
-                $hname=$_SESSION["HNAME"] =  $data["hname"];
-                $nickname=$_SESSION["NICKNAME"] = $data["name"];
-                $hid=$_SESSION["HID"] = $data["id"];
-                
-                // 更新登录记录
-                $arr = array(
-                    "riqi_lastlogin" => date("Y-m-d H:i:s"),
-                    "login_ip" => getIPaddress()
-                );
-                $this->conn_h->update($arr, $where);  
-                $myArr["success"] = 0;
-                $myArr["hid"] = $hid;
-                $myArr["hname"] = $hname;
-                $myArr["nickname"] = $nickname;
-            } else {
-                $where = "hname='" . $_POST["data"]["hname"] . "'";
-                // 是否有效
-                $where .= " and ifok='0'";
-                
-                $data = $this->conn_h->get_one("*", $where);
-                if($data){
-                    $myArr["success"] = 1;//密码错误
-                }else{
-                    $myArr["success"] = 2;//账号错误
+                $stored = $data["pwd"];
+                $ok = false;
+                if (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0) {
+                    // 新 bcrypt 哈希
+                    $ok = password_verify($rawPwd, $stored);
+                } else {
+                    // 存量 md5 哈希（兼容迁移）
+                    $ok = (strcasecmp($stored, md5($rawPwd)) === 0);
+                    // 登录成功后透明重哈希为 bcrypt，下次起走强校验
+                    if ($ok) {
+                        $newHash = password_hash($rawPwd, PASSWORD_BCRYPT);
+                        $this->conn_h->update(array("pwd" => $newHash), "id=" . (int)$data["id"]);
+                    }
                 }
-                
-          //  }
-                 }
+
+                if ($ok) {
+                    // 设置登录信息
+                    $_SESSION["HNAME"]   = $data["hname"];
+                    $_SESSION["NICKNAME"] = $data["name"];
+                    $_SESSION["HID"]      = $data["id"];
+
+                    // 更新登录记录
+                    $arr = array(
+                        "riqi_lastlogin" => date("Y-m-d H:i:s"),
+                        "login_ip" => getIPaddress()
+                    );
+                    $this->conn_h->update($arr, "id=" . (int)$data["id"]);
+                    $myArr["success"] = 0;
+                    $myArr["hid"] = $data["id"];
+                    $myArr["hname"] = $data["hname"];
+                    $myArr["nickname"] = $data["name"];
+                    echo json_encode($myArr);
+                    return;
+                }
+                $myArr["success"] = 1; // 密码错误
+            } else {
+                $myArr["success"] = 2; // 账号错误
+            }
             echo json_encode($myArr);
         }
     }
@@ -550,8 +557,8 @@ class h extends admin_base
     function ajax_pwd2()
     {
          
-        $hid = $_POST["data"]["hid"];  
-        $pwd = md5($_POST["data"]["pwd"]);
+        $hid = (int)$_POST["data"]["hid"];
+        $pwd = password_hash((string)$_POST["data"]["pwd"], PASSWORD_BCRYPT);
                 $where = "id=$hid";
                 $data = $this->conn_h->get_one("*", $where);
                 if (! $data) {
@@ -589,7 +596,7 @@ class h extends admin_base
                         $myArr["success"] = 1;
                     } else { 
                       //  unset($_POST["data"]["yzm"]);
-                        $_POST["pwd"] = md5($_POST["pwd"]);
+                        $_POST["pwd"] = password_hash((string)$_POST["pwd"], PASSWORD_BCRYPT);
                         $_POST["riqi"] = date("Y-m-d H:i:s");
                         $_POST["ip"] = getIPaddress();
                         $_POST["phone"] = $_POST["hname"];
@@ -623,7 +630,7 @@ class h extends admin_base
                     $hname = $_POST["data"]["hname"];
                     unset($_POST["data"]["msg"]);
                     $where = "hname='$hname'";
-                    $mypwd = md5($_POST["data"]["pwd"]);
+                    $mypwd = password_hash((string)$_POST["data"]["pwd"], PASSWORD_BCRYPT);
                     $arr = array(
                         "pwd" => $mypwd
                     );

@@ -108,11 +108,16 @@ class upload
                                 "bmp"
                             ))) {
                                 // 反馈上传结果提示:0成功，1.并未上传；2.格式不准确；3.大小不合要求；4.系统出错（权限）
-                                $this->rstno[$picform] = 2;
-                                break; // 同一表单下有任意一项不足则终止该项资源上传（不影响兄弟表单上传）
+                                    $this->rstno[$picform] = 2;
+                                    break; // 同一表单下有任意一项不足则终止该项资源上传（不影响兄弟表单上传）
+                                }
+                                // 校验真实图片内容，防止伪装图片上传造成 RCE
+                                if (! @getimagesize($tmpfile[$i])) {
+                                    $this->rstno[$picform] = 2;
+                                    break;
+                                }
                             }
-                        }
-                    } // if name
+                        } // if name
                     
                     $path = $this->uploaddir;
                     $myname = "konecms" . time() . rand(100, 900);

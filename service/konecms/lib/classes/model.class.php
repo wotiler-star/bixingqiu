@@ -196,7 +196,8 @@ class model {
 		if (is_array ( $where )) {
 			$sql = '';
 			foreach ( $where as $key => $val ) {
-				$sql .= $sql ? " $font `$key` = '$val' " : " `$key` = '$val'";
+				$val = $this->sql_val ( $val );
+			$sql .= $sql ? " $font `$key` = $val " : " `$key` = $val";
 			}
 			return $sql;
 		} else {
@@ -209,6 +210,17 @@ class model {
 	 *
 	 * @return int
 	 */
+	final public function sql_val($val) {
+		if (is_numeric($val)) {
+			return $val;
+		}
+		return "'" . $this->db->escape($val) . "'";
+	}
+
+	final public function escape($str) {
+		return $this->db->escape($str);
+	}
+
 	final public function affected_rows() {
 		return $this->db->affected_rows ();
 	}

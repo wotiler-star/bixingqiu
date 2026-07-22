@@ -33,7 +33,7 @@ class admin extends admin_base{
             $_POST["data"]["ifip"] = isset($_POST["data"]["ifip"]) ? 0 : 1;
 
             //3. 加密
-            $_POST["data"]["pwd"] = md5($_POST["data"]["pwd"]);
+            $_POST["data"]["pwd"] = password_hash((string)$_POST["data"]["pwd"], PASSWORD_BCRYPT);
             
             
             
@@ -148,7 +148,7 @@ class admin extends admin_base{
     
         if(isset($_POST["data"])){
             //1. 加密
-            $_POST["data"]["pwd"] = md5($_POST["data"]["pwd"]);
+            $_POST["data"]["pwd"] = password_hash((string)$_POST["data"]["pwd"], PASSWORD_BCRYPT);
        
             $this->conn_admin->update($_POST["data"],$where);
             $this->conn_admin->affected_rows()?showmessage(L("do_ok"),"?c=admin&a=manage"):showmessage(L("do_fail"),"?c=admin&a=manage");

@@ -32,7 +32,11 @@ function cur_city($api = "http://ip.taobao.com/service/getIpInfo.php?ip=")
 function base64_image_content($base64_image_content, $path, $base)
 {
     if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)) {
-        $type = $result[2];
+        $type = strtolower($result[2]);
+        $allow_img = array('jpg','jpeg','gif','png','bmp','webp');
+        if (! in_array($type, $allow_img)) {
+            return false;
+        }
         $new_file = $path . "/" . date('Ymd', time()) . "/";
         if (! file_exists($new_file)) {
             $dirArr = array(
@@ -290,7 +294,7 @@ function format_output_string($string)
 function to_sqls($data, $front = ' AND ', $in_column = false)
 {
     if ($in_column && is_array($data)) {
-        $ids = '\'' . implode('\',\'', $data) . '\'';
+        $ids = '\'' . implode('\',\'', array_map('addslashes', $data)) . '\'';
         $sql = "$in_column IN ($ids)";
         return $sql;
     } else {
@@ -300,7 +304,8 @@ function to_sqls($data, $front = ' AND ', $in_column = false)
         if (is_array($data) && count($data) > 0) {
             $sql = '';
             foreach ($data as $key => $val) {
-                $sql .= $sql ? " $front `$key` = '$val' " : " `$key` = '$val' ";
+                $val = is_numeric($val) ? $val : "'" . addslashes($val) . "'";
+                $sql .= $sql ? " $front `$key` = $val " : " `$key` = $val ";
             }
             return $sql;
         } else {
@@ -536,7 +541,7 @@ function unicode_decode_string($name)
          
          foreach ($wArr as $a) {
              foreach($wFieldArr as $field){
-                 $where.=$field . " like '%$a%'  or ";
+                 $where.=$field . " like '%".addslashes($a)."%'  or ";
              }
          }
          $where  =" and (". rtrim($where, "or ").") ";
@@ -544,12 +549,12 @@ function unicode_decode_string($name)
      }
      // 日期
      if(isset($_POST["riqi1"])&&$_POST["riqi1"]){
-         $riqi1=$_POST["riqi1"];
+         $riqi1=addslashes($_POST["riqi1"]);
          $where .=   " and  $riqi_field >='$riqi1'";
          $urlArr["riqi1"]=urlencode($riqi1);
      }
      if(isset($_POST["riqi2"])&&$_POST["riqi2"]){
-         $riqi2=$_POST["riqi2"];
+         $riqi2=addslashes($_POST["riqi2"]);
          $where .=   " and  $riqi_field <='$riqi2'";
          $urlArr["riqi2"]=urlencode($riqi2);
      }
@@ -561,7 +566,7 @@ function unicode_decode_string($name)
      if($_POST){
          foreach($_POST as $k=>$v){
             
-             $where .= $v == "_" ? "" : " and $k = '$v'";
+             $where .= $v == "_" ? "" : " and $k = '".addslashes($v)."'";
              if($v!="_") $urlArr["$k"]=urlencode($v);
          }
      } 
@@ -585,21 +590,21 @@ function unicode_decode_string($name)
      $sql = "";
      foreach ($myArr as $k => $v) {
          if ($k == "riqi1") {
-              $where.=" and  $riqi_field>='$v'"; 
+              $where.=" and  $riqi_field>='".addslashes($v)."'"; 
          } elseif ($k == "riqi2") {
-              $where.=" and  $riqi_field<='$v' "; 
+              $where.=" and  $riqi_field<='".addslashes($v)."' "; 
          }elseif ($k == "w") {
              $wArr = preg_split("/[\s,，]+/", $v);
              $where2 = "";
              foreach ($wArr as $a) {
                  $a=urldecode($a);
                  foreach($wFieldArr as $field){
-                     $where.=$field . " like '%$a%'  or ";
+                     $where.=$field . " like '%".addslashes($a)."%'  or ";
                  }
               }
              $where .=" and (" . rtrim($where2, "or ") .") "; 
          } else { 
-             $where .= " and $k='$v'";  
+             $where .= " and $k='".addslashes($v)."'";  
          } 
          $pageurl .= "&$k=$v"; 
          $v = urlencode($v);

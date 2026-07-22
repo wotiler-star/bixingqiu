@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM, { render } from 'react-dom';
-import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import SeoManager from './SeoManager';
 
 
 import { Provider } from 'react-redux';
@@ -40,8 +41,9 @@ const GetBaidu = props => {
 
 
 render(<Provider store={store}>
-  <HashRouter>
+  <BrowserRouter>
     <div>
+      <SeoManager />
       <Header />
       <Switch>
         <Route path='/home' exact component={Home} />
@@ -64,7 +66,7 @@ render(<Provider store={store}>
         <GetBaidu></GetBaidu>
       </Footer>
     </div>
-  </HashRouter>
+  </BrowserRouter>
 </Provider>
   , root);
 
