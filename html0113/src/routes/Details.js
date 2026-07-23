@@ -5,6 +5,7 @@ import Qs from "qs";
 import '../static/css/Details.less';
 import { Icon } from "antd";
 import { NavLink } from "react-router-dom";
+import sanitizeHtml from "../util/sanitize";
 
 class init extends React.Component {
   constructor(props, context) {
@@ -31,8 +32,10 @@ class init extends React.Component {
       weekDay = ["星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
     id = parseFloat(id);
     axios.get(`${global.constants.winUrl}?c=Content&cataid=${cataid}&id=${id}`).then(res => {
-      console.log(res, res.data[0].riqi);
-      let timeArr = res.data[0].riqi.replace(' ', ':').replace(/\:/g, '-').split('-'),
+      let first = (res.data && res.data.length) ? res.data[0] : null;
+      console.log(res, first && first.riqi);
+      if (!first) return;
+      let timeArr = first.riqi.replace(' ', ':').replace(/\:/g, '-').split('-'),
         dt = new Date(`${timeArr[0]}-${timeArr[1]}-${timeArr[2]}`).getDay();
 
       this.setState({
@@ -67,7 +70,7 @@ class init extends React.Component {
           let { title, cnt_short, lihao, likong, id } = item;
           return <div className="content" key={index}>
             <h1>{title}</h1>
-            <div className={'text'} dangerouslySetInnerHTML={{ __html: cnt_short }}>
+            <div className={'text'} dangerouslySetInnerHTML={{ __html: sanitizeHtml(cnt_short) }}>
             </div>
             <div className="judge-profit">
               <a href='javascript:;'>

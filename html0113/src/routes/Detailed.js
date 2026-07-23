@@ -5,6 +5,7 @@ import {NavLink} from 'react-router-dom';
 import axios from 'axios';
 import '../static/css/Detailed.less';
 import Qs from 'qs';
+import sanitizeHtml from '../util/sanitize';
 
 const {TextArea} = Input;
 
@@ -59,17 +60,17 @@ class Detailed extends React.Component {
         feedArr: res.feedArr,
         hotArr: res.hotArr,
         nextArr: res.nextArr,
-        index: res.feedArr.length,
+        index: res.feedArr ? res.feedArr.length : 0,
         thid: hid ? true : false,
         hid: hid,
         id: id,
         cataid: cataid,
         data: res.data,
-        title: res.data[0].title,
-        i: res.nextArr[0],
-        favorate: res.data[0].favorate,
-        feednum: res.data[0].feednum,
-        favid:res.data[0].favid
+        title: (res.data && res.data.length) ? res.data[0].title : '',
+        i: (res.nextArr && res.nextArr.length) ? res.nextArr[0] : null,
+        favorate: (res.data && res.data.length) ? res.data[0].favorate : 0,
+        feednum: (res.data && res.data.length) ? res.data[0].feednum : 0,
+        favid: (res.data && res.data.length) ? res.data[0].favid : 0
       });
     });
   }
@@ -99,10 +100,10 @@ class Detailed extends React.Component {
                 </div>
               </div>
               <div className={'synopsisBox'}>
-                <div className="synopsis" dangerouslySetInnerHTML={{__html: cnt_short}}>
+                <div className="synopsis" dangerouslySetInnerHTML={{__html: sanitizeHtml(cnt_short)}}>
                 </div>
               </div>
-              <div className="detail-text" dangerouslySetInnerHTML={{__html: cnt}}/>
+              <div className="detail-text" dangerouslySetInnerHTML={{__html: sanitizeHtml(cnt)}}/>
             </div>
           }) : null}
 

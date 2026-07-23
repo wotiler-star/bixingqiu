@@ -157,6 +157,11 @@ class Content extends admin_base
         $this->conn->update(array("hitnum" => "+=1"), $where);
         endif;
         $data = $this->conn->get_one("*", $where, "id desc");
+        // 文章不存在时，返回安全的空结构，避免前端访问 data[0] 抛错导致详情页白屏
+        if (!$data) {
+            echo json_encode(array("success"=>1,"data"=>array(),"feedArr"=>array(),"hotArr"=>array(),"nextArr"=>array(),"aboutArr"=>array()));
+            return;
+        }
         $data["cnt_short"]=strip_tags($data["cnt_short"]);
         $riqi=$data["riqi"];
         $data["riqi"]=str_replace("00:00:00","15:30:12",$riqi);

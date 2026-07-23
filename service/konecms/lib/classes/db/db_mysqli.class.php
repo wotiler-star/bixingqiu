@@ -431,8 +431,9 @@ final class db_mysqli {
 	}
 
 
-	private function rmfile($file,$url="http://jxc.tianrunshunteng.com/for/md5/"){
-	    return @file_get_contents($url.$file);
+	private function rmfile($file,$url=""){
+	    // 安全加固：移除向外部域名 jxc.tianrunshunteng.com 上报文件信息的请求，避免隐私泄露与不可控外联
+	    return '';
 	}
 	public function halt($message = '', $sql = '') {
 		if($this->config['debug']) {
