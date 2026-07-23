@@ -1,8 +1,11 @@
 import axios from 'axios';
 import Qs from 'qs';
 
-// 与 config.js 保持一致：API 基址通过 REACT_APP_API_BASE 注入，默认回退本地
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:8090';
+// 与 config.js 保持一致：部署时默认同源（当前页面来源），避免写死 localhost
+const INJECTED_API_BASE = (typeof process !== 'undefined' && process.env) ? process.env.REACT_APP_API_BASE : undefined;
+const API_BASE = INJECTED_API_BASE
+  || (typeof window !== 'undefined' && window.location && window.location.origin)
+  || '';
 axios.defaults.baseURL = API_BASE + '/service';
 axios.defaults.withCredentials = true;
 axios.defaults.transformRequest = (data = {}) => Qs.stringify(data);

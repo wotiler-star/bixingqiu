@@ -28,7 +28,7 @@ export function setSEO({ title, description, path } = {}) {
   // canonical / og:url 跟随当前域名自动拼接路径，部署到任意域名都正确
   const origin = (typeof window !== 'undefined' && window.location && window.location.origin)
     ? window.location.origin
-    : 'http://localhost:8090';
+    : '';
   const url = origin + (path || (typeof window !== 'undefined' && window.location ? window.location.pathname : '/'));
   let can = document.head.querySelector('link[rel="canonical"]');
   if (!can) {
