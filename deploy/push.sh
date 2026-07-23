@@ -17,21 +17,25 @@ REMOTE="${1:?用法: ./push.sh user@服务器IP}"
 LOCAL="/f/bixingqiu"
 APP_ROOT=/var/www/bixingqiu
 
-echo "==> [1/4] 上传前端构建产物"
+echo "==> [1/5] 上传前端构建产物"
 rsync -avz --delete \
   --exclude 'static/js/*.map' \
   "$LOCAL/html0113/build/" "${REMOTE}:${APP_ROOT}/html0113/build/"
 
-echo "==> [2/4] 上传后端（排除 .git 与 .env，保留服务器上传目录 konecms_ups）"
+echo "==> [2/5] 上传后端（排除 .git 与 .env，保留服务器上传目录 konecms_ups）"
 rsync -avz --delete \
   --exclude '.git' \
   --exclude 'config/.env' \
   --exclude 'konecms_ups' \
   "$LOCAL/service/" "${REMOTE}:${APP_ROOT}/service/"
 
-echo "==> [3/4] 上传数据库 dump 并导入"
+echo "==> [3/5] 上传部署工具包（server-init.sh / nginx 配置等）"
+rsync -avz \
+  "$LOCAL/deploy/" "${REMOTE}:${APP_ROOT}/deploy/"
+
+echo "==> [4/5] 上传数据库 dump 并导入"
 rsync -avz "$LOCAL/deploy/db/bixingqiu.sql" "${REMOTE}:/tmp/bixingqiu.sql"
 ssh "${REMOTE}" "mysql ${DB_NAME:-k_k3_bixingqiu} < /tmp/bixingqiu.sql && echo imported"
 
-echo "==> [4/4] 完成"
+echo "==> [5/5] 完成"
 echo "访问 http://${REMOTE#*@}/"
