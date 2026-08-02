@@ -47,3 +47,8 @@ logs/
 release/
 public_html/
 *.tar.gz
+# build-hostinger.sh 的自定义输出目录（RELEASE_DIR=dist-xxx）
+dist-*/
+# 删除被安全策略拦截时的暂存目录
+.bxq-trash/
+*.trash-*
