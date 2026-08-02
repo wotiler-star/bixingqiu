@@ -1,4 +1,20 @@
-# 币星球 · 部署工具包
+# 币星球 · 部署工具包（VPS 方案 · 备选）
+
+> **⚠️ 当前项目已改为部署到 Hostinger 共享主机，请优先阅读 [README-HOSTINGER.md](./README-HOSTINGER.md)。**
+>
+> 本文档针对 **自建 VPS（Vultr + Nginx + PHP 7.4）**，与 Hostinger 环境有本质差异：
+>
+> | 差异点 | 本文档（VPS） | Hostinger（现行方案） |
+> |---|---|---|
+> | Web 服务器 | Nginx（`nginx-bixingqiu.conf`） | LiteSpeed/Apache（用 `.htaccess`） |
+> | PHP 版本 | 7.4 | 8.x（代码已按 PHP 8 适配） |
+> | 配置权限 | 有 root，可改 `php.ini`/`nginx.conf` | 无 root，只能用 `.htaccess` + `.user.ini` |
+> | 部署方式 | `server-init.sh` + `push.sh` | 面板上传 zip / Git 部署 |
+>
+> 本目录下的 `nginx-bixingqiu.conf`、`server-init.sh`、`push.sh`、`vultr-create.sh`
+> **仅适用于 VPS 方案**，在 Hostinger 上不要执行。
+>
+> 保留本文档是为了将来流量增长、需要迁出共享主机时可直接复用。
 
 把修复后的全站源码一键部署到**海外 VPS**（推荐 Vultr 洛杉矶）。
 
