@@ -10,13 +10,15 @@
   <meta name="description" content="币星球聚焦区块链行业人物、专家专栏、7×24快讯、数字货币与宏观经济资讯，提供深度的链圈人物库与内容社区。">
   <meta name="keywords" content="币星球,区块链,数字货币,比特币,专家专栏,快讯,链圈人物,加密货币">
   <meta name="author" content="币星球">
-  <link rel="canonical" href="http://localhost:8090/">
+  <!-- __SITE_ORIGIN__ 由 deploy/build-hostinger.sh 在打包时替换为真实站点地址；
+       若未替换，页面底部的兜底脚本会在运行时用 location.origin 修正。 -->
+  <link rel="canonical" href="__SITE_ORIGIN__/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_CN">
   <meta property="og:site_name" content="币星球">
   <meta property="og:title" content="币星球 - 区块链人物与链圈资讯平台">
   <meta property="og:description" content="币星球聚焦区块链行业人物、专家专栏、7×24快讯、数字货币与宏观经济资讯。">
-  <meta property="og:url" content="http://localhost:8090/">
+  <meta property="og:url" content="__SITE_ORIGIN__/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="币星球 - 区块链人物与链圈资讯平台">
   <meta name="twitter:description" content="币星球聚焦区块链行业人物、专家专栏、7×24快讯、数字货币与宏观经济资讯。">
@@ -26,21 +28,48 @@
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "币星球",
-    "url": "http://localhost:8090/",
+    "url": "__SITE_ORIGIN__/",
     "description": "区块链人物与链圈资讯平台",
     "sameAs": []
   }
   </script>
-  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"> </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+    crossorigin="anonymous"></script>
   <script>
-    (adsbygoogle == window.adsbygoogle | le || []).push({
-      google_ad_client: "ca-pub-4833174736056842",
-      enable_page_level_ads: true
-    });
+    // 修复：原代码为 (adsbygoogle == window.adsbygoogle | le || []) —— 语法损坏，
+    // 会在每次加载抛 ReferenceError 且广告永不初始化。
+    try {
+      window.adsbygoogle = window.adsbygoogle || [];
+      window.adsbygoogle.push({
+        google_ad_client: "ca-pub-4833174736056842",
+        enable_page_level_ads: true
+      });
+    } catch (e) { /* 广告脚本被拦截时静默忽略，不影响主站 */ }
   </script>
 </head>
 
 <body>
+  <script>
+    // 兜底：若打包时未替换 __SITE_ORIGIN__ 占位符，运行时用真实来源修正 SEO 标签，
+    // 避免把 canonical / og:url 指向错误地址。
+    (function () {
+      var PH = '__SITE' + '_ORIGIN__';
+      var origin = window.location.origin ||
+        (window.location.protocol + '//' + window.location.host);
+      var c = document.querySelector('link[rel="canonical"]');
+      if (c && c.getAttribute('href').indexOf(PH) === 0) {
+        c.setAttribute('href', origin + window.location.pathname);
+      }
+      var o = document.querySelector('meta[property="og:url"]');
+      if (o && o.getAttribute('content').indexOf(PH) === 0) {
+        o.setAttribute('content', origin + window.location.pathname);
+      }
+      var ld = document.querySelector('script[type="application/ld+json"]');
+      if (ld && ld.textContent.indexOf(PH) !== -1) {
+        ld.textContent = ld.textContent.split(PH).join(origin);
+      }
+    })();
+  </script>
   <script>
     // 兼容旧的 #/home 形式链接：加载时若带 hash 路由则改写为干净路径
     (function () {
