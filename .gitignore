@@ -34,3 +34,16 @@ logs/
 
 # PHP settings
 *.ini
+# 例外：Hostinger 部署必需的 PHP 运行时配置，必须纳入版本管理
+!service/.user.ini
+!service/admin/.user.ini
+
+# IDE 元数据（Eclipse PDT，部署时不需要，且会暴露本地路径）
+.buildpath
+.project
+.settings/
+
+# 部署临时产物
+release/
+public_html/
+*.tar.gz

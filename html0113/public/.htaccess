@@ -1,0 +1,125 @@
+# ===========================================================================
+# 币星球 · 站点根 .htaccess（Hostinger / LiteSpeed·Apache）
+# ---------------------------------------------------------------------------
+# 部署位置：public_html/.htaccess
+# 本文件放在 CRA 的 public/ 目录下，npm run build 时会被原样复制到 build/，
+# 因此把 build/ 内容整体上传到 public_html 即自动生效，无需手工搬运。
+#
+# 覆盖内容：SPA 前端路由回退、HTTPS 跳转、静态资源缓存、Gzip、安全响应头、
+#          敏感文件封禁。/service/ 前缀的请求全部放行给 PHP 后端。
+# ===========================================================================
+
+# ---------- 基础 ----------
+Options -Indexes
+DirectoryIndex index.html index.php
+AddDefaultCharset UTF-8
+
+# 让浏览器正确识别现代静态资源类型（部分主机默认表缺失会导致 JS/字体 MIME 错误）
+<IfModule mod_mime.c>
+    AddType application/javascript          .js .mjs
+    AddType text/css                        .css
+    AddType image/svg+xml                   .svg
+    AddType image/webp                      .webp
+    AddType application/json                .json .webmanifest
+    AddType font/woff                       .woff
+    AddType font/woff2                      .woff2
+    AddType application/vnd.ms-fontobject   .eot
+    AddType font/ttf                        .ttf
+</IfModule>
+
+# ---------- 重写 ----------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 1) 强制 HTTPS
+    #    Hostinger 由前置层终结 SSL，回源到 PHP/Apache 时 %{HTTPS} 常为 off，
+    #    只判断 %{HTTPS} 会造成无限重定向。这里优先看 X-Forwarded-Proto。
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1) [NC]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # 2) 封禁隐藏文件/目录（.env、.git、.settings…），放行 ACME 证书校验
+    RewriteRule "(^|/)\.(?!well-known/)" - [F,L]
+
+    # 3) 后端接口不参与 SPA 回退，原样交给 PHP
+    RewriteRule ^service(/|$) - [L]
+
+    # 4) 已存在的真实文件或目录直接返回
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 5) 其余路径统统交给 React 单页应用
+    #    没有这条，刷新 /article/123 这类前端路由会直接 404。
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# ---------- 压缩 ----------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css
+    AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+    AddOutputFilterByType DEFLATE application/json application/xml application/rss+xml
+    AddOutputFilterByType DEFLATE image/svg+xml application/vnd.ms-fontobject
+    AddOutputFilterByType DEFLATE font/ttf font/otf font/woff font/woff2
+</IfModule>
+
+# ---------- 缓存 ----------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault                      "access plus 1 hour"
+    ExpiresByType text/html             "access plus 0 seconds"
+    ExpiresByType application/json      "access plus 0 seconds"
+    ExpiresByType text/css              "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/png             "access plus 6 months"
+    ExpiresByType image/jpeg            "access plus 6 months"
+    ExpiresByType image/gif             "access plus 6 months"
+    ExpiresByType image/webp            "access plus 6 months"
+    ExpiresByType image/svg+xml         "access plus 6 months"
+    ExpiresByType font/woff2            "access plus 1 year"
+    ExpiresByType font/woff             "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # CRA 构建产物文件名带内容哈希，可以长期强缓存
+    <FilesMatch "\.(js|css|woff2?|ttf|otf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    # 入口 HTML 必须每次校验，否则前端发版后用户会一直拿到旧壳子
+    <FilesMatch "\.(html|json|webmanifest)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+
+    # ---------- 安全响应头 ----------
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+
+    # HSTS：确认 HTTPS 稳定运行后再启用（启用后浏览器会强制记住半年）
+    # Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains"
+</IfModule>
+
+# ---------- 敏感文件封禁 ----------
+<FilesMatch "(?i)\.(env|ini|log|sql|sh|bak|old|swp|dist|map|json5|lock)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# 例外：SPA 需要读取的 manifest/配置类 JSON 不在上面的封禁列表里（.json 未封禁），
+# 只封了 .json5/.lock 等构建期文件。
+
+# ---------- 上传体积（LiteSpeed 支持，Apache+mod_php 亦可） ----------
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 12M
+</IfModule>

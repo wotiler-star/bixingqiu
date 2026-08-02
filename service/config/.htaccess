@@ -1,0 +1,9 @@
+# 数据库凭据所在目录，禁止任何 HTTP 访问。
+# 这里有 dbconn.php 与运行时生成的 .env，泄露即等同于数据库被拿走。
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

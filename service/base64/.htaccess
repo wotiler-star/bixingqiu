@@ -1,0 +1,8 @@
+# 该目录仅存放历史遗留的占位文本，无任何运行时用途，禁止 HTTP 访问。
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

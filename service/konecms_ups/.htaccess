@@ -1,0 +1,43 @@
+# ===========================================================================
+# 用户上传目录 —— 禁止一切脚本执行
+# ---------------------------------------------------------------------------
+# 这是共享主机被挂马的头号入口：只要上传过滤有任何一处能被绕过
+# （图片马、双扩展名、.phar、大小写变体…），能执行 = 直接 RCE。
+# 这里做「纵深防御」：即使文件被写进来，也永远只能当静态文件下载。
+# ===========================================================================
+
+Options -Indexes -ExecCGI
+
+# 取消这些后缀与解释器的关联
+<IfModule mod_mime.c>
+    RemoveHandler .php .phtml .php3 .php4 .php5 .php6 .php7 .php8 .pht .phps .phar .cgi .pl .py .jsp .asp .aspx .shtml
+    RemoveType    .php .phtml .php3 .php4 .php5 .php6 .php7 .php8 .pht .phps .phar
+</IfModule>
+
+# 直接拒绝访问任何脚本类文件
+<FilesMatch "(?i)\.(php[0-9]?|phtml|pht|phps|phar|cgi|pl|py|sh|bash|jsp|asp|aspx|shtml|htaccess|user\.ini)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# 传统 mod_php 环境下额外关闭引擎（LiteSpeed 下该模块不存在，会自动跳过）
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php5.c>
+    php_flag engine off
+</IfModule>
+
+# 上传的图片强制以附件之外的静态类型返回，避免被当 HTML 解析（存储型 XSS）
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Security-Policy "default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'"
+</IfModule>

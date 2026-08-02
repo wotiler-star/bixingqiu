@@ -1,0 +1,52 @@
+# ===========================================================================
+# 币星球 · 后端 /service/ 访问控制（Hostinger / LiteSpeed·Apache）
+# 部署位置：public_html/service/.htaccess
+#
+# KoneCMS 是"单入口 + include"结构：所有业务都从 index.php 进，
+# konecms/ 与 admin/konecms/ 里的 PHP、模板只应被服务端 include，
+# 一旦允许 HTTP 直达，就等于把内部类文件、模板、SQL 拼装逻辑全部暴露，
+# 也是共享主机上最常见的被挂马入口。
+# ===========================================================================
+
+Options -Indexes
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ---- 1) 配置、IDE 残留、混淆模板目录：一律拒绝 ----
+    RewriteRule ^(config|\.settings|base64)(/|$) - [F,L]
+
+    # ---- 2) 框架内部目录：禁止直接请求可执行文件与模板 ----
+    #     放行同目录下的静态资源（模板里引用的 css/js/图片确实要走 HTTP）
+    RewriteRule ^(admin/)?konecms/.+\.(php|inc|tpl|htm|html)$ - [F,L]
+
+    # ---- 3) 第三方组件里的演示/示例脚本：只放行加固过的上传接口 ----
+    RewriteRule ^source/phpqrcode/.+\.php$ - [F,L]
+    RewriteRule ^source/kindeditor-[^/]+/php/(?!upload_json\.php).+\.php$ - [F,L]
+</IfModule>
+
+# ---- 4) 敏感文件名封禁 ----
+<FilesMatch "(?i)^(\.env.*|\.buildpath|\.project|\.gitignore|composer\.(json|lock)|.*\.(sql|log|bak|old|swp|dist|md|ini|sh|yml|yaml))$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# ---- 5) 安全响应头 ----
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+    # 接口响应不缓存，避免 CDN/浏览器缓存住登录态相关数据
+    <FilesMatch "\.php$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+</IfModule>
