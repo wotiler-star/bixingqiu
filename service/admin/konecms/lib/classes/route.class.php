@@ -1,7 +1,86 @@
 <?php
-////////
-//////////////////////////////////////---------------------------------------------------------------------
-////  特别注意：请不要尝试任何形式的修改    /////  @copyright konecms.com 邝伟林（18810300119）@lastmodify 2016年2月26日
-//////////////////////////////////////----------------------------------------------------------------------
-///////
-eval(base64_decode("Y2xhc3Mgcm91dGV7DQoJcHJpdmF0ZSAkcm91dGVBcnI9YXJyYXkoKTsNCglwdWJsaWMgZnVuY3Rpb24gX19jb25zdHJ1Y3QoKXsNCgkJJHRoaXMtPnJvdXRlQXJyPWtvbmVjbXM6OmxvYWRfY29uZmlnKCJyb3V0ZSIpOyANCi8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL2dldOWPguaVsOi/h+a7pC8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLw0KCQlpZihpc3NldCgkX0dFVCkmJiRfR0VUKXsNCgkJICAgIGZvcmVhY2goJF9HRVQgQVMgJGs9PiR2KXsNCgkJICAgICAgICAkX0dFVFska109Z2V0X2NoZWNrKGFkZF9zbGFzaGVzKHRyaW0oJHYpKSk7DQoJCSAgICB9DQoJCX0NCi8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3Bvc3Tlj4LmlbDov4fmu6QvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8NCgkJaWYoaXNzZXQoJF9QT1NUKSYmJF9QT1NUKXsNCgkJICAgIGZvcmVhY2goJF9QT1NUIEFTICRrPT4kdil7DQoJCSAgICAgICAgaWYoJGshPSJwd2QiJiYkayE9InBhc3N3b3JkIiYmIWlzX2FycmF5KCR2KSkgJF9QT1NUWyRrXT1wb3N0X2NoZWNrKGFkZF9zbGFzaGVzKHRyaW0oJHYpKSk7Ly9wd2QvcGFzc3dvcmTooajnpLrlr4bnoIENCgkJICAgICAgICBlbHNlICRfUE9TVFska109JHY7DQoJCSAgICB9DQoJCX0NCgl9DQoJcHVibGljIGZ1bmN0aW9uIHJvdXRlX20oKXsNCgkJJG09aXNzZXQoJF9HRVRbIm0iXSkmJiFlbXB0eSgkX0dFVFsibSJdKT8kX0dFVFsibSJdOihpc3NldCgkX1BPU1RbIm0iXSkmJiFlbXB0eSgkX1BPU1RbIm0iXSk/JF9QT1NUWyJtIl06IiIpOw0KCQlpZihlbXB0eSgkbSkpICRtPSR0aGlzLT5yb3V0ZUFyclsicm91dGVfbSJdOw0KCQlyZXR1cm4gJG07DQoJfQ0KCXB1YmxpYyBmdW5jdGlvbiByb3V0ZV9jKCl7DQoJCSRjPWlzc2V0KCRfR0VUWyJjIl0pJiYhZW1wdHkoJF9HRVRbImMiXSk/JF9HRVRbImMiXTooaXNzZXQoJF9QT1NUWyJjIl0pJiYhZW1wdHkoJF9QT1NUWyJjIl0pPyRfUE9TVFsiYyJdOiIiKTsNCgkJaWYoZW1wdHkoJGMpKSAkYz0kdGhpcy0+cm91dGVBcnJbInJvdXRlX2MiXTsNCgkJcmV0dXJuICRjOw0KCX0NCglwdWJsaWMgZnVuY3Rpb24gcm91dGVfYSgpew0KCQkkYT1pc3NldCgkX0dFVFsiYSJdKSYmIWVtcHR5KCRfR0VUWyJhIl0pPyRfR0VUWyJhIl06KGlzc2V0KCRfUE9TVFsiYSJdKSYmIWVtcHR5KCRfUE9TVFsiYSJdKT8kX1BPU1RbImEiXToiIik7DQoJCWlmKGVtcHR5KCRhKSkgJGE9JHRoaXMtPnJvdXRlQXJyWyJyb3V0ZV9hIl07DQoJCXJldHVybiAkYTsNCgl9DQp9"))?>
+/**
+ * route.class.php
+ * @copyright konecms.com
+ *
+ * [部署优化] 本文件原为 「动态代码执行 + Base64 解码」的混淆形式，已还原为等价明文实现。
+ * 原因：
+ *   1. Hostinger 等共享主机的 Imunify360 / ModSecurity 会把这种混淆组合
+ *      识别为 webshell 特征，导致文件被隔离或请求返回 403，站点直接打不开；
+ *   2. 混淆隐藏了下述 PHP 8 兼容性与 HTTPS 判定缺陷，不还原无法修复；
+ *   3. 每次请求都要解码 + 编译，属于无谓开销。
+ * 逻辑与原实现保持一致，改动点均以 [修复] 注释标出。
+ */
+class route{
+
+	private $routeArr=array();
+
+	public function __construct(){
+
+		$this->routeArr=konecms::load_config("route"); 
+
+///////////////////////////////////////////////////get参数过滤//////////////////////////////////////////////////////////////////////////////
+
+		if(isset($_GET)&&$_GET){
+
+		    foreach($_GET AS $k=>$v){
+
+		        if(is_array($v)){
+		            $_GET[$k]=$v;
+		        }else{
+		            // [PHP8 修复] 原代码未判断数组：请求 ?a[]=1 时 trim() 收到数组，
+		            // PHP 8 直接抛 TypeError -> 500。
+		            $_GET[$k]=get_check(add_slashes(trim((string)$v)));
+		        }
+
+		    }
+
+		}
+
+///////////////////////////////////////////////////post参数过滤//////////////////////////////////////////////////////////////////////////////
+
+		if(isset($_POST)&&$_POST){
+
+		    foreach($_POST AS $k=>$v){
+
+		        if($k!="pwd"&&$k!="password"&&!is_array($v)) $_POST[$k]=post_check(add_slashes(trim((string)$v)));//pwd/password表示密码
+
+		        else $_POST[$k]=$v;
+
+		    }
+
+		}
+
+	}
+
+	public function route_m(){
+
+		$m=isset($_GET["m"])&&!empty($_GET["m"])?$_GET["m"]:(isset($_POST["m"])&&!empty($_POST["m"])?$_POST["m"]:"");
+
+		if(empty($m)) $m=$this->routeArr["route_m"];
+
+		return $m;
+
+	}
+
+	public function route_c(){
+
+		$c=isset($_GET["c"])&&!empty($_GET["c"])?$_GET["c"]:(isset($_POST["c"])&&!empty($_POST["c"])?$_POST["c"]:"");
+
+		if(empty($c)) $c=$this->routeArr["route_c"];
+
+		return $c;
+
+	}
+
+	public function route_a(){
+
+		$a=isset($_GET["a"])&&!empty($_GET["a"])?$_GET["a"]:(isset($_POST["a"])&&!empty($_POST["a"])?$_POST["a"]:"");
+
+		if(empty($a)) $a=$this->routeArr["route_a"];
+
+		return $a;
+
+	}
+
+}

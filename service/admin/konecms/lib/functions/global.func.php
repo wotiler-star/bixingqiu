@@ -22,14 +22,16 @@
  */
 function add_slashes($string, $force = 0)
 {
-    if (! get_magic_quotes_gpc() || $force) {
-        if (is_array($string)) {
-            foreach ($string as $key => $val) {
-                $string[$key] = addslashes($val, $force);
-            }
-        } else {
-            $string = addslashes($string);
+    // [PHP8 修复] get_magic_quotes_gpc() 在 PHP 8.0 已移除，调用即 Fatal error。
+    // magic_quotes 自 PHP 5.4 起已不存在，等价于恒 false，直接走转义分支。
+    if (is_array($string)) {
+        foreach ($string as $key => $val) {
+            // [PHP8 修复] addslashes() 仅接受 1 个参数，原写法传 2 个会抛 ArgumentCountError；
+            // 且数组元素应递归处理。
+            $string[$key] = add_slashes($val, $force);
         }
+    } elseif (is_string($string)) {
+        $string = addslashes($string);
     }
     
     return $string;
@@ -37,6 +39,10 @@ function add_slashes($string, $force = 0)
 
 function get_check($Sql_Str)
 { // 自动过滤Sql的注入语句。
+    // [PHP8 修复] 避免向 preg_match() 传 null（PHP 8.1 弃用告警）
+    if (! is_string($Sql_Str) || $Sql_Str === '') {
+        return $Sql_Str;
+    }
     $check = preg_match('/select|insert|update|delete|\'|\\*|\*|\.\.\/|\.\/|union|into|load_file|outfile/i', $Sql_Str, $matchArr);
     if ($check) {
         print_r($matchArr);
@@ -49,6 +55,10 @@ function get_check($Sql_Str)
 
 function post_check($Sql_Str)
 { // 自动过滤Sql的注入语句。
+    // [PHP8 修复] 避免向 preg_match() 传 null（PHP 8.1 弃用告警）
+    if (! is_string($Sql_Str) || $Sql_Str === '') {
+        return $Sql_Str;
+    }
     $check = preg_match('/select|update|delete|outfile/i', $Sql_Str, $matchArr);
     if ($check) {
         print_r($matchArr);

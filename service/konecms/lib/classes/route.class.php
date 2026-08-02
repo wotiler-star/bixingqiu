@@ -1,7 +1,110 @@
 <?php
-////////
-//////////////////////////////////////---------------------------------------------------------------------
-////  特别注意：请不要尝试任何形式的修改    /////  @copyright konecms.com 邝伟林（18810300119）@lastmodify 2016年2月26日
-//////////////////////////////////////----------------------------------------------------------------------
-///////
-eval(base64_decode("Y2xhc3Mgcm91dGV7DQoJcHJpdmF0ZSAkcm91dGVBcnI9YXJyYXkoKTsNCglwdWJsaWMgZnVuY3Rpb24gX19jb25zdHJ1Y3QoKXsNCgkJJHRoaXMtPnJvdXRlQXJyPWtvbmVjbXM6OmxvYWRfY29uZmlnKCJyb3V0ZSIpOyANCi8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL2dldOWPguaVsOi/h+a7pC8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLw0KCQlpZihpc3NldCgkX0dFVCkmJiRfR0VUKXsNCgkJICAgIGZvcmVhY2goJF9HRVQgQVMgJGs9PiR2KXsNCgkJICAgICAgICAkX0dFVFska109Z2V0X2NoZWNrKGFkZF9zbGFzaGVzKHRyaW0oJHYpKSk7DQoJCSAgICB9DQoJCX0NCi8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3Bvc3Tlj4LmlbDov4fmu6QvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8NCgkJaWYoaXNzZXQoJF9QT1NUKSYmJF9QT1NUKXsNCgkJICAgIGZvcmVhY2goJF9QT1NUIEFTICRrPT4kdil7DQoJCSAgICAgICAgaWYoJGshPSJwd2QiJiYkayE9InBhc3N3b3JkIiYmIWlzX2FycmF5KCR2KSkgJF9QT1NUWyRrXT1wb3N0X2NoZWNrKGFkZF9zbGFzaGVzKHRyaW0oJHYpKSk7Ly9wd2QvcGFzc3dvcmTooajnpLrlr4bnoIENCgkJICAgICAgICBlbHNlICRfUE9TVFska109JHY7DQoJCSAgICB9DQoJCX0NCgl9DQoJcHVibGljIGZ1bmN0aW9uIHJvdXRlX20oKXsNCgkJJG09aXNzZXQoJF9HRVRbIm0iXSkmJiFlbXB0eSgkX0dFVFsibSJdKT8kX0dFVFsibSJdOihpc3NldCgkX1BPU1RbIm0iXSkmJiFlbXB0eSgkX1BPU1RbIm0iXSk/JF9QT1NUWyJtIl06IiIpOw0KCQlpZihlbXB0eSgkbSkpICRtPSR0aGlzLT5yb3V0ZUFyclsicm91dGVfbSJdOw0KCQlyZXR1cm4gJG07DQoJfQ0KCXB1YmxpYyBmdW5jdGlvbiByb3V0ZV9jKCl7DQoJCSRjPWlzc2V0KCRfR0VUWyJjIl0pJiYhZW1wdHkoJF9HRVRbImMiXSk/JF9HRVRbImMiXTooaXNzZXQoJF9QT1NUWyJjIl0pJiYhZW1wdHkoJF9QT1NUWyJjIl0pPyRfUE9TVFsiYyJdOiIiKTsNCgkJaWYoZW1wdHkoJGMpKSAkYz0kdGhpcy0+cm91dGVBcnJbInJvdXRlX2MiXTsNCgkJcmV0dXJuICRjOw0KCX0NCglwdWJsaWMgZnVuY3Rpb24gcm91dGVfYSgpew0KCQkkYT1pc3NldCgkX0dFVFsiYSJdKSYmIWVtcHR5KCRfR0VUWyJhIl0pPyRfR0VUWyJhIl06KGlzc2V0KCRfUE9TVFsiYSJdKSYmIWVtcHR5KCRfUE9TVFsiYSJdKT8kX1BPU1RbImEiXToiIik7DQoJCWlmKGVtcHR5KCRhKSkgJGE9JHRoaXMtPnJvdXRlQXJyWyJyb3V0ZV9hIl07DQoJCXJldHVybiAkYTsNCgl9DQp9"))?>
+/**
+ * route.class.php 路由解析 + 入参过滤
+ * @copyright konecms.com
+ *
+ * [部署优化说明]
+ * 原文件为 「动态代码执行 + Base64 解码」的混淆形式，存在三个问题：
+ *   1. 无法审计与修复，隐藏了下面的 PHP 8 兼容性缺陷；
+ *   2. 部分虚拟主机（含 Hostinger 的 ModSecurity / imunify360 规则）会把
+ *      "动态代码执行+Base64解码" 判定为 webshell 特征而拦截或隔离文件；
+ *   3. eval 每次请求都要额外解码编译，无谓开销。
+ * 现已还原为等价明文实现，逻辑保持一致，并修复了下列 bug。
+ */
+
+class route
+{
+    private $routeArr = array();
+
+    public function __construct()
+    {
+        $this->routeArr = konecms::load_config("route");
+
+        // ---------------- GET 参数过滤 ----------------
+        if (isset($_GET) && $_GET) {
+            foreach ($_GET as $k => $v) {
+                // [BUG 修复] 原代码为 get_check(add_slashes(trim($v)))，未判断 $v 是否为数组。
+                // 当请求形如 ?a[]=1 时，trim() 收到数组：PHP 7 报 Warning 并返回 null，
+                // PHP 8 直接抛 TypeError → 整站 500。此处与下方 POST 分支保持一致的数组处理。
+                if (is_array($v)) {
+                    $_GET[$k] = $this->filterArray($v, 'get');
+                } else {
+                    $_GET[$k] = get_check(add_slashes(trim((string) $v)));
+                }
+            }
+        }
+
+        // ---------------- POST 参数过滤 ----------------
+        if (isset($_POST) && $_POST) {
+            foreach ($_POST as $k => $v) {
+                // pwd / password 表示密码，原样保留不做转义，避免改变口令内容
+                if ($k != "pwd" && $k != "password" && !is_array($v)) {
+                    $_POST[$k] = post_check(add_slashes(trim((string) $v)));
+                } else {
+                    $_POST[$k] = $v;
+                }
+            }
+        }
+    }
+
+    /**
+     * 递归过滤数组型入参
+     * @param array  $arr
+     * @param string $mode get|post
+     * @return array
+     */
+    private function filterArray($arr, $mode = 'get')
+    {
+        $out = array();
+        foreach ($arr as $k => $v) {
+            if (is_array($v)) {
+                $out[$k] = $this->filterArray($v, $mode);
+            } else {
+                $val = add_slashes(trim((string) $v));
+                $out[$k] = ($mode === 'get') ? get_check($val) : post_check($val);
+            }
+        }
+        return $out;
+    }
+
+    public function route_m()
+    {
+        $m = isset($_GET["m"]) && !empty($_GET["m"]) ? $_GET["m"] : (isset($_POST["m"]) && !empty($_POST["m"]) ? $_POST["m"] : "");
+        if (empty($m)) {
+            $m = $this->routeArr["route_m"];
+        }
+        // [安全修复] m/c/a 会被直接拼进类文件路径（见 konecms::_load_class），
+        // 原实现未做白名单校验，存在路径穿越（../）风险。此处限制为安全字符集。
+        return $this->sanitizeRouteToken($m, $this->routeArr["route_m"]);
+    }
+
+    public function route_c()
+    {
+        $c = isset($_GET["c"]) && !empty($_GET["c"]) ? $_GET["c"] : (isset($_POST["c"]) && !empty($_POST["c"]) ? $_POST["c"] : "");
+        if (empty($c)) {
+            $c = $this->routeArr["route_c"];
+        }
+        return $this->sanitizeRouteToken($c, $this->routeArr["route_c"]);
+    }
+
+    public function route_a()
+    {
+        $a = isset($_GET["a"]) && !empty($_GET["a"]) ? $_GET["a"] : (isset($_POST["a"]) && !empty($_POST["a"]) ? $_POST["a"] : "");
+        if (empty($a)) {
+            $a = $this->routeArr["route_a"];
+        }
+        return $this->sanitizeRouteToken($a, $this->routeArr["route_a"]);
+    }
+
+    /**
+     * 路由片段安全校验：只允许字母、数字、下划线
+     * 命中非法字符时回退到默认值，避免 ../ 造成的本地文件包含
+     */
+    private function sanitizeRouteToken($value, $default)
+    {
+        if (!is_string($value) || $value === '' || !preg_match('/^[A-Za-z0-9_]{1,50}$/', $value)) {
+            return $default;
+        }
+        return $value;
+    }
+}

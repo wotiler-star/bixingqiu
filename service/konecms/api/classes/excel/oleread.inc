@@ -38,7 +38,8 @@ class OLERead {
     var $data = '';
     
     
-    function OLERead(){
+    /* [修复] PHP4 风格构造函数在 PHP 8 中不再被识别为构造函数，改为 __construct */
+    function __construct(){
         
         
     }

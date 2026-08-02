@@ -257,9 +257,12 @@ class Spreadsheet_Excel_Reader
      *
      * Some basic initialisation
      */ 
-    function Spreadsheet_Excel_Reader()
+    /* [修复] PHP4 风格构造函数在 PHP 8 中不再被识别为构造函数，改为 __construct */
+    function __construct()
     {
-        $this->_ole =& new OLERead();
+        /* [修复] PHP 7 已移除 "=& new" 语法（按引用赋值 new 的结果），直接赋值即可。
+         * 保留原写法会在 PHP 8 直接 Parse error，整个 Excel 导入功能不可用。 */
+        $this->_ole = new OLERead();
         $this->setUTFEncoder('iconv');
     }
 

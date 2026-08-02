@@ -143,26 +143,52 @@ function is_mobile_request()
 }
 function add_slashes($string, $force = 0)
 {
-    if (! get_magic_quotes_gpc() || $force) {
-        if (is_array($string)) {
-            foreach ($string as $key => $val) {
-                $string[$key] = addslashes($val, $force);
-            }
-        } else {
-            $string = addslashes($string);
+    // [PHP8 修复] get_magic_quotes_gpc() 在 PHP 8.0 已被移除，调用会直接 Fatal error。
+    // magic_quotes 特性自 PHP 5.4 起就已不存在，等价于该函数恒返回 false，
+    // 因此这里直接执行转义分支即可，行为与原逻辑一致。
+    if (is_array($string)) {
+        foreach ($string as $key => $val) {
+            // [PHP8 修复] 原写法 addslashes($val, $force) 传了 2 个参数，
+            // 而 addslashes() 只接受 1 个参数：PHP 8 下会抛 ArgumentCountError。
+            // 同时数组元素本应递归处理，改为调用 add_slashes() 自身。
+            $string[$key] = add_slashes($val, $force);
         }
+    } elseif (is_string($string)) {
+        $string = addslashes($string);
     }
-    
+    // 非字符串标量(int/float/bool/null)原样返回，规避 PHP 8.1 "传 null 给字符串参数" 的弃用告警
     return $string;
+}
+
+/**
+ * 拦截命中危险模式的输入。
+ * [PHP8/API 修复] 原实现用 print_r + <script>alert 输出 HTML，
+ * 在本项目（纯 JSON 接口）里会把 HTML 混进响应体，导致前端 JSON.parse 失败白屏；
+ * 且回显 $matchArr 属于信息泄露。改为输出标准 JSON 错误并终止。
+ */
+function kone_reject_input()
+{
+    if (! headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        header('X-Kone-Reject: 1');
+    }
+    echo json_encode(array(
+        'status'  => 0,
+        'code'    => 'ILLEGAL_PARAM',
+        'message' => '请求参数包含非法字符，已被安全策略拦截。'
+    ), JSON_UNESCAPED_UNICODE);
+    exit();
 }
 
 function get_check($Sql_Str)
 { // 自动过滤Sql的注入语句。
+    // [PHP8 修复] preg_match() 第二参数为 null 时在 PHP 8.1 触发弃用告警，先做类型保护
+    if (! is_string($Sql_Str) || $Sql_Str === '') {
+        return $Sql_Str;
+    }
     $check = preg_match('/select|insert|update|delete|like|count|execute|chr|master|truncate|declare|create|modify|iframe|import|\'|\\*|\*|\.\.\/|\.\/|union|into|load_file|outfile/i', $Sql_Str, $matchArr);
     if ($check) {
-        print_r($matchArr);
-        echo '<script language="JavaScript">alert("系统警告：\n\n请不要尝试在参数中包含非法字符尝试注入！");</script>';
-        exit();
+        kone_reject_input();
     } else {
         return $Sql_Str;
     }
@@ -170,11 +196,13 @@ function get_check($Sql_Str)
 
 function post_check($Sql_Str)
 { // 自动过滤Sql的注入语句。
+    // [PHP8 修复] 同上，避免 null 传入 preg_match
+    if (! is_string($Sql_Str) || $Sql_Str === '') {
+        return $Sql_Str;
+    }
     $check = preg_match('/select|insert|update|delete|like|count|execute|chr|master|truncate|declare|create|modify|import|union|into|load_file|outfile/i', $Sql_Str, $matchArr);
     if ($check) {
-        print_r($matchArr);
-        echo '<script language="JavaScript">alert("系统警告：\n\n请不要尝试在参数中包含非法字符尝试注入！");</script>';
-        exit();
+        kone_reject_input();
     } else {
         return $Sql_Str;
     }

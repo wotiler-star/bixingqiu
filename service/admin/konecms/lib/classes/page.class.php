@@ -6,8 +6,10 @@ class page {
 	public $pageCount; // 总页面数
 	private $arr; // 其他URL参数
 	private $pstr; // 分页字符串
+	public $url = ""; /* [修复] PHP 8.2 起动态创建属性被弃用 */
 	private $getpage; // 分页参数，默认为 page[=1....][实现一个页面多个分页字符串]
-	function page($amount, $pageSize = 10, $getpage = "", $arr = array()) {
+	/* [修复] PHP4 风格构造函数在 PHP 8 中不再被识别为构造函数，改为 __construct */
+	function __construct($amount, $pageSize = 10, $getpage = "", $arr = array()) {
 		if ($getpage == "")
 			$getpage = "page";
 		$this->getpage = $getpage;
