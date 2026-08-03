@@ -33,11 +33,12 @@ function safeResponse(obj) {
 }
 
 axios.interceptors.response.use(
-  result => safeResponse(result.data),
+  result => safeResponse(result.data || {}),
   error => {
     console.error('[api] 请求失败:', error.config && error.config.url, error.message);
-    // 网络/服务器错误时 resolve 为空对象，由组件空态兜底，避免未捕获的 Promise 告警与白屏
-    return Promise.resolve({});
+    // 网络/服务器错误时 resolve 为安全数据结构（数组字段兜底为空数组），
+    // 避免组件 res.feedArr.slice() / res.tuishowArr.length 抛 TypeError 导致整页白屏
+    return Promise.resolve(safeResponse({}));
   }
 );
 export default axios;
