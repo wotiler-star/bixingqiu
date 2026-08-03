@@ -35,11 +35,10 @@ public_html/
 └── service/               ← 后端 KoneCMS（整个 service/ 目录原样上传）
     ├── .htaccess          ← 后端访问控制
     ├── .user.ini          ← PHP 运行时配置
-    ├── .env               ← ⚠️ 手动创建，数据库凭据（见第四步）
     ├── index.php
     ├── admin.php
     ├── admin/
-    ├── config/            ← 有独立 .htaccess（Require all denied）
+    ├── config/            ← 有独立 .htaccess（Require all denied）；**.env 放这里**（见第四步）
     ├── konecms/
     ├── konecms_ups/       ← 上传目录，有独立 .htaccess（禁脚本执行）
     └── source/
@@ -78,8 +77,12 @@ bash deploy/build-hostinger.sh
 **方式 A — hPanel 文件管理器（推荐，最省事）**
 1. hPanel → 文件 → 文件管理器 → 进入 `public_html`
 2. **先清空**原有默认页（`default.php` / `index.php` 等）
-3. 上传 `bixingqiu-hostinger.zip` → 右键 **Extract**
+3. 上传 `bixingqiu-hostinger.zip` → 在 `public_html` **内**右键 **Extract**
+   - ⚠️ 本包**已去除 `public_html/` 前缀**，务必解压到 `public_html` 目录内部；
+     若解压到 home 根目录会把文件散落到 public_html 之外，站点无法访问。
 4. 解压后确认 `.htaccess` / `.user.ini` 存在（文件管理器需勾选"显示隐藏文件"）
+5. 同样上传 `bixingqiu-uploads.zip`，在 `public_html/service/` **内**解压
+   （包内顶层是 `konecms_ups/`，解压后落在 `public_html/service/konecms_ups/`）
 
 **方式 B — FTP**
 ```bash
@@ -93,9 +96,21 @@ lftp -u <user>,<pass> ftp://<ftp_host> -e "mirror -R --delete release/public_htm
 
 1. hPanel → 数据库 → **MySQL 数据库** → 新建数据库和用户（记下 `库名/用户名/密码`）
    - Hostinger 的库名/用户名会自动带前缀，如 `u123456789_bxq`
-2. hPanel → 数据库 → **phpMyAdmin** → 选中该库 → 导入 → 上传 `deploy/db/bixingqiu.sql`
-   - 若 SQL 超过上传限制，先用 gzip 压缩后导入，或分表导入
-3. 在 `public_html/service/` 下**新建 `.env`**（文件管理器 → 新建文件）：
+2. hPanel → 数据库 → **phpMyAdmin** → 选中该库 → 导入 → 上传 **`deploy/db/bixingqiu.sql`**（7.33 MB）
+
+   > 🔒 **该 SQL 不在 GitHub 仓库中，只随本地交付件提供**（`.gitignore` 已屏蔽 `deploy/db/`）。
+   > 原因：dump 内含 **2206 个真实手机号、182 个密码哈希**，本仓库为 **public**，
+   > 一旦提交会永久留在 git 历史里无法彻底清除，违反个人信息保护要求。
+   > 若在别的机器上找不到它，可从本机 `F:\bixingqiu\deploy\db\bixingqiu.sql` 或
+   > MySQL 数据目录 `D:\mysql57\MySQL5.7\data\k_k3_bixingqiu` 重新导出。
+   - ✅ 该备份导出于 2026-07-23，含 **18 张表**：`i_tb`(资讯 441 条) `catalog_tb`(栏目 195 条) `feedback_tb`(269 条) `h_tb`(项目 26 条) `admin_tb`(后台账号) 等，与代码完全匹配。
+   - ✅ **无 `CREATE DATABASE` / `USE` 语句**，可直接导入任意库名（适配 Hostinger 的 `u123456789_` 前缀）。
+   - ✅ 无 DEFINER / 视图 / 存储过程，MyISAM + utf8，MariaDB 10.x 完全兼容；含 `DROP TABLE`，可重复导入。
+   - 若 phpMyAdmin 提示超出上传限制，改用同目录的 **`bixingqiu.sql.gz`**（1.76 MB），phpMyAdmin 支持直接导入 gz。
+
+   > ⚠️ **导入后必须立即改后台密码**：备份里 `admin_tb` 有两个超管账号，其中 `hao` 的密码是弱口令 `123456`（裸 MD5 无加盐）。后台 `admin.php` 暴露在公网，不改极易被爆破。登录后台后第一时间修改，或在 phpMyAdmin 里直接更新 `admin_tb.password` 字段为新密码的 MD5。
+3. 在 `public_html/service/config/` 下**新建 `.env`**（文件管理器 → 新建文件）：
+   - ⚠️ 是 `service/config/.env`，不是 `service/.env`——`dbconn.php` 用 `__DIR__` 读取 config 目录下的 `.env`。
 
 ```ini
 DB_HOST=localhost
@@ -134,7 +149,7 @@ hPanel → 安全 → **SSL** → 为域名安装免费 SSL → 等待签发（�
 | 3 | `https://域名/service/index.php` | 返回后端响应（非 500） |
 | 4 | F12 Network 看 API 请求 | 指向 `https://域名/service/...`，非 localhost |
 | 5 | `https://域名/service/config/dbconn.php` | **403 Forbidden** |
-| 6 | `https://域名/service/.env` | **403 Forbidden** |
+| 6 | `https://域名/service/config/.env` | **403 Forbidden** |
 | 7 | `https://域名/service/konecms/konecms.php` | **403 Forbidden** |
 | 8 | `https://域名/service/admin.php` | 302 跳转到 `admin/index.php` 登录页 |
 | 9 | 未登录直接 POST `service/source/kindeditor-4.1.7/php/upload_json.php` | 返回 `{"error":1,"message":"未授权"}` |

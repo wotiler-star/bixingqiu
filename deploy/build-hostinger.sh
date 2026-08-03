@@ -180,8 +180,8 @@ else
 fi
 
 # ---------- 5. 生成 .env 模板 ----------
-cat > "$RELEASE/env.example" <<'EOF'
-# 上传到服务器后，重命名为 .env 放在 public_html/service/ 目录下
+cat > "$RELEASE/public_html/env.example" <<'EOF'
+# 上传到服务器后，重命名为 .env 放在 public_html/service/config/ 目录下（dbconn.php 用 __DIR__ 读取）
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=u000000000_bxq
@@ -205,18 +205,26 @@ zip_paths() {  # $1=工作目录  $2=输出 zip 绝对路径  $3..=要压缩的�
     ( cd "$WORKDIR" && "$PYBIN" - "$(winpath "$OUTZIP")" "$@" <<'PYEOF'
 import os, sys, zipfile
 out, items = sys.argv[1], sys.argv[2:]
+def _arc(p):
+    p = p.replace(os.sep, '/')
+    if p == '.': return None
+    if p.startswith('./'): p = p[2:]
+    return p
 with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
     for item in items:
         if os.path.isfile(item):
-            z.write(item, item)
+            a = _arc(item)
+            if a: z.write(item, a)
             continue
         for root, dirs, files in os.walk(item):
             dirs[:] = [d for d in dirs if d not in ('.git', '__pycache__')]
             if not dirs and not files:          # 保留空目录（如 konecms_ups）
-                z.writestr(root.replace(os.sep, '/') + '/', '')
+                a = _arc(root)
+                if a: z.writestr(a + '/', '')
             for f in files:
                 p = os.path.join(root, f)
-                z.write(p, p.replace(os.sep, '/'))
+                a = _arc(p)
+                if a: z.write(p, a)
 print('  条目数:', len(zipfile.ZipFile(out).namelist()))
 PYEOF
     )
@@ -226,7 +234,7 @@ PYEOF
 }
 
 say "打包核心包 …"
-zip_paths "$RELEASE" "$ZIP" public_html env.example
+zip_paths "$RELEASE/public_html" "$ZIP" .
 
 # 历史上传内容单独成包
 UPS_SRC="$SERVICE/konecms_ups"
@@ -257,7 +265,7 @@ echo "  文件数量 : $FILES"
 echo "  目录大小 : $SIZE"
 echo "  核心包   : $ZIP"
 [ -f "$RELEASE/$UPS_ZIP" ] && echo "  资源包   : $RELEASE/$UPS_ZIP（$UPS_COUNT 个历史上传文件）" || true
-echo "  env 模板 : $RELEASE/env.example"
+echo "  env 模板 : $RELEASE/public_html/env.example"
 echo
 [ -n "$TRASH_LEFT" ] && { echo; warn "以下临时目录未能自动删除，请手动清理："; for t in $TRASH_LEFT; do echo "    $t"; done; echo; }
 

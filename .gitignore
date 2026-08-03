@@ -29,8 +29,13 @@ logs/
 .env.*.local
 
 # Database
+# ⚠️ 数据库备份严禁入库：本项目 dump 含 2206 个真实手机号、182 个密码哈希，
+#    且本仓库为 public，一旦提交将永久留存于 git 历史无法彻底删除。
+#    备份仅离线交付（本地 deploy/db/ 目录）。
 *.sql
+*.sql.gz
 *.sqlite
+deploy/db/
 
 # PHP settings
 *.ini
