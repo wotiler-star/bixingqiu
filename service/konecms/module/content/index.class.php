@@ -212,10 +212,12 @@ if($kuaiArr){
 	              $i++;
 	          }
 	          
-	          foreach ($pai2Arr as $key => $row) { 
+	          if(!empty($pai2Arr)){
+	              foreach ($pai2Arr as $key => $row) { 
 	              $money[$key] = $row['pinglunnum'];
+	              }
+	              array_multisort($money, SORT_DESC, $pai2Arr);
 	          }
-	          array_multisort($money, SORT_DESC, $pai2Arr);
 	          
 	      
       //专家
@@ -267,7 +269,27 @@ if($kuaiArr){
 		    }
 		}
 		
-	    $rtnArr=array(
+	    // [部署修复] 把数据中写死的 http://localhost/ 重写为当前站点 origin，
+    // 否则首页轮播/推荐/广告/推广的链接点击后会跳到 localhost 打不开。
+    $bxqScheme = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') ? 'https' : 'http';
+    $bxqHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost');
+    $bxqOrigin = $bxqScheme . '://' . $bxqHost;
+    $bxqNormalizeUrl = function($url) use ($bxqOrigin) {
+        if (empty($url)) return $url;
+        return preg_replace('#^https?://localhost(/|$)#i', $bxqOrigin . '/', $url);
+    };
+    foreach (array('showArr', 'subshowArr', 'adshowArr', 'tuishowArr') as $bxqKey) {
+        if (isset($$bxqKey) && is_array($$bxqKey)) {
+            foreach ($$bxqKey as &$bxqRow) {
+                if (is_array($bxqRow) && isset($bxqRow['url'])) {
+                    $bxqRow['url'] = $bxqNormalizeUrl($bxqRow['url']);
+                }
+            }
+            unset($bxqRow);
+        }
+    }
+
+    $rtnArr=array(
 		   "showArr"=>$showArr,//大BANNER
 		   "subshowArr"=>$subshowArr,//BANNER右侧2图
 		   "adshowArr"=>$adshowArr,//广告横幅
