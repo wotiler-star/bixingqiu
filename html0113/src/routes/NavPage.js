@@ -3,9 +3,10 @@ import ReactDOM, { render } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import { Icon } from 'antd';
 import '../static/css/NavPage.less';
-import { height } from 'window-size';
 import axios from 'axios';
 
+import { ARROW_PLACEHOLDER } from '../static/placeholder';
+import { localePath } from '../i18n/i18n';
 class NavPage extends React.Component {
   constructor(props, content) {
     super(props, content);
@@ -44,7 +45,7 @@ class NavPage extends React.Component {
               tab: true
             })}> </i></span>
           </div>
-          <NavLink to='/apply' className="post_websit">
+          <NavLink to={localePath('/apply')} className="post_websit">
             <i></i>
             <span>提交网址</span>
           </NavLink>
@@ -58,7 +59,7 @@ class NavPage extends React.Component {
           <div className={'listBox'} ref={'guo1'}>
             <span className='s' ref='A'>
               国内机构
-              <img src="https://resource.jinse.com/phenix/img/0001.svg?v=1154" alt="" />
+              <img src={ARROW_PLACEHOLDER} alt="" />
             </span>
             <div className='tabnav-mousemove'>
               {g55 ? g55.map((item, index) => {
@@ -77,13 +78,13 @@ class NavPage extends React.Component {
               let g1 = this.refs.guo1;
               g1.getAttribute('id') != 'active' ? g1.setAttribute('id', 'active') : g1.setAttribute('id', '');
             }}>
-              <img src="https://resource.jinse.com/phenix/img/0001.svg?v=1154" alt="" />
+              <img src={ARROW_PLACEHOLDER} alt="" />
             </i>
           </div>
           <div className={'listBox'} ref={'guo2'}>
             <span className='s' ref='A'>
               国内机构
-              <img src="https://resource.jinse.com/phenix/img/0001.svg?v=1154" alt="" />
+              <img src={ARROW_PLACEHOLDER} alt="" />
             </span>
             <div className='tabnav-mousemove'>
               {g56 ? g56.map((item, index) => {
@@ -102,7 +103,7 @@ class NavPage extends React.Component {
               let g1 = this.refs.guo2;
               g1.getAttribute('id') != 'active' ? g1.setAttribute('id', 'active') : g1.setAttribute('id', '');
             }}>
-              <img src="https://resource.jinse.com/phenix/img/0001.svg?v=1154" alt="" />
+              <img src={ARROW_PLACEHOLDER} alt="" />
             </i>
           </div>
         </div>

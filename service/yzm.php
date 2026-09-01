@@ -11,6 +11,7 @@ function getAuthImage($text) {
 	imagefill($im, 16, 13, $buttum_c);
 
 	$font = 't1.ttf';
+	$use_ttf = function_exists('imagettftext') && file_exists($font);
 
 	for ($i=0;$i<strlen($text);$i++)
 	{
@@ -19,7 +20,11 @@ function getAuthImage($text) {
 		$p = array_rand($array);
 		$an = $array[$p]*mt_rand(1,10);//角度
 		$size = 28;
-		imagettftext($im, $size, $an, 15+$i*$size, 35, $text_c, $font, $tmp);
+		if ($use_ttf) {
+			imagettftext($im, $size, $an, 15+$i*$size, 35, $text_c, $font, $tmp);
+		} else {
+			imagestring($im, 5, 15+$i*$size, 12, $tmp, $text_c);
+		}
 	}
 
 
@@ -59,7 +64,15 @@ function getAuthImage($text) {
 	}
 
 	//设置文件头;
-	Header("Content-type: image/JPEG");
+	// [修复] 原实现未设置防缓存头，浏览器/代理会缓存验证码图片。
+	// 验证码改为一次性（校验后立即作废）后，缓存会让用户看到旧图、
+	// 提交旧值而 session 里已是新值，导致永远登录/注册不成功。
+	Header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+	Header("Cache-Control: post-check=0, pre-check=0", false);
+	Header("Pragma: no-cache");
+	Header("Expires: 0");
+	// [修复] 下面用 ImagePNG() 输出，Content-type 应为 image/png（原为 image/JPEG）
+	Header("Content-type: image/png");
 
 	//以PNG格式将图像输出到浏览器或文件;
 	ImagePNG($distortion_im);

@@ -6,6 +6,7 @@ import '../static/css/MyDetail.less';
 import Qs from "qs";
 import axios from "axios";
 
+import { localePath } from '../i18n/i18n';
 class MyDetail extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -60,13 +61,13 @@ class MyDetail extends React.Component {
             分享
           </div>
           <div className='shareBox' style={{ display: this.state.share ? 'block' : 'none' }}>
-            <NavLink to='/#'>
+            <NavLink to={localePath('/#')}>
               <Icon type="qq" theme="outlined" />
             </NavLink>
-            <NavLink to='/#'>
+            <NavLink to={localePath('/#')}>
               <Icon type="weibo" theme="outlined" />
             </NavLink>
-            <NavLink to='/#' className='w'>
+            <NavLink to={localePath('/#')} className='w'>
               <Icon type="wechat" theme="filled" />
               <div className='wechatBox'>
                 <p>微信扫一扫：分享</p>
@@ -133,11 +134,11 @@ class MyDetail extends React.Component {
         {contentD ? contentD.map((item, index) => {
           let { picdir_list, title, cnt_short, riqi, hitnum, id } = item;
           return <div className='list' key={index}>
-            <NavLink to={`/Detailed?cataid=11&id=${id}`} className='imgBox'>
+            <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)} className='imgBox'>
               <img src={picdir_list} alt="" />
             </NavLink>
             <div className='textBox'>
-              <NavLink to={`/Detailed?cataid=11&id=${id}`}>
+              <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
                 {title}
               </NavLink>
               <p>

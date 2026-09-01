@@ -87,6 +87,13 @@ AddDefaultCharset UTF-8
     <FilesMatch "\.(js|css|woff2?|ttf|otf|eot)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
+    # Service Worker 绝不可长缓存：浏览器靠重新拉取 /service-worker.js 来发现新版本，
+    # 若标 immutable(1年) 则发版/改缓存策略都永久不生效。必须 no-cache 让其每次重新校验。
+    <FilesMatch "service-worker\.js$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
     # 入口 HTML 必须每次校验，否则前端发版后用户会一直拿到旧壳子
     <FilesMatch "\.(html|json|webmanifest)$">
         Header set Cache-Control "no-cache, must-revalidate"
@@ -105,7 +112,7 @@ AddDefaultCharset UTF-8
 </IfModule>
 
 # ---------- 敏感文件封禁 ----------
-<FilesMatch "(?i)\.(env|ini|log|sql|sh|bak|old|swp|dist|map|json5|lock)$">
+<FilesMatch "(?i)\.(env|ini|log|sql|sh|bak|old|swp|dist|map|json5|lock|example|gz|tgz|tar|zip|sql\.gz)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>

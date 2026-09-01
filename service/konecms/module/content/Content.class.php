@@ -1,5 +1,6 @@
 <?php 
 konecms::load_module_classes("admin_base");
+require_once __DIR__ . '/../../../source/lib_ratelimit.php';
 
 class Content extends admin_base
 {
@@ -16,6 +17,73 @@ class Content extends admin_base
         $this->conn_favorate=konecms::load_model_class("favorate");
     }
 
+    /*
+     * [安全修复] 当前登录会员 id，一律取服务端 session，绝不采信客户端 hid。
+     */
+    private function currentHid()
+    {
+        return isset($_SESSION["HID"]) ? (int) $_SESSION["HID"] : 0;
+    }
+
+    /*
+     * [安全修复] 写接口鉴权。未登录直接输出 JSON 并终止。
+     */
+    private function requireLogin()
+    {
+        $hid = $this->currentHid();
+        if ($hid <= 0) {
+            if (!headers_sent()) {
+                header('Content-Type: application/json; charset=utf-8');
+            }
+            echo json_encode(array("success" => 401, "msg" => "请先登录"), JSON_UNESCAPED_UNICODE);
+            exit();
+        }
+        return $hid;
+    }
+
+    /*
+     * [安全修复] 取 $_POST["data"] 中的整数字段。
+     * route.class.php 对 POST **数组** 不做任何过滤，因此 $_POST["data"]["id"]
+     * 会原样进入 "id=$id" 这类裸插值 WHERE，构成注入点（黑名单不拦 OR / =）。
+     * 所有数字型主键必须经此函数强转。
+     */
+    private function postInt($key, $default = 0)
+    {
+        if (!isset($_POST["data"]) || !is_array($_POST["data"])) {
+            return $default;
+        }
+        return isset($_POST["data"][$key]) ? (int) $_POST["data"][$key] : $default;
+    }
+
+    /*
+     * [安全修复] 字段白名单，杜绝 insert($_POST["data"]) 的批量赋值越权
+     * （原实现可顺带写入 ifok / ifchecked / orderid 等审核控制列）。
+     */
+    private function pickFields($allow, $src = null)
+    {
+        if ($src === null) {
+            $src = isset($_POST["data"]) && is_array($_POST["data"]) ? $_POST["data"] : array();
+        }
+        $out = array();
+        foreach ($allow as $k) {
+            if (isset($src[$k]) && !is_array($src[$k])) {
+                $out[$k] = $src[$k];
+            }
+        }
+        return $out;
+    }
+
+    /*
+     * [安全修复] 统一 JSON 输出，避免 header 未设导致的 XSS/嗅探。
+     */
+    private function jsonOut($arr)
+    {
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+        }
+        echo json_encode($arr, JSON_UNESCAPED_UNICODE);
+    }
+
     public function init()
     {
         
@@ -23,6 +91,8 @@ class Content extends admin_base
        // unset($_SESSION["HID"]);
         $this->mycataid = $cataid = $_GET["cataid"];
         if(strpos($this->mycataid,"ataid")) $this->mycataid=str_replace("cataid","",$this->mycataid);
+        // [安全修复] cataid 落到 "cataid=$this->mycataid" 裸插值 WHERE，强转整型防注入
+        $this->mycataid = (int) $this->mycataid;
         $this->sortArr = $this->conn_catalog->get_one("*", "cataid=$this->mycataid");
         !$this->sortArr && showmessage("没有找到页面", "?");
         //目录属性 
@@ -148,12 +218,21 @@ class Content extends admin_base
     private function detail()
     {
         // 获取数据
+        /* [BUG 修复] 原实现里 $where 只在 isset($_GET["id"]) 分支内赋值，
+         * 但 init() 对「单页属性(shux)」栏目也会走 detail()（此时无 id），
+         * 于是 $where 未定义 → PHP 8 抛 Undefined variable 警告，且 get_one()
+         * 在 where 为空时退化成「全站最新一篇」，单页栏目会串内容。
+         * 这里给出兜底：无 id 时限定在当前栏目内取最新一篇。 */
+        $where = "ifhidden='1' and cataid like '%cataid".$this->mycataid."%'";
         if (isset($_GET["id"])):
         $id = isset($_GET["id"]) ? intval($_GET["id"]) : 0;
         $where = "cataid like '%cataid".$this->mycataid."%' and id <>$id";
         $aboutArr = $this->conn->select("*", $where, "id desc",6);
         
-        $where = "ifhidden='1' and id=" . $_GET["id"];
+        /* [安全修复] 原为 "id=" . $_GET["id"] 裸拼接。虽然 route 对 GET 标量
+         * 做了 add_slashes，但数字上下文无需引号即可注入（如 id=1 or 1=1），
+         * update(hitnum+=1) 会命中全表。改用上面已 intval 的 $id。 */
+        $where = "ifhidden='1' and id=" . $id;
         $this->conn->update(array("hitnum" => "+=1"), $where);
         endif;
         $data = $this->conn->get_one("*", $where, "id desc");
@@ -210,7 +289,7 @@ class Content extends admin_base
         if($feedArr){
             $i=0;
             foreach($feedArr as $a){
-                $hid=$a["hid"];
+                $hid=(int)$a["hid"];
                 $hid=$hid?$hid:4;
                 $arr_=$this->conn_h->get_one("name,picdir","id=$hid");
                 $feedArr[$i]["picdir"]=$arr_["picdir"];
@@ -223,8 +302,8 @@ class Content extends admin_base
         $data["favorate"]=1;
         $data["favid"]=0;
         if(isset($_GET["hid"])&&$_GET["hid"]){
-            $pid=$data["id"];
-            $hid=$_GET["hid"];
+            $pid=(int)$data["id"];
+            $hid=(int)$_GET["hid"];
             $ifFavorate=$this->conn_favorate->get_one("*","pid=$pid and hid=$hid");
             if($ifFavorate){
                 $data["favorate"]=0;
@@ -545,72 +624,157 @@ class Content extends admin_base
   
     public function ajax_feedback(){
         /*
-         * pname 文章标题
-         * pid
-         * hid 
-         * hname
-         * cataid
-         * content
+         * pname 文章标题 / pid / hid / hname / cataid / content
+         *
+         * [安全修复]
+         * 1. 原实现无任何鉴权 + 直接 insert($_POST["data"])：匿名可灌评论，
+         *    且能伪造 hid/hname 冒充他人，还能顺带写入表内任意列。
+         * 2. 现在：必须登录；hid/hname 一律以服务端 session + 会员表为准；
+         *    字段白名单；按 IP 限流（10 条 / 10 分钟）；正文长度上限。
          */
-        $conn_feedback=konecms::load_model_class("feedback");
-        $_POST["data"]["riqi"] = date("Y-m-d H:i:s");
-        $conn_feedback->insert($_POST["data"]);
-        $id = $conn_feedback->insert_id();
-        if($id){
-            
-            $arr["success"]=0;
-        }else{
-            $arr["success"]=1;
+        $hid = $this->requireLogin();
+
+        if (!bxq_rl_check('feedback', 10, 600)) {
+            $this->jsonOut(array("success" => 429, "msg" => "评论过于频繁，请稍后再试"));
+            return;
         }
-        echo json_encode($arr);
-    
+
+        $pid    = $this->postInt("pid");
+        $cataid = $this->postInt("cataid");
+        $content = isset($_POST["data"]["content"]) && !is_array($_POST["data"]["content"])
+                 ? trim($_POST["data"]["content"]) : "";
+        if ($pid <= 0 || $content === "") {
+            $this->jsonOut(array("success" => 1, "msg" => "参数不完整"));
+            return;
+        }
+        if (mb_strlen($content, "UTF-8") > 1000) {
+            $content = mb_substr($content, 0, 1000, "UTF-8");
+        }
+
+        // 文章标题与会员昵称都从库里取，不采信客户端
+        $iRow = $this->conn_i->get_one("title", "id=$pid");
+        if (!$iRow) {
+            $this->jsonOut(array("success" => 1, "msg" => "文章不存在"));
+            return;
+        }
+        $hRow = $this->conn_h->get_one("hname,name", "id=$hid");
+        $hname = $hRow ? ($hRow["name"] ? $hRow["name"] : $hRow["hname"]) : "";
+
+        $conn_feedback=konecms::load_model_class("feedback");
+        $row = array(
+            "pname"   => $iRow["title"],
+            "pid"     => $pid,
+            "cataid"  => $cataid,
+            "hid"     => $hid,
+            "hname"   => $hname,
+            "content" => $content,
+            "riqi"    => date("Y-m-d H:i:s"),
+        );
+        $conn_feedback->insert($row);
+        $id = $conn_feedback->insert_id();
+        bxq_rl_hit('feedback', 600);
+
+        $arr["success"] = $id ? 0 : 1;
+        $this->jsonOut($arr);
     }
     
       
     public function ajax_site(){
         /*
-         * pname 文章标题
-         * pid
-         * hid 
-         * hname
-         * cataid
-         * content
+         * 网站收录申请（前台 /apply）。业务上允许匿名提交，故不加登录校验，
+         * 但必须堵住以下三个原始漏洞：
+         *
+         * [安全修复]
+         * 1. insert($_POST["data"]) 批量赋值 —— 提交者可自行写入 ifok / ifchecked
+         *    等审核控制列，直接把自己的外链「审核通过」并挂上首页友链。
+         *    现改为字段白名单，审核状态由后台决定。
+         * 2. base64_image_content() 无条件调用 —— 传任意字符串会写垃圾文件；
+         *    现仅当值确实是 data:image/... base64 时才落盘，其余按普通 URL 处理。
+         * 3. 无限流 —— 匿名接口可被脚本灌库。现按 IP 限 5 次 / 10 分钟。
          */
-        $conn_site=konecms::load_model_class("site");
-        $_POST["data"]["riqi"] = date("Y-m-d H:i:s");
-          $_POST["data"]["picdir"]=base64_image_content($_POST["data"]["picdir"],"konecms_ups/k/image","/service/");
-        $conn_site->insert($_POST["data"]);
-        $id = $conn_site->insert_id();
-        if($id){
-            
-            $arr["success"]=0;
-        }else{
-            $arr["success"]=1;
+        if (!bxq_rl_check('site_apply', 5, 600)) {
+            $this->jsonOut(array("success" => 429, "msg" => "提交过于频繁，请稍后再试"));
+            return;
         }
-        echo json_encode($arr);
-    
+
+        $row = $this->pickFields(array(
+            "sitename", "short", "url", "sort", "alexa", "lxr", "tel"
+        ));
+        if (!isset($row["sitename"]) || trim($row["sitename"]) === "") {
+            $this->jsonOut(array("success" => 1, "msg" => "请填写网站名称"));
+            return;
+        }
+        foreach ($row as $k => $v) {
+            $v = trim($v);
+            if (mb_strlen($v, "UTF-8") > 500) {
+                $v = mb_substr($v, 0, 500, "UTF-8");
+            }
+            $row[$k] = $v;
+        }
+
+        $picdir = isset($_POST["data"]["picdir"]) && !is_array($_POST["data"]["picdir"])
+                ? trim($_POST["data"]["picdir"]) : "";
+        if ($picdir !== "" && stripos($picdir, "data:image/") === 0) {
+            $picdir = base64_image_content($picdir, "konecms_ups/k/image", "/service/");
+        } elseif ($picdir !== "" && !preg_match('#^(https?:)?/[^\s"\'<>]{0,300}$#i', $picdir)) {
+            $picdir = ""; // 既不是 base64 也不是合法 URL/路径，丢弃
+        }
+        $row["picdir"] = $picdir;
+        $row["riqi"]   = date("Y-m-d H:i:s");
+
+        $conn_site=konecms::load_model_class("site");
+        $conn_site->insert($row);
+        $id = $conn_site->insert_id();
+        bxq_rl_hit('site_apply', 600);
+
+        $arr["success"] = $id ? 0 : 1;
+        $this->jsonOut($arr);
     }
 
     public function ajax_favorate(){
-        
+        /*
+         * [安全修复]
+         * 1. 原实现 hid 取自 POST —— 任何人都能替他人收藏（越权写）。现取 session。
+         * 2. pid/hid 裸插值进 WHERE —— 现全部整型强转。
+         * 3. insert($_POST["data"]) 批量赋值 —— 现字段白名单。
+         * 4. 原来 echo json_encode($_POST["data"]) 把请求体回显（反射型输出，
+         *    且前端判断的是 res.success，回显根本不含 success，收藏状态永远判错）。
+         *    现返回规范 JSON。
+         */
+        $hid = $this->requireLogin();
         $arr["success"]=1;
-        $pid=$_POST["data"]["pid"];
-        $cataid=$_POST["data"]["cataid"];
-        $hid=$_POST["data"]["hid"];
-        
-        $data_=$this->conn_favorate->get_one("*","pid=$pid and hid=$hid");
-        if(!$data_){
-        $data2_=$this->conn_i->get_one("title","id=$pid");
-        $_POST["data"]["pname"] =$data2_["title"];
-        $_POST["data"]["riqi"] = date("Y-m-d H:i:s"); 
-            $this->conn_favorate->insert($_POST["data"]);
-            $id = $this->conn_favorate->insert_id();
-            if($id){
-                $arr["success"]=0;
-            } 
+        $pid    = $this->postInt("pid");
+        $cataid = $this->postInt("cataid");
+        if ($pid <= 0) {
+            $this->jsonOut(array("success" => 1, "msg" => "参数不完整"));
+            return;
         }
-        echo json_encode($_POST["data"]);
-    
+
+        $data_=$this->conn_favorate->get_one("*","pid=$pid and hid=$hid");
+        if($data_){
+            // 已收藏，视为成功（幂等），并回传已有记录 id 供前端取消收藏使用
+            $this->jsonOut(array("success" => 0, "favid" => (int)$data_["id"], "repeat" => 1));
+            return;
+        }
+        $data2_=$this->conn_i->get_one("title","id=$pid");
+        if(!$data2_){
+            $this->jsonOut(array("success" => 1, "msg" => "文章不存在"));
+            return;
+        }
+        $row = array(
+            "pid"    => $pid,
+            "cataid" => $cataid,
+            "hid"    => $hid,
+            "pname"  => $data2_["title"],
+            "riqi"   => date("Y-m-d H:i:s"),
+        );
+        $this->conn_favorate->insert($row);
+        $id = $this->conn_favorate->insert_id();
+        if($id){
+            $arr["success"]=0;
+            $arr["favid"]=(int)$id;
+        }
+        $this->jsonOut($arr);
     }
     
 
@@ -638,7 +802,7 @@ class Content extends admin_base
         foreach ($zhuanjiaArr as &$row) unset($row["pwd"]); // 安全加固：不返回密码哈希
 
         if($_POST["data"]["hid"]){
-            $myhid=$_POST["data"]["hid"];
+            $myhid=(int)$_POST["data"]["hid"]; // [安全修复] 裸插值 myhid=$myhid，强转整型
             $i=0;
             foreach($zhuanjiaArr as $a){
                 $hid=$a["id"];
@@ -670,7 +834,7 @@ class Content extends admin_base
 	  
 
 	  if($_POST["data"]["hid"]){
-	      $myhid=$_POST["data"]["hid"];
+	      $myhid=(int)$_POST["data"]["hid"]; // [安全修复] 裸插值 myhid=$myhid，强转整型
 	      $i=0;
 	      foreach($zhuanjiaArr as $a){
 	          $hid=$a["id"];
@@ -786,7 +950,7 @@ class Content extends admin_base
      */
     function getExpert(){
         if (isset($_GET["hid"])) {
-            $hid=$_GET["hid"];
+            $hid=(int)$_GET["hid"]; // [安全修复] 裸插值 id=$hid
             $this->conn_h->update(array("hitnum" => "+=1"), "id=$hid");
             //会员信息
             $hArr=$this->conn_h->get_one("*","id=$hid");
@@ -809,7 +973,7 @@ class Content extends admin_base
             $hArr=array($hArr);
             
 	  if($_POST["data"]["hid"]){
-	      $myhid=$_POST["data"]["hid"];
+	      $myhid=(int)$_POST["data"]["hid"]; // [安全修复] 裸插值 myhid=$myhid，强转整型
                 $i=0;
                 foreach($hArr as $a){
                     $hid=$a["id"];
@@ -835,10 +999,14 @@ class Content extends admin_base
 
     public function getMore(){
     
-        $cataid_=$_POST["data"]["cataid"];
+        /* [安全修复] cataid / id 均来自未过滤的 POST 数组，且被裸插值进
+         * "id<$id" 以及 Cataid() 的 SQL。这里统一整型化。 */
+        $cataid_= isset($_POST["data"]["cataid"]) && !is_array($_POST["data"]["cataid"])
+                ? $_POST["data"]["cataid"] : "";
         $arr_=explode(",",$cataid_);
-        $cataid_=str_replace("cataid","",$arr_[0]);
-        $id=$_POST["data"]["id"];
+        $cataid_=(int)str_replace("cataid","",$arr_[0]);
+        $id=$this->postInt("id");
+        if ($id <= 0) { $id = PHP_INT_MAX; } // 首屏未带 id 时不过滤 id，避免空列表
          
         $where=" ifhidden='1' and id<$id ";
         $mysubcataid = Cataid($this->conn_catalog, $cataid_);
@@ -850,32 +1018,45 @@ class Content extends admin_base
         echo json_encode($dataArr);
     }
     
+    /*
+     * 利好 / 利空 投票（快讯页匿名可投）。
+     *
+     * [安全修复]
+     * 1. $id 原为 $_POST["data"]["id"] 裸插值进 "id=$id"。route.class.php 对
+     *    POST 数组完全不过滤，post_check 黑名单又不拦 OR / = ，
+     *    传 id=0 or 1=1 即可把全表 lihao 批量自增 —— 数据可被一次刷爆。
+     *    现统一整型强转。
+     * 2. 无任何防刷，单 IP 可无限刷票。现按 IP 限 60 次 / 10 分钟。
+     * 3. 原来没有任何返回体，前端 .then 拿到空串。现返回 JSON。
+     */
+    private function voteField($field){
+        $id   = $this->postInt("id");
+        $type = $this->postInt("type");
+        if ($id <= 0) {
+            $this->jsonOut(array("success" => 1, "msg" => "参数错误"));
+            return;
+        }
+        if (!bxq_rl_check('vote', 60, 600)) {
+            $this->jsonOut(array("success" => 429, "msg" => "操作过于频繁"));
+            return;
+        }
+        if ($type) {
+            $this->conn_i->update(array($field => "-=1"), "id=$id and $field>0");
+        } else {
+            $this->conn_i->update(array($field => "+=1"), "id=$id");
+        }
+        bxq_rl_hit('vote', 600);
+        $row = $this->conn_i->get_one("$field", "id=$id");
+        $this->jsonOut(array("success" => 0, $field => $row ? (int)$row[$field] : 0));
+    }
+
     //利好
     public function ajax_set_lihao(){
-        $id=$_POST["data"]["id"];
-        $type=$_POST["data"]["type"];
-        if($type){
-            $arr_= array("lihao"=>"-=1");
-            $this->conn_i->update($arr_,"id=$id and lihao>0");
-        }else{
-            $arr_= array("lihao"=>"+=1");
-            $this->conn_i->update($arr_,"id=$id");
-        }
-       // echo $this->conn_i->sql();
-        
+        $this->voteField("lihao");
     }
-    //利好
+    //利空
     public function ajax_set_likong(){
-        $id=$_POST["data"]["id"];
-        $type=$_POST["data"]["type"];
-    
-        if($type){
-            $arr_= array("likong"=>"-=1");
-            $this->conn_i->update($arr_,"id=$id and likong>0");
-        }else{
-            $arr_= array("likong"=>"+=1");
-            $this->conn_i->update($arr_,"id=$id");
-        }
+        $this->voteField("likong");
     }
 }
 

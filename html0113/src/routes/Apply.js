@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM, { render } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import { Icon, Input, Upload, message, Select, Button } from 'antd';
 import '../static/css/Apply.less';
@@ -12,16 +11,28 @@ function getBase64(img, callback) {
 }
 
 function beforeUpload(file) {
-  const isJPG = file.type === 'image/jpeg';
-  if (!isJPG) {
-    message.error('You can only upload JPG file!');
+  // [BUG 修复] 原来只允许 image/jpeg，选 png 直接被拒且提示是英文；
+  // 导航站 LOGO 绝大多数是 png，这里放宽为 jpg/png，提示改中文。
+  const okType = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!okType) {
+    message.error('仅支持 JPG / PNG 格式的图片');
+    return false;
   }
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
+    message.error('图片大小不能超过 2MB');
+    return false;
   }
-  return isJPG && isLt2M;
+  return true;
 }
+
+/*
+ * [BUG 修复] 这个 Upload 只用于本地预览并生成 base64（LOGO 随表单一起提交给
+ * ajax_site），本不需要真的上传。原实现 action="static/media" 会让 antd 真的
+ * 把文件 POST 到该地址 —— 那是个目录，必然失败并弹出红色「上传失败」。
+ * 改为 customRequest 空实现：走完上传生命周期拿到 done 状态，但不发请求。
+ */
+const noopUpload = () => {};
 
 const { TextArea } = Input;
 const InputGroup = Input.Group;
@@ -33,11 +44,15 @@ class Apply extends React.Component {
     super(props, context);
     this.state = {
       loading: false,
+      sortValue: '投资机构',
     };
   }
 
   componentWillMount() {
-    document.getElementById('root').scrollIntoView(true);//为ture返回顶部，false为底部
+    // [BUG 修复] 原实现未判空，#root 缺失（或直接本组件被单独挂载）时抛
+    // TypeError 导致整个页面白屏。
+    const root = document.getElementById('root');
+    root && root.scrollIntoView && root.scrollIntoView(true); // 为 true 返回顶部，false 为底部
   }
 
   handleChange = (info) => {
@@ -82,7 +97,7 @@ class Apply extends React.Component {
             listType="picture-card"
             className="avatar-uploader"
             showUploadList={false}
-            action="static/media"
+            customRequest={noopUpload}
             beforeUpload={beforeUpload}
             onChange={this.handleChange}
           >
@@ -107,8 +122,14 @@ class Apply extends React.Component {
           <div className='nameBox'>
             收录分类
           </div>
-          <InputGroup compact ref={'tttt'}>
-            <Select style={{ width: '80%', marginLeft: '20%', height: '0.55rem' }} defaultValue="投资机构" ref={'touzi'}>
+          <InputGroup compact>
+            {/* [BUG 修复] 原实现提交时读 touzi.props.defaultValue —— 那是**初始**值，
+                用户改了分类后提交的还是「投资机构」。改为受控 onChange。 */}
+            <Select
+              style={{ width: '80%', marginLeft: '20%', height: '0.55rem' }}
+              value={this.state.sortValue}
+              onChange={(v) => this.setState({ sortValue: v })}
+            >
               <Option value="投资机构">投资机构</Option>
               <Option value="交易平台">交易平台</Option>
               <Option value="行情">行情</Option>
@@ -143,31 +164,41 @@ class Apply extends React.Component {
         </li>
         <li>
           <Button type="primary" block onClick={() => {
-            let { name, title, link, touzi, paiming, lianxi, number } = this.refs,
+            let { name, title, link, paiming, lianxi, number } = this.refs,
+              val = (r) => (r && r.input && typeof r.input.value === 'string') ? r.input.value.trim() : '',
               obj = {
-                "sitename": name.input.value,
-                "picdir": this.state.imageUrl,
-                "short": title.textAreaRef.value,
-                "url": link.input.value,
-                "sort": touzi.props.defaultValue,
-                "alexa": paiming.input.value,
-                "lxr": lianxi.input.value,
-                "tel": number.input.value
+                "sitename": val(name),
+                "picdir": this.state.imageUrl || '',
+                "short": (title && title.textAreaRef && typeof title.textAreaRef.value === 'string')
+                        ? title.textAreaRef.value.trim() : '',
+                "url": val(link),
+                // [BUG 修复] 用受控 state 的当前值，而不是 defaultValue
+                "sort": this.state.sortValue,
+                "alexa": val(paiming),
+                "lxr": val(lianxi),
+                "tel": val(number)
               };
-            console.log(this.refs.tttt, touzi.props.defaultValue, touzi.querySelector('.ant-select-selection-selected-value').getAttribute('title'));
-            console.log(touzi.querySelector('.ant-select-selection-selected-value').innerHTML);
-            console.log(this.refs.tttt.value);
-            console.log(touzi.value);
+            if (!obj.sitename) { message.warning('请填写网站名称'); return; }
+            if (!obj.url) { message.warning('请填写网址'); return; }
+            // [BUG 修复] url 补协议，否则入库后前台跳转 /xxx 会被当成站内相对路径
+            if (!/^https?:\/\//i.test(obj.url)) { obj.url = 'http://' + obj.url.replace(/^\/+/, ''); }
             axios({
               method: 'post',
-              url: `${global.constants.winUrl}?c=Content&a=ajax_site `,
+              /* [BUG 修复] 原 URL 结尾带一个空格：'a=ajax_site ' 。
+                 后端 sanitizeRouteToken 只放行 [A-Za-z0-9_]{1,50}，含空格会被判非法
+                 并回退到默认 action —— 这个表单点提交其实一条都没入库。 */
+              url: `${global.constants.winUrl}?c=Content&a=ajax_site`,
               data: { "data": obj }
             }).then(res => {
-              if (res.success == 0) {
-                alert('提交成功！');
+              if (!res) { message.error('提交失败，请稍后重试'); return; }
+              if (res.success === 0) {
+                message.success('提交成功，请等待审核！');
                 window.location.reload(true);
+              } else {
+                // [BUG 修复] 原来只处理成功分支，失败时用户完全无感知
+                message.error(res.msg || '提交失败，请稍后重试');
               }
-            })
+            }).catch(() => message.error('提交失败，请检查网络后重试'))
           }}>提交</Button>
           {/*<Button block>重新填写</Button>*/}
         </li>

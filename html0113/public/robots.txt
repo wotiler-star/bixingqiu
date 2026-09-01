@@ -1,6 +1,18 @@
 User-agent: *
 Allow: /
 
-# 注意：部署到正式域名后，请把下面这行 Sitemap 改成正式站点地址
-# 例如：Sitemap: https://你的域名/sitemap.xml
-Sitemap: http://localhost:8090/sitemap.xml
+# 隐私页与低质量页不参与索引（每个语种前缀都要覆盖，故用通配符）
+# 登录/注册/会员中心：属于用户私有区，索引无意义且可能泄露路径
+Disallow: /*/login
+Disallow: /*/register
+Disallow: /*/personal
+# 搜索结果页：无限组合，典型的抓取预算浪费
+Disallow: /*/search
+# 不带 id 的详情/作者页渲染出来是空页
+Disallow: /*/detailed$
+Disallow: /*/details$
+Disallow: /*/mydetail$
+
+# 多语言站点地图索引：含 zh-CN / en / ja / zh-TW 四个语种 URL 与 hreflang 互链
+# 部署到正式域名后，把下面这行改成正式站点地址（含 https）
+Sitemap: https://lightgray-opossum-850414.hostingersite.com/sitemap-index.xml

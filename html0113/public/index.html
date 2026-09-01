@@ -110,6 +110,12 @@
         <a href="/livenews">快讯</a> |
         <a href="/apply">入驻申请</a>
       </p>
+      <p>语言版本：
+        <a href="/zh-CN/home">简体中文</a> |
+        <a href="/en/home">English</a> |
+        <a href="/ja/home">日本語</a> |
+        <a href="/zh-TW/home">繁體中文</a>
+      </p>
     </div>
   </noscript>
   <div id="root"></div>
@@ -120,6 +126,39 @@
       hm.src = "https://hm.baidu.com/hm.js?ccb0e8f10ba18ccb5041e8aa48068c1b";
       var s = document.getElementsByTagName("script")[0];
       s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+  <script>
+    // [优化/多语言] 注入 runtime shim：中和 reload(true) 白闪 + http->https 混合内容升级 + 按 URL 设 <html lang>
+    (function () {
+      try {
+        var _reload = window.location.reload ? window.location.reload.bind(window.location) : null;
+        if (_reload) {
+          window.location.reload = function (force) {
+            if (force === true) return;
+            return _reload.apply(null, arguments);
+          };
+        }
+        function bxqUpgrade() {
+          var sel = 'img[src^="http://"],link[href^="http://"],a[href^="http://"],[style*="http://"]';
+          document.querySelectorAll(sel).forEach(function (el) {
+            try {
+              if (el.tagName === 'IMG') { if (/^http:\/\//i.test(el.src)) el.src = el.src.replace(/^http:\/\//i, 'https://'); }
+              else if (el.tagName === 'A' || el.tagName === 'LINK') { var a = el.getAttribute('href'); if (a && /^http:\/\//i.test(a)) el.setAttribute('href', a.replace(/^http:\/\//i, 'https://')); }
+              else { var s = el.getAttribute('style'); if (s && /http:\/\//i.test(s)) el.setAttribute('style', s.replace(/http:\/\//ig, 'https://')); }
+            } catch (e) { }
+          });
+        }
+        bxqUpgrade();
+        document.addEventListener('DOMContentLoaded', bxqUpgrade);
+        if (window.MutationObserver) { new MutationObserver(bxqUpgrade).observe(document.documentElement, { childList: true, subtree: true }); }
+        function bxqSetLang() {
+          var p = window.location.pathname || '/';
+          var m = p.match(/^\/(en|ja|zh-TW|zh-CN)\b/);
+          document.documentElement.lang = m ? m[1] : 'zh-CN';
+        }
+        bxqSetLang();
+      } catch (e) { }
     })();
   </script>
 </body>

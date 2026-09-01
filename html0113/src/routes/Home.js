@@ -9,6 +9,8 @@ import axios from 'axios';
 import './config';
 import Qs from 'qs';
 
+import { AVATAR_PLACEHOLDER } from '../static/placeholder';
+import { localePath } from '../i18n/i18n';
 // import 'antd/dist/antd.css';
 
 
@@ -191,7 +193,7 @@ class Home extends React.Component {
                 </div>
               </div>
               {adshowArr ? adshowArr.map((item, index) => {
-                return <NavLink to='/#' className='imgBox' key={index}>
+                return <NavLink to={localePath('/#')} className='imgBox' key={index}>
                   <img src={item.picdir} alt={item.title} />
                 </NavLink>
               }) : null}
@@ -201,7 +203,7 @@ class Home extends React.Component {
 
             <div className='primary-right'>
               <h3>最新资讯</h3>
-              <NavLink to='/livenews?cataid=8' className='more'> </NavLink>
+              <NavLink to={localePath('/livenews?cataid=8')} className='more'> </NavLink>
 
               <div className='list-box' id='list-items'>
                 <div className='item-box'>
@@ -212,13 +214,13 @@ class Home extends React.Component {
                           <span>{item.time}</span>
                         </div>
                       </div>
-                      <NavLink to={`/Detailed?cataid=8&id=${item.id}`}>
+                      <NavLink to={localePath(`/detailed?cataid=8&id=${item.id}`)}>
                         <span>{item.title}</span>
                       </NavLink>
                     </div>
                   }) : ''}
                 </div>
-                <NavLink to='/livenews?cataid=1' className='filsh'>查看更多</NavLink>
+                <NavLink to={localePath('/livenews?cataid=1')} className='filsh'>查看更多</NavLink>
               </div>
               <div className='gradual'></div>
             </div>
@@ -237,7 +239,7 @@ class Home extends React.Component {
               <li className=" ">政策</li>
               <li className=" ">评级</li>
               <li className=" ">全球</li>
-              <li className=" "><NavLink to='/column?cataid=25'>专栏</NavLink></li>
+              <li className=" "><NavLink to={localePath('/column?cataid=25')}>专栏</NavLink></li>
             </ul>
             <div className='list-content'>
 
@@ -246,7 +248,7 @@ class Home extends React.Component {
                 cataid = data[index].cataid;
                 let { picdir_list, title, short, source, riqi, keywords, id } = item;
                 return <div className='news-list' key={index}>
-                  <NavLink to={`/Detailed?cataid=11&id=${id}`}>
+                  <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
                     <div className='imgBox'>
                       <img src={picdir_list} alt="" />
                     </div>
@@ -257,7 +259,7 @@ class Home extends React.Component {
                     <div className='list-bottom'>
                       <span>{source}</span>
                       <span>{riqi}</span>
-                      {/**<NavLink to='/#'>
+                      {/**<NavLink to={localePath('/#')}>
                         {keywords}
                       </NavLink>
                       <p>关键字:</p> */}
@@ -319,7 +321,7 @@ class Home extends React.Component {
             <div className='products-box'>
               <div className='title'>
                 <h3>专栏作家</h3>
-                <NavLink to='/author'>
+                <NavLink to={localePath('/author')}>
                   <span>更多</span>
                   <i className="more-2"></i>
                 </NavLink>
@@ -329,11 +331,11 @@ class Home extends React.Component {
                 return <div className='products' key={index}>
                   <a href={'javascript:;'}>
                     <div className='imgBox'>
-                      <NavLink to={`/mydetail?id=${id}`}>
+                      <NavLink to={localePath(`/mydetail?id=${id}`)}>
                         <img src={picdir} alt="" />
                       </NavLink>
                     </div>
-                    <NavLink to={`/mydetail?id=${id}`} style={{ textDecoration: 'none' }}>
+                    <NavLink to={localePath(`/mydetail?id=${id}`)} style={{ textDecoration: 'none' }}>
                       <div className="textBox">
                         <span>{name}</span>
                         <p>{short}</p>
@@ -373,7 +375,7 @@ class Home extends React.Component {
               {pai1Arr ? pai1Arr.map((item, index) => {
                 let { id, hitnum, picdir_list, title, num_days, pinglunnum } = item;
                 return <div className="listBox" key={index}>
-                  <NavLink to={`/Detailed?cataid=11&id=${id}`}>
+                  <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
                     <div className="imgBox">
                       <img src={picdir_list} alt="" />
                     </div>
@@ -396,7 +398,7 @@ class Home extends React.Component {
               {pai2Arr ? pai2Arr.map((item, index) => {
                 let { id, hitnum, picdir_list, title, pinglunnum, num_days } = item;
                 return <div className="listBox" key={index}>
-                  <NavLink to={`/Detailed?cataid=11&id=${id}`}>
+                  <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
                     <div className="imgBox">
                       <img src={picdir_list} alt="" />
                     </div>
@@ -422,7 +424,7 @@ class Home extends React.Component {
                     let { content, name, picdir, pname, riqi } = item;
                     return <div className='listBox' key={index}>
                       <div className="topBox">
-                        <img src={picdir == undefined ? "http://liancaijing.com/json/avatar.png" : picdir} alt="" />
+                        <img src={picdir == undefined ? AVATAR_PLACEHOLDER : picdir} alt="" />
                         <a href="javascript:;">{name == undefined ? '网友' : name}</a>
                         <span>{riqi}</span>
                       </div>

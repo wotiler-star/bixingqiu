@@ -6,6 +6,8 @@ import '../static/css/Column.less';
 import Qs from "qs";
 import axios from "axios";
 
+import { COVER_PLACEHOLDER } from '../static/placeholder';
+import { localePath } from '../i18n/i18n';
 class Column extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -85,16 +87,16 @@ class Column extends React.Component {
             cataid = dataTab[index].cataid;
             let { picdir_list, title, cnt_short, riqi, hitnum, cataid, hid, picdir_h, nickname, id } = item;
             return <div className='list' key={index}>
-              <NavLink to={`/Detailed?cataid=${cataid}&id=${id}&`}>
+              <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}&`)}>
                 <img src={picdir_list} alt="" />
               </NavLink>
               <div className='text'>
-                <NavLink to={`/Detailed?cataid=${cataid}&id=${id}&`} style={{ textDecoration: 'none' }}>
+                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}&`)} style={{ textDecoration: 'none' }}>
                   <h2>{title}</h2>
                 </NavLink>
                 <p>{cnt_short}</p>
                 <div>
-                  <NavLink to={`/mydetail?id=${hid}&`}>
+                  <NavLink to={localePath(`/mydetail?id=${hid}&`)}>
                     <img src={picdir_h} alt="" />
                     <span>{nickname}</span>
                   </NavLink>
@@ -157,8 +159,8 @@ class Column extends React.Component {
               let { picdir, name, short, id, ifover } = item;
               return <div className='main' key={index}>
                 <a href='javascript:;'>
-                  <NavLink to={`/mydetail?id=${id}`} style={{ textDecoration: 'none' }}>
-                    <img src={picdir == undefined ? "https://img.jinse.com/957312_image20.png" : picdir} alt="" />
+                  <NavLink to={localePath(`/mydetail?id=${id}`)} style={{ textDecoration: 'none' }}>
+                    <img src={picdir == undefined ? COVER_PLACEHOLDER : picdir} alt="" />
 
                     <div className='name'>
                       <span>{name}</span>
@@ -203,11 +205,11 @@ class Column extends React.Component {
               {zhuanjiaArr ? zhuanjiaArr.map((item, index) => {
                 let { id, name, picdir, short, ifover, num_wenzhang, hitnum } = item;
                 return <div className={'listBox'} key={index}>
-                  <NavLink to={`/mydetail?id=${id}`}>
-                    <img src={picdir == undefined ? "https://img.jinse.com/285444_image20.png" : picdir} alt="Three" />
+                  <NavLink to={localePath(`/mydetail?id=${id}`)}>
+                    <img src={picdir == undefined ? COVER_PLACEHOLDER : picdir} alt="Three" />
                   </NavLink>
                   <div className="title">
-                    <NavLink to={`/mydetail?id=${id}`}>
+                    <NavLink to={localePath(`/mydetail?id=${id}`)}>
                       {name}
                     </NavLink>
                     <span>{short}</span>
@@ -245,10 +247,10 @@ class Column extends React.Component {
 
               }) : null}
 
-              {/*<NavLink to='/#'>
-                <img src="https://img.jinse.com/285444_image20.png" alt="Three" />
+              {/*<NavLink to={localePath('/#')}>
+                <img src={COVER_PLACEHOLDER} alt="Three" />
                 <div>
-                  <NavLink to='/#'>
+                  <NavLink to={localePath('/#')}>
                     Three
                   </NavLink>
                   <span>公众号作者-极界区块链</span>
@@ -259,7 +261,7 @@ class Column extends React.Component {
                   <i>128.1万</i>
                   <span>浏览数</span>
                 </ul>
-                <NavLink to='/#' className='attention'>
+                <NavLink to={localePath('/#')} className='attention'>
                   + 关注
                 </NavLink>
             </NavLink>*/}

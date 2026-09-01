@@ -83,6 +83,14 @@ final class db_mysqli {
 		if(!is_object($this->link)) {
 			$this->connect();
 		}
+		/* [修复] 连接失败时 connect() 仅返回 false，$this->link 仍为 null。
+		 * 若此处直接 $this->link->query() 会在 null 上调用方法，
+		 * 触发 TypeError 致命错误并被 display_errors=Off 吞掉，表现为空白 500。
+		 * 改为：连接未建立则中止并返回 false，由上层决定如何提示。 */
+		if(!is_object($this->link)) {
+			$this->halt('Database connection failed, cannot execute query: ' . $this->errormsg);
+			return false;
+		}
 		$this->lastqueryid = $this->link->query($sql);
 		if($this->lastqueryid === false) { $this->halt($this->link->error, $sql); }
 		$this->querycount++;
@@ -491,8 +499,62 @@ final class db_mysqli {
 		} else {
 			$q = '';
 		}
+		/*
+		 * [安全修复] 原实现只在两端补引号，完全没有转义值本身，
+		 * 于是 insert()/update() 的值只要来自「未经入口过滤的数据源」就能闭合引号注入。
+		 * 已确认的未过滤来源：
+		 *   1. $_POST["pwd"] / $_POST["password"]（route.class.php 显式跳过，见其第 41 行注释）；
+		 *   2. $_POST 里的数组入参（route.class.php 只过滤标量，数组原样放行）；
+		 *   3. $_SERVER 请求头（ip / user-agent / referer）、$_COOKIE、$_SESSION、php://input。
+		 * 这里补齐转义，并且必须做到「幂等」——因为入口层已对标量做过 addslashes，
+		 * 若再无脑转义一次会变成 It\\'s（存库多一个反斜杠），属于数据污染。
+		 */
+		$value = $this->escape_once((string)$value);
 		$value = $q.$value.$q;
 		return $value;
+	}
+
+	/**
+	 * 幂等的 SQL 字符串转义。
+	 * 已经是转义形态（\' \" \\ \0）的字符对保持原样，未转义的危险字符补上反斜杠。
+	 * 这样无论值是否经过入口层 addslashes，最终落库内容都一致且安全。
+	 *
+	 * 逐字节扫描在 utf8/utf8mb4 下是安全的：UTF-8 续字节恒 >= 0x80，
+	 * 不可能等于 ASCII 的引号或反斜杠，故不存在 GBK 式宽字节绕过。
+	 *
+	 * @param  string $value
+	 * @return string
+	 */
+	private function escape_once($value) {
+		if ($value === '') {
+			return $value;
+		}
+		$out = '';
+		$len = strlen($value);
+		for ($i = 0; $i < $len; $i++) {
+			$ch = $value[$i];
+			/* 已转义的字符对：整对保留，避免二次转义 */
+			if ($ch === '\\' && $i + 1 < $len && strpos("'\"\\0nrZ", $value[$i + 1]) !== false) {
+				$out .= $ch . $value[$i + 1];
+				$i++;
+				continue;
+			}
+			/* 未转义的危险字符：补反斜杠 */
+			if ($ch === '\'' || $ch === '"' || $ch === '\\') {
+				$out .= '\\' . $ch;
+				continue;
+			}
+			if ($ch === "\0") {
+				$out .= '\\0';
+				continue;
+			}
+			if ($ch === "\x1a") {
+				$out .= '\\Z';
+				continue;
+			}
+			$out .= $ch;
+		}
+		return $out;
 	}
 }
 ?>

@@ -208,6 +208,13 @@ class model {
 	}
 	
 	/**
+	 * 转义 SQL 字符串（与前端 model 兼容，供 controller 调用 escape）
+	 */
+	final public function escape($str) {
+		return $this->db->escape($str);
+	}
+	
+	/**
 	 * 获取最后数据库操作影响到的条数
 	 *
 	 * @return int

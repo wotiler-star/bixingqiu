@@ -4,6 +4,8 @@ import {NavLink} from 'react-router-dom';
 import axios from "axios";
 import {Icon, message, Upload} from "antd";
 
+import { localePath } from '../../i18n/i18n';
+import stepImg from '../../static/image/step2.jpg'; // 修复：原为硬编码 static/media 字面量，webpack 未打包该文件 -> 线上 404
 function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
@@ -89,7 +91,7 @@ class media extends React.Component {
     const imageUrl3 = this.state.imageUrl3;
     return <div className="right-content-9 right-box">
       <h3>实名认证</h3>
-      <img src="static/media/step2.jpg" alt=""/>
+      <img src={stepImg} alt=""/>
       <h3>运营者信息</h3>
       <div className="name a">
         <h4>组织名称：</h4>
@@ -192,7 +194,7 @@ class media extends React.Component {
             url: `${global.constants.winUrl}?c=h&a=certStep2&hid=${this.state.id}`,
             data: {"data": obj}
           }).then(res => {
-            res.success == 0 ? this.props.history.push("/personal/tips") : alert('认证失败，请重新认证！');
+            res.success == 0 ? this.props.history.push(localePath("/personal/tips")) : alert('认证失败，请重新认证！');
           })
         }}>提交
         </button>

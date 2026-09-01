@@ -5,9 +5,127 @@
  * last update date 2016年3月27日
  */
 konecms::load_module_classes("admin_base");
+// 文件级频率限制（登录 / 注册 / 发短信防刷）
+require_once __DIR__ . '/../../../source/lib_ratelimit.php';
 
 class h extends admin_base
 {
+    /*
+     * 图形验证码是否开启（BXQ_CAPTCHA=0 时关闭，部署好带验证码的前端后再开启）
+     */
+    private function captchaOn()
+    {
+        $v = getenv('BXQ_CAPTCHA');
+        return ($v === false) ? false : (strtolower($v) !== '0' && $v !== '0');
+    }
+
+    /*
+     * 校验图形验证码（yzm.php 写入 $_SESSION['randNum']），校验成功后一次性消费，防重放。
+     * 关闭时直接放行。
+     */
+    private function verifyCaptcha($yzm, $consume = true)
+    {
+        if (!$this->captchaOn()) {
+            return true;
+        }
+        $yzm = strtolower(trim((string) $yzm));
+        if (!isset($_SESSION['randNum']) || $yzm === '' || $yzm !== $_SESSION['randNum']) {
+            return false;
+        }
+        // 消费后重置，防止同一验证码被重复使用（$consume=false 时仅校验不重置，
+        // 用于「获取短信验证码」这一步，避免消耗掉注册时还要用的同一验证码）
+        if ($consume) {
+            $_SESSION['randNum'] = bin2hex(random_bytes(4));
+        }
+        return true;
+    }
+
+    /*
+     * 短信验证是否强制开启（BXQ_SMS_ENABLE=1）
+     */
+    private function smsOn()
+    {
+        $v = getenv('BXQ_SMS_ENABLE');
+        return ($v !== false && (strtolower($v) === '1' || $v === '1'));
+    }
+
+    /*
+     * [安全修复] 当前登录会员 id。
+     * 一律以服务端 session 为准，绝不采信客户端传来的 hid —— 否则任何人
+     * 只要改一个数字就能读写他人账号（原 ajax_setInfo / delmycarehid 即如此）。
+     * 未登录返回 0。
+     */
+    private function currentHid()
+    {
+        return isset($_SESSION["HID"]) ? (int) $_SESSION["HID"] : 0;
+    }
+
+    /*
+     * [安全修复] 写接口统一鉴权入口。
+     * 本类构造函数里的 checklogin 早先被注释掉（见 __construct），
+     * 导致所有 ajax 写接口对匿名访问敞开。这里按方法粒度补回。
+     * 未登录时输出 JSON 并终止请求。
+     */
+    private function requireLogin()
+    {
+        $hid = $this->currentHid();
+        if ($hid <= 0) {
+            if (!headers_sent()) {
+                header('Content-Type: application/json; charset=utf-8');
+            }
+            echo json_encode(array("success" => 401, "msg" => "请先登录"), JSON_UNESCAPED_UNICODE);
+            exit();
+        }
+        return $hid;
+    }
+
+    /*
+     * [安全修复] 会员资料可写字段白名单。
+     * 原实现把整个 $_POST["data"] 直接丢给 update()，属于批量赋值漏洞：
+     * 会员可顺带改写 pwd（改密码/提权）、hname（顶号）、ifauthor（自封专栏作家）、
+     * ifchecked 等敏感列。这里只放行真正属于「个人资料」的字段。
+     */
+    private function profileWhitelist($data)
+    {
+        if (!is_array($data)) {
+            return array();
+        }
+        $allow = array(
+            'name', 'picdir', 'short', 'sex', 'birthday', 'address',
+            'qq', 'weixin', 'weibo', 'email', 'company', 'job', 'website',
+        );
+        $out = array();
+        foreach ($allow as $k) {
+            if (isset($data[$k])) {
+                $out[$k] = $data[$k];
+            }
+        }
+        return $out;
+    }
+
+    /*
+     * [安全修复] 对外输出的会员字段白名单。
+     * 原 ajax_getInfo 用 get_one("*") 后直接 json_encode，
+     * 把 pwd 哈希、手机号等一并吐给任意匿名请求方，属于敏感信息泄露。
+     */
+    private function publicMemberFields($row)
+    {
+        if (!is_array($row)) {
+            return array();
+        }
+        $allow = array(
+            'id', 'hname', 'name', 'picdir', 'short', 'sex', 'riqi',
+            'ifauthor', 'company', 'job', 'website', 'weibo', 'weixin',
+        );
+        $out = array();
+        foreach ($allow as $k) {
+            if (isset($row[$k])) {
+                $out[$k] = $row[$k];
+            }
+        }
+        return $out;
+    }
+
 
     function __construct()
     { 
@@ -31,7 +149,7 @@ class h extends admin_base
         $this->conn_favorate = konecms::load_model_class("favorate"); 
      
         if ($this->checklogin()) {
-            $hid = $_SESSION["HID"];
+            $hid = (int) $_SESSION["HID"]; // [安全加固] 裸插值 id=$hid，整型强转
             $where = "id=$hid";
             $this->hArr = $this->conn_h->get_one("*", $where);
             
@@ -42,10 +160,20 @@ class h extends admin_base
     }
     //获取账号信息
     function ajax_getInfo(){ 
-        $hid = $_GET["hid"];
+        /* [安全修复] hid 原样拼进 SQL；且 get_one("*") 会把 pwd 哈希/手机号吐给匿名请求方 */
+        $hid = isset($_GET["hid"]) ? (int) $_GET["hid"] : 0;
+        if ($hid <= 0) {
+            echo json_encode(array());
+            return;
+        }
         $where = "id=$hid";
-        $hArr = $this->conn_h->get_one("*", $where);
-        
+        $row = $this->conn_h->get_one("*", $where);
+        if (!$row) {
+            echo json_encode(array());
+            return;
+        }
+        $hArr = $this->publicMemberFields($row);
+
         $where="hid=$hid";
         $hArr["num_content"]=$this->conn_i->count($where);//文章数量
         $hArr["num_favorate"]=$this->conn_favorate->count($where);//收藏数量
@@ -56,19 +184,42 @@ class h extends admin_base
     }
     //设置账号信息
     function ajax_setInfo(){  
-        $hid = $_POST["data"]["hid"];
+        /*
+         * [安全修复] 原实现以客户端 $_POST["data"]["hid"] 定位记录并整表批量赋值：
+         * 改一个 hid 就能覆写任意会员资料，连 pwd 都能一起改 —— 等于任意账号接管。
+         * 现改为：必须登录 + 只改自己 + 只放行资料类字段。
+         */
+        $hid = $this->requireLogin();
         $where = "id=$hid";
-        unset($_POST["data"]["hid"]);
-        $_POST["data"]["picdir"]=base64_image_content($_POST["data"]["picdir"],"konecms_ups/k/image","/service/");
-       
-        $this->conn_h->update($_POST["data"], $where);
+
+        $data = $this->profileWhitelist(isset($_POST["data"]) ? $_POST["data"] : array());
+        if (isset($data["picdir"]) && $data["picdir"] !== '') {
+            $data["picdir"] = base64_image_content($data["picdir"], "konecms_ups/k/image", "/service/");
+        }
+        if (!$data) {
+            echo json_encode(array("success" => 1, "msg" => "没有可更新的字段"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $this->conn_h->update($data, $where);
         $myArr["success"]=$this->conn_h->affected_rows() ?  0: 1; 
         echo json_encode($myArr);
     }
 
     function ajax_del_myi(){
-        $id=$_POST["data"]["id"];
-        $this->conn_i->delete("id=$id");
+        /*
+         * [安全修复] 原实现无鉴权、无归属校验，且 id 直拼 SQL：
+         * 匿名 POST data[id]=1 or 1=1 可一次删光全站文章。
+         * 现改为：必须登录 + 只能删自己的稿件 + id 强制整型。
+         */
+        $hid = $this->requireLogin();
+        $id = isset($_POST["data"]["id"]) ? (int) $_POST["data"]["id"] : 0;
+        if ($id <= 0) {
+            echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $this->conn_i->delete("id=$id and hid=$hid");
+        echo json_encode(array("success" => $this->conn_i->affected_rows() ? 0 : 1));
     }
     /*
      * 用户资料
@@ -76,11 +227,15 @@ class h extends admin_base
     function init()
     {
         $this->curA="h"; 
-        $hid = $_SESSION["HID"];
+        $hid = $this->currentHid();
         $where = "id=$hid";
-        if (isset($_POST["data"])) { 
-            $this->conn_h->update($_POST["data"], $where);
-            $this->conn_h->affected_rows() ? showmessage(L("do_ok"), "?c=h") : showmessage(L("do_fail"), "?c=h");
+        if ($hid > 0 && isset($_POST["data"])) {
+            /* [安全修复] 同 ajax_setInfo：批量赋值收窄为资料类字段白名单 */
+            $data = $this->profileWhitelist($_POST["data"]);
+            if ($data) {
+                $this->conn_h->update($data, $where);
+                $this->conn_h->affected_rows() ? showmessage(L("do_ok"), "?c=h") : showmessage(L("do_fail"), "?c=h");
+            }
         }
          
         include parent::load_tpl("h/h_home");
@@ -118,16 +273,22 @@ class h extends admin_base
 
     //我的关注
     function mycarehid(){
-        $hid=$_GET["hid"];
+        /* [安全修复] hid 强制整型，避免 ?hid=1 or 1=1 拖库 */
+        $hid = isset($_GET["hid"]) ? (int) $_GET["hid"] : 0;
+        if ($hid <= 0) {
+            echo json_encode(array());
+            return;
+        }
         $data=$this->conn_mycarehid->i("*","myhid=$hid", "riqi desc");
         if($data){
             $i=0;
             foreach($data as $a){
-                $carehid=$a["carehid"];
+                $carehid=(int)$a["carehid"];
                 $data_=$this->conn_h->get_one("*","id=$carehid");
-                $data[$i]["name"]=$data_["name"];
-                $data[$i]["picdir"]=$data_["picdir"];
-                $data[$i]["short"]=$data_["short"];
+                /* [修复] 原代码未判空，被关注账号已注销时 PHP8 下访问 null 数组键会告警 */
+                $data[$i]["name"]=$data_ ? $data_["name"] : '';
+                $data[$i]["picdir"]=$data_ ? $data_["picdir"] : '';
+                $data[$i]["short"]=$data_ ? $data_["short"] : '';
                 $i++;
             }
         }
@@ -135,12 +296,18 @@ class h extends admin_base
     }
     //取消关注
     function delmycarehid(){
-        if($_POST["data"]["mycarehid"]){
-            $hid=$_POST["data"]["hid"];
-            $carehid=$_POST["data"]["mycarehid"];
-            
+        /*
+         * [安全修复] 原实现用客户端 hid 定位并直拼 SQL，
+         * 可代替他人取消关注，也可注入。现改为必须登录 + 只操作自己的关注关系。
+         */
+        $hid = $this->requireLogin();
+        $carehid = isset($_POST["data"]["mycarehid"]) ? (int) $_POST["data"]["mycarehid"] : 0;
+        if ($carehid > 0) {
             $this->conn_mycarehid->delete("myhid=$hid and carehid=$carehid");
+            echo json_encode(array("success" => $this->conn_mycarehid->affected_rows() ? 0 : 1));
+            return;
         }
+        echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
     }
     /*
      * 我的文章
@@ -190,7 +357,14 @@ class h extends admin_base
         }
 
         if(isset($_POST["data"]["cataid"])&&$_POST["data"]["cataid"]!="10"){
-               $cataid = $this->conn->escape($_POST["data"]["cataid"]);
+            /*
+             * [FATAL 修复] 原代码调用 $this->conn->escape()，但 $this->conn 只在
+             * Content.class.php 里被赋值，h 类从未定义该属性 —— PHP 8 下会抛
+             * "Call to a member function escape() on null" 致命错误，
+             * 即「我的文章」按栏目筛选必然 500。
+             * cataid 本身是数字栏目号，强制整型即可，既修崩溃又消除注入。
+             */
+            $cataid = (int) $_POST["data"]["cataid"];
             $v_ = "cataid" . $cataid;
             $where .=  " and find_in_set( '$v_',cataid) ";
         }
@@ -206,8 +380,14 @@ class h extends admin_base
     public function getMore(){
     
         
-        $id=$_POST["data"]["id"];
-        $hid=$_GET["hid"];   
+        /* [安全修复]
+         * 1. 原来 hid 取自 $_GET["hid"] —— 这是「我的文章」管理列表，含审核中/
+         *    未通过/草稿，任何人改一个数字就能翻看别人的未公开稿件（IDOR）。
+         *    现一律以 session 为准，未登录直接 401。
+         * 2. id / cataid 来自未过滤的 POST 数组且裸插值进 WHERE，现整型强转。 */
+        $hid = $this->requireLogin();
+        $id = isset($_POST["data"]["id"]) ? (int) $_POST["data"]["id"] : 0;
+        if ($id <= 0) { $id = PHP_INT_MAX; }
          
         $where=" ifhidden='1' and id<$id and hid=$hid";
 
@@ -230,9 +410,11 @@ class h extends admin_base
         }
 
         if(isset($_POST["data"]["cataid"])&&$_POST["data"]["cataid"]!="10"){
-            $cataid=$_POST["data"]["cataid"];
-            $v_ = "cataid" . $cataid;
-            $where .=  " and find_in_set( '$v_',cataid) ";
+            $cataid=(int)$_POST["data"]["cataid"]; // [安全修复] 拼进 find_in_set 字面量，整型强转
+            if ($cataid > 0) {
+                $v_ = "cataid" . $cataid;
+                $where .=  " and find_in_set( '$v_',cataid) ";
+            }
         }
         
         
@@ -302,7 +484,20 @@ class h extends admin_base
      * 申请专栏第二步：填写表单
      */
     function certStep2(){
-        $getsort=$_POST["data"]["sort0"];
+        /* [安全修复]
+         * 1. 原来 hid 取自 $_POST["data"]["hid"] —— 提交时改一个数字就能把
+         *    **别人**的账号置为 ifauthor=2（申请中/专栏作家），属越权写。
+         *    现一律以 session HID 为准，并强制覆盖 data.hid。
+         * 2. sort0 不在 0/1/2 时 $conn / $sort 都未定义，PHP 8 直接抛
+         *    Error: Call to a member function insert() on null（500 白屏）。
+         *    现先校验枚举。 */
+        $hid = $this->requireLogin();
+        $getsort = isset($_POST["data"]["sort0"]) ? (int) $_POST["data"]["sort0"] : -1;
+        if (!in_array($getsort, array(0, 1, 2), true)) {
+            if (!headers_sent()) { header('Content-Type: application/json; charset=utf-8'); }
+            echo json_encode(array("success" => 1, "msg" => "请选择申请类别"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
         switch($getsort){
             case 0:
                 $sort="geren";
@@ -327,17 +522,18 @@ class h extends admin_base
         }
         
         unset($_POST["data"]["sort0"]);
-        if (isset($_POST["data"])) {
-            $hid=$_POST["data"]["hid"]=$_POST["data"]["hid"];
+        if (isset($_POST["data"]) && is_array($_POST["data"])) {
+            // [安全修复] 强制以 session 会员为申请主体，忽略客户端传来的 hid
+            $_POST["data"]["hid"] = $hid;
+            unset($_POST["data"]["ifok"], $_POST["data"]["ifchecked"], $_POST["data"]["id"]);
 
-            
-            
             $id=$conn->insert($_POST["data"]);
             if($id){
                 $this->conn_h->update(array("ifauthor"=>2,"sort"=>$sort),"id=$hid");
             }
            
         $myArr["success"]=$id ?  0: 1; 
+        if (!headers_sent()) { header('Content-Type: application/json; charset=utf-8'); }
         echo json_encode($myArr); 
         }
          
@@ -361,7 +557,7 @@ class h extends admin_base
         $this->curA="n";
         // 获取信息数据
         ! isset($_GET["id"]) && showmessage(L("错误的ID值"), "?a=init");
-        $id = $_GET["id"];
+        $id = (int) $_GET["id"]; // [安全修复] 裸插值 id=$id，数字上下文可绕过引号转义
         $where = "id=$id";
         $conn_i = konecms::load_model_class("i");
         $data = $conn_i->get_one("*", $where);
@@ -398,8 +594,18 @@ class h extends admin_base
     }
     
     function ajax_del_favorate(){
-        $id=$_POST["data"]["favid"];
-        $this->conn_favorate->delete("id=$id");
+        /*
+         * [安全修复] 原实现无鉴权、无归属校验且 id 直拼 SQL：
+         * 匿名 POST data[favid]=1 or 1=1 可删光全站收藏记录。
+         */
+        $hid = $this->requireLogin();
+        $id = isset($_POST["data"]["favid"]) ? (int) $_POST["data"]["favid"] : 0;
+        if ($id <= 0) {
+            echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $this->conn_favorate->delete("id=$id and hid=$hid");
+        echo json_encode(array("success" => $this->conn_favorate->affected_rows() ? 0 : 1));
     }
 
  
@@ -473,15 +679,21 @@ class h extends admin_base
      * 设置头像
      */
     function ajax_set_photo(){
-        if($_POST["picdir"]){
-        $picdir=$_POST["picdir"];
-        $hid=$_SESSION["HID"];
-        $this->conn_h->update(array("picdir"=>$picdir),"id=$hid");
-        $arr["success"]=0;
-        }else{
-            $arr["success"]=1;
+        /*
+         * [BUG 修复] 原实现 return json_encode(...)，但调度器 build_cms::init() 用
+         * call_user_func() 调用动作方法并丢弃返回值，响应体因此恒为空 —— 前端拿不到
+         * 任何结果，头像设置看起来永远失败。必须 echo。
+         * [安全修复] 同时补上登录校验，未登录时 $_SESSION["HID"] 为空会写成 id= 空串。
+         */
+        $hid = $this->requireLogin();
+        $picdir = isset($_POST["picdir"]) ? (string) $_POST["picdir"] : '';
+        if ($picdir !== '') {
+            $this->conn_h->update(array("picdir" => $picdir), "id=$hid");
+            $arr["success"] = 0;
+        } else {
+            $arr["success"] = 1;
         }
-        return json_encode($arr);
+        echo json_encode($arr);
     }
    
       
@@ -491,6 +703,19 @@ class h extends admin_base
     function ajax_login()
     {
         if (isset($_POST["data"]["hname"])) {
+
+            // 频率限制：同一 IP 10 分钟内最多 20 次登录尝试
+            if (!bxq_rl_check('login', 20, 600)) {
+                echo json_encode(array("success" => 9, "msg" => "尝试过于频繁，请稍后再试"));
+                return;
+            }
+            bxq_rl_hit('login', 600);
+
+            // 图形验证码
+            if (!$this->verifyCaptcha(isset($_POST["yzm"]) ? $_POST["yzm"] : '')) {
+                echo json_encode(array("success" => 3, "msg" => "图形验证码错误"));
+                return;
+            }
 
             $hname = $this->conn_h->escape($_POST["data"]["hname"]);
             $rawPwd = isset($_POST["data"]["pwd"]) ? (string)$_POST["data"]["pwd"] : '';
@@ -515,6 +740,9 @@ class h extends admin_base
                 }
 
                 if ($ok) {
+                    // 会话固定防护：登录成功后重置会话 ID
+                    session_regenerate_id(true);
+
                     // 设置登录信息
                     $_SESSION["HNAME"]   = $data["hname"];
                     $_SESSION["NICKNAME"] = $data["name"];
@@ -541,15 +769,13 @@ class h extends admin_base
         }
     }
     
-    //检查用户名
+    //检查用户名（返回 1=已存在 0=可用，便于前端判断）
     function ajax_check_hname($hname){
     
-        $mywhere = "hname='$hname'";
+        $hname = $this->conn_h->escape($hname);
+        $mywhere = "hname='" . $hname . "'";
         $data = $this->conn_h->get_one("*", $mywhere);
-        if ($data) {
-            return true;
-        }
-        return false;
+        echo $data ? '1' : '0';
     }
     /*
      * 修改密码
@@ -583,34 +809,98 @@ class h extends admin_base
      */
     function ajax_rsg()
     {
-          
-                // if (strtolower($_POST["data"]["yzm"]) != $_SESSION["randNum"]) {
-                 //   $myArr["msg"] = "图形验证码有误 ！";
-                 //   $myArr["success"] = 1;
-             //   } else {
-                    $hname = $_POST["hname"];
-                    $mywhere = "hname='$hname'";
-                    $data = $this->conn_h->get_one("*", $mywhere);
-                    if ($data) {
-                        $myArr["msg"] = "该手机号已被注册 ！";
-                        $myArr["success"] = 1;
-                    } else { 
-                      //  unset($_POST["data"]["yzm"]);
-                        $_POST["pwd"] = password_hash((string)$_POST["pwd"], PASSWORD_BCRYPT);
-                        $_POST["riqi"] = date("Y-m-d H:i:s");
-                        $_POST["ip"] = getIPaddress();
-                        $_POST["phone"] = $_POST["hname"];
-                        $_POST["name"] = "会员" . date('mydhis');
-                        // 会员表
-                        $this->conn_h->insert($_POST);
-                         $hid = $this->conn_h->insert_id();
-                         $myArr["msg"] = "注册成功 ！";
-                         $myArr["success"] = 0;
-                    }//可注册结束
-                //}
-             
-            echo json_encode($myArr);
-         
+        // 频率限制：同一 IP 10 分钟内最多 10 次注册尝试
+        if (!bxq_rl_check('rsg', 10, 600)) {
+            echo json_encode(array("success" => 9, "msg" => "注册过于频繁，请稍后再试"));
+            return;
+        }
+
+        // 图形验证码
+        if (!$this->verifyCaptcha(isset($_POST["yzm"]) ? $_POST["yzm"] : '')) {
+            echo json_encode(array("success" => 3, "msg" => "图形验证码错误"));
+            return;
+        }
+
+        $hname = $this->conn_h->escape($_POST["hname"]);
+
+        // 服务端手机号校验（前端已校验，后端兜底）
+        if (!preg_match('/^1[3-9]\d{9}$/', $hname)) {
+            echo json_encode(array("success" => 1, "msg" => "手机号格式不正确"));
+            return;
+        }
+        $rawPwd = isset($_POST["pwd"]) ? (string)$_POST["pwd"] : '';
+        if (!preg_match('/^[\w_@#$%&*\-]{8,24}$/', $rawPwd)) {
+            echo json_encode(array("success" => 1, "msg" => "密码需为 8-24 位字母、数字或常见符号"));
+            return;
+        }
+
+        // 短信验证码（BXQ_SMS_ENABLE=1 时强制）
+        if ($this->smsOn()) {
+            $msg = isset($_POST["msg"]) ? trim((string)$_POST["msg"]) : '';
+            if (!isset($_SESSION["MESSAGE"]) || $msg === '' || $msg !== (string)$_SESSION["MESSAGE"]) {
+                echo json_encode(array("success" => 4, "msg" => "短信验证码错误"));
+                return;
+            }
+            unset($_SESSION["MESSAGE"]);
+        }
+
+        $mywhere = "hname='" . $hname . "'";
+        $data = $this->conn_h->get_one("*", $mywhere);
+        if ($data) {
+            echo json_encode(array("success" => 1, "msg" => "该手机号已被注册"));
+            return;
+        }
+
+        bxq_rl_hit('rsg', 600);
+
+        // 字段白名单写入：杜绝批量赋值越权（防止伪造 ifok/ifauthor/balance 等字段）
+        $ins = array(
+            "hname"  => $hname,
+            "pwd"    => password_hash($rawPwd, PASSWORD_BCRYPT),
+            "riqi"   => date("Y-m-d H:i:s"),
+            "ip"     => getIPaddress(),
+            "phone"  => $hname,
+            "mobile" => $hname,
+            "name"   => "会员" . date('mydhis')
+        );
+        $this->conn_h->insert($ins);
+        $hid = $this->conn_h->insert_id();
+        echo json_encode(array("success" => 0, "msg" => "注册成功", "hid" => $hid));
+    }
+
+    /*
+     * 发送短信验证码（注册 / 找回密码共用）
+     * 受图形验证码保护，防短信轰炸；BXQ_SMS_DRIVER=dev 时返回 dev_code 便于联调。
+     */
+    function ajax_send_sms()
+    {
+        // 图形验证码保护（不消费，避免消耗掉注册时还要用的同一验证码）
+        if (!$this->verifyCaptcha(isset($_POST["yzm"]) ? $_POST["yzm"] : '', false)) {
+            echo json_encode(array("success" => 1, "msg" => "图形验证码错误"));
+            return;
+        }
+        $hname = $this->conn_h->escape(isset($_POST["hname"]) ? $_POST["hname"] : '');
+        if (!preg_match('/^1[3-9]\d{9}$/', $hname)) {
+            echo json_encode(array("success" => 1, "msg" => "手机号格式不正确"));
+            return;
+        }
+        // 同一手机号 60 秒内只能发一次
+        if (!bxq_rl_check('sms_' . $hname, 1, 60)) {
+            echo json_encode(array("success" => 1, "msg" => "验证码发送过于频繁，请 60 秒后重试"));
+            return;
+        }
+        $code = (string) mt_rand(100000, 999999);
+        $_SESSION["MESSAGE"] = $code;
+        $_SESSION["MESSAGE_TIME"] = time();
+        bxq_rl_hit('sms_' . $hname, 60);
+
+        require_once __DIR__ . '/../../../source/sms/SmsSender.php';
+        $r = SmsSender::send($hname, $code);
+        $out = array("success" => 0, "msg" => "验证码已发送");
+        if (!empty($r["dev_code"])) {
+            $out["dev_code"] = $r["dev_code"]; // 仅 dev 模式返回，便于联调
+        }
+        echo json_encode($out);
     }
 
     /*
@@ -619,29 +909,30 @@ class h extends admin_base
     function ajax_callpwd()
     {
         if (isset($_POST["data"]) && isset($_SESSION["MESSAGE"])) {
-            if ($_POST["data"]["msg"] != $_SESSION["MESSAGE"]) {
-                $myArr["msg"] = "手机验证码输入有误 ！";
-                $myArr["success"] = 1;
-            } else {
-                if (strtolower($_POST["data"]["yzm"]) != $_SESSION["randNum"]) {
-                    $myArr["msg"] = "图形验证码输入有误 ！";
-                    $myArr["success"] = 1;
-                } else {
-                    $hname = $_POST["data"]["hname"];
-                    unset($_POST["data"]["msg"]);
-                    $where = "hname='$hname'";
-                    $mypwd = password_hash((string)$_POST["data"]["pwd"], PASSWORD_BCRYPT);
-                    $arr = array(
-                        "pwd" => $mypwd
-                    );
-                    
-                    $this->conn_h->update($arr, $where);
-                    
-                    $myArr["success"] = 0;
-                }
+            // 图形验证码
+            if (!$this->verifyCaptcha(isset($_POST["yzm"]) ? $_POST["yzm"] : '')) {
+                echo json_encode(array("success" => 1, "msg" => "图形验证码错误"));
+                return;
             }
+            if ($_POST["data"]["msg"] != $_SESSION["MESSAGE"]) {
+                echo json_encode(array("success" => 1, "msg" => "手机验证码输入有误"));
+                return;
+            }
+            $hname = $this->conn_h->escape($_POST["data"]["hname"]);
+            unset($_POST["data"]["msg"]);
+            $where = "hname='" . $hname . "'";
+            $mypwd = password_hash((string)$_POST["data"]["pwd"], PASSWORD_BCRYPT);
+            $arr = array(
+                "pwd" => $mypwd
+            );
+            
+            $this->conn_h->update($arr, $where);
+            unset($_SESSION["MESSAGE"]);
+            
+            echo json_encode(array("success" => 0, "msg" => "密码已重置"));
+        } else {
+            echo json_encode(array("success" => 1, "msg" => "请先获取手机验证码"));
         }
-        echo json_encode($myArr);
     } 
     
     

@@ -3,6 +3,7 @@ import ReactDOM, { render } from 'react-dom';
 import axios from "axios";
 import { NavLink } from 'react-router-dom';
 
+import { localePath } from '../../i18n/i18n';
 class myi extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -33,7 +34,7 @@ class myi extends React.Component {
       <h3>我的文章</h3>
       <ul className="content-box">
         <li className="release">
-          <NavLink to={'/personal/geni'}>
+          <NavLink to={localePath('/personal/geni')}>
             发布新文章
           </NavLink>
         </li>
@@ -98,14 +99,16 @@ class myi extends React.Component {
         console.log(obj)
         axios({
           method: 'post',
-          url: `${global.constants.winUrl}??c=h&a=getMore&hid=${window.localStorage.HID}`,
+          // [BUG 修复] 原来写成 "??c=h"，第一个查询参数名会变成 "?c"，
+          // 后端 $_GET["c"] 取不到 → 路由回落默认控制器 → 「加载更多」永远无数据。
+          url: `${global.constants.winUrl}?c=h&a=getMore&hid=${window.localStorage.HID}`,
           data: { "data": obj }
         }).then(res => {
-          console.log(this.state.data, res);
+          if (!Array.isArray(res)) return;
           this.setState({
-            data: this.state.data.concat(res)
+            data: (this.state.data || []).concat(res)
           });
-        })
+        }).catch(() => {})
       }}>
         点 击 加 载 更 多
       </div>

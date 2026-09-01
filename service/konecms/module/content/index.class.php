@@ -28,6 +28,27 @@ class index extends admin_base{
 	}
 
 	/*
+	 * [安全修复] 当前登录会员 id（只认服务端 session）。
+	 */
+	private function currentHid(){
+	    return isset($_SESSION["HID"]) ? (int) $_SESSION["HID"] : 0;
+	}
+
+	/*
+	 * [安全修复] 取 POST 数组中的整数。route.class.php 不过滤 POST 数组，
+	 * 这些值会裸插值进 WHERE。
+	 */
+	private function postInt($key, $default = 0){
+	    if (!isset($_POST["data"]) || !is_array($_POST["data"])) { return $default; }
+	    return isset($_POST["data"][$key]) ? (int) $_POST["data"][$key] : $default;
+	}
+
+	private function jsonOut($arr){
+	    if (!headers_sent()) { header('Content-Type: application/json; charset=utf-8'); }
+	    echo json_encode($arr, JSON_UNESCAPED_UNICODE);
+	}
+
+	/*
 	 * 站点首页
 	 */
 	function init(){  
@@ -225,7 +246,7 @@ if($kuaiArr){
 	  $zhuanjiaArr=$this->conn_h->select("id,picdir,name,short",$where,"hitnum desc",6);
 	   
 	  if($_POST["data"]["hid"]){
-	      $myhid=$_POST["data"]["hid"];
+	      $myhid=(int)$_POST["data"]["hid"]; // [安全修复] 裸插值 myhid=$myhid，强转整型
 	      $i=0;
 	      foreach($zhuanjiaArr as $a){
 	          $hid=$a["id"];
@@ -269,25 +290,15 @@ if($kuaiArr){
 		    }
 		}
 		
-	    // [部署修复] 把数据中写死的 http://localhost/ 重写为当前站点 origin，
-    // 否则首页轮播/推荐/广告/推广的链接点击后会跳到 localhost 打不开。
+	    // [部署修复] 把数据中写死的 http://localhost/ 或 127.0.0.1 重写为当前站点 origin，
+    // 否则首页轮播/推荐/广告/推广/资讯列表等链接点击后会跳到 localhost 打不开。
     $bxqScheme = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') ? 'https' : 'http';
     $bxqHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost');
     $bxqOrigin = $bxqScheme . '://' . $bxqHost;
     $bxqNormalizeUrl = function($url) use ($bxqOrigin) {
-        if (empty($url)) return $url;
-        return preg_replace('#^https?://localhost(/|$)#i', $bxqOrigin . '/', $url);
+        if (empty($url) || !is_string($url)) return $url;
+        return preg_replace('#^https?://(localhost|127\.0\.0\.1)(:\d+)?(/|$)#i', $bxqOrigin . '/', $url);
     };
-    foreach (array('showArr', 'subshowArr', 'adshowArr', 'tuishowArr') as $bxqKey) {
-        if (isset($$bxqKey) && is_array($$bxqKey)) {
-            foreach ($$bxqKey as &$bxqRow) {
-                if (is_array($bxqRow) && isset($bxqRow['url'])) {
-                    $bxqRow['url'] = $bxqNormalizeUrl($bxqRow['url']);
-                }
-            }
-            unset($bxqRow);
-        }
-    }
 
     $rtnArr=array(
 		   "showArr"=>$showArr,//大BANNER
@@ -312,7 +323,28 @@ if($kuaiArr){
 	        "tuishowArr"=>$tuishowArr, //推广
 	        "feedArr"=>$feedArr//评论
 	    );
-	    echo  json_encode($rtnArr);
+	    // [部署修复] 遍历整个返回结构，把所有文章/栏目链接里的 localhost / 127.0.0.1 重写为当前站点 origin
+    // （不限于轮播，资讯列表、快讯、排行、专家等区块里的 url/link/href 一并修正）
+    $bxqWalk = function(&$arr) use (&$bxqWalk, $bxqNormalizeUrl) {
+        if (!is_array($arr)) return;
+        foreach ($arr as $k => &$v) {
+            if (is_array($v)) {
+                foreach (array('url', 'link', 'href') as $uk) {
+                    if (isset($v[$uk]) && is_string($v[$uk])) {
+                        $v[$uk] = $bxqNormalizeUrl($v[$uk]);
+                    }
+                }
+                $bxqWalk($v);
+            }
+        }
+        unset($v);
+    };
+    foreach ($rtnArr as &$bxqSection) {
+        $bxqWalk($bxqSection);
+    }
+    unset($bxqSection);
+
+    echo  json_encode($rtnArr);
 	     
 	      //include self::load_tpl("index");
 	}
@@ -321,16 +353,35 @@ if($kuaiArr){
 	 * 关注专家
 	 */
 	function carehid(){
-	    if (isset($_POST["data"])) {
-	        $hid=$_POST["data"]["hid"]=$_POST["data"]["hid"];
-	        $carehid=$_POST["data"]["hid"]=$_POST["data"]["mycarehid"];
-	        $riqi=date("Y-m-d H:i:s");
-	        $arr=array("carehid"=>$carehid,"myhid"=>$hid,"riqi"=>$riqi);
-            $this->conn_mycarehid->insert($arr); 
-	        $myArr["success"]=0;
-	        echo json_encode($myArr);
+	    /*
+	     * [安全修复]
+	     * 1. 原来 myhid 直接取客户端 POST —— 任何人都能替他人「关注专家」，
+	     *    也能把自己塞进别人的关注列表。现一律取 session HID。
+	     * 2. 无登录校验 —— 匿名可灌 mycarehid_tb。现要求登录。
+	     * 3. 无去重 —— 重复点关注会插重复行，粉丝数虚高。现先查后插（幂等）。
+	     * 4. carehid 未做整型强转（后续 h.class.php 取消关注时会裸插值）。
+	     */
+	    $hid = $this->currentHid();
+	    if ($hid <= 0) {
+	        $this->jsonOut(array("success" => 401, "msg" => "请先登录"));
+	        return;
 	    }
-	     
+	    $carehid = $this->postInt("mycarehid");
+	    if ($carehid <= 0 || $carehid === $hid) {
+	        $this->jsonOut(array("success" => 1, "msg" => "参数错误"));
+	        return;
+	    }
+	    // 目标专家必须存在
+	    if (!$this->conn_h->get_one("id", "id=$carehid")) {
+	        $this->jsonOut(array("success" => 1, "msg" => "专家不存在"));
+	        return;
+	    }
+	    $exist = $this->conn_mycarehid->get_one("id", "myhid=$hid and carehid=$carehid");
+	    if (!$exist) {
+	        $arr=array("carehid"=>$carehid,"myhid"=>$hid,"riqi"=>date("Y-m-d H:i:s"));
+	        $this->conn_mycarehid->insert($arr);
+	    }
+	    $this->jsonOut(array("success" => 0));
 	}
 	/*
 	 * genWhere($cataidArr, $shuxArr=array())
@@ -381,10 +432,14 @@ if($kuaiArr){
 	}
 	
 	public function getMore(){	
-	    $cataid_=$_POST["data"]["cataid"];
+	    /* [安全修复] cataid / id 来自未过滤的 POST 数组，被裸插值进 WHERE 与
+	     * Cataid()。统一整型化，并对缺 id 的首屏请求给出安全兜底。 */
+	    $cataid_= isset($_POST["data"]["cataid"]) && !is_array($_POST["data"]["cataid"])
+	            ? $_POST["data"]["cataid"] : "";
 	    $arr_=explode(",",$cataid_);
-	    $cataid_=str_replace("cataid","",$arr_[0]);
-	    $id=$_POST["data"]["id"];	    
+	    $cataid_=(int)str_replace("cataid","",$arr_[0]);
+	    $id=$this->postInt("id");
+	    if ($id <= 0) { $id = PHP_INT_MAX; }
 	    $where="ifindex='0' and ifhidden='1' and id<$id ";
 	    $mysubcataid = Cataid($this->conn_catalog, $cataid_);
 	    $cataidArr_=explode(",",rtrim($mysubcataid,","));//索引0 为顶级目录，索引1为目录根

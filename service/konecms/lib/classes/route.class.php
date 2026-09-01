@@ -16,6 +16,19 @@ class route
 {
     private $routeArr = array();
 
+    /*
+     * [BUG 修复] 关键词黑名单豁免名单。
+     * get_check()/post_check() 用「裸英文单词」做 SQL 注入黑名单
+     * （select|insert|update|delete|like|count|chr|master|create|into|union...），
+     * 它是子串匹配，因此会误杀大量正常检索词：
+     *   搜 "Chromia/CHR" 命中 chr、搜 "count" 命中 count、搜 "like" 命中 like、
+     *   搜 "MasterCard" 命中 master、带英文撇号的词命中单引号规则。
+     * 结果是搜索接口直接返回 ILLEGAL_PARAM 而不是结果。
+     * 搜索关键词的注入防护由「入口层 add_slashes + so.class.php 通配符转义」保证，
+     * 无需再叠加这层误报极高的词表，故对其豁免。
+     */
+    private $noKeywordCheck = array('w');
+
     public function __construct()
     {
         $this->routeArr = konecms::load_config("route");
@@ -23,6 +36,11 @@ class route
         // ---------------- GET 参数过滤 ----------------
         if (isset($_GET) && $_GET) {
             foreach ($_GET as $k => $v) {
+                // 检索关键词：只做转义，跳过词表拦截（见 $noKeywordCheck 注释）
+                if (in_array($k, $this->noKeywordCheck, true) && !is_array($v)) {
+                    $_GET[$k] = add_slashes(trim((string) $v));
+                    continue;
+                }
                 // [BUG 修复] 原代码为 get_check(add_slashes(trim($v)))，未判断 $v 是否为数组。
                 // 当请求形如 ?a[]=1 时，trim() 收到数组：PHP 7 报 Warning 并返回 null，
                 // PHP 8 直接抛 TypeError → 整站 500。此处与下方 POST 分支保持一致的数组处理。

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM, {render} from 'react-dom';
 import axios from "axios";
 import {Icon, message, Upload} from "antd";
+import stepImg from '../../static/image/step2.jpg'; // 修复：原为硬编码 static/media 字面量，webpack 未打包该文件 -> 线上 404
 
 function getBase64(img, callback) {
   const reader = new FileReader();
@@ -89,7 +90,7 @@ class enterprise extends React.Component {
     const imageUrl3 = this.state.imageUrl3;
     return <div className="right-content-9 right-box">
       <h3>实名认证</h3>
-      <img src="static/media/step2.jpg" alt=""/>
+      <img src={stepImg} alt=""/>
       <h3>运营者信息</h3>
       <div className="name a">
         <h4>企业名称：</h4>

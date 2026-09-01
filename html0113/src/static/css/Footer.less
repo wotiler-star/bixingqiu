@@ -104,8 +104,12 @@
                 float: right;
                 .footer-share {
                     display: block;
-                    a {
+                    // .footer-share-item：原先是 <NavLink to="/#"> 死链，改成非导航 span 后
+                    // 必须接管原 a 的全部样式，否则圆形底色与尺寸会全部丢失。
+                    a,
+                    .footer-share-item {
                         position: relative;
+                        cursor: pointer;
                         display: inline-block;
                         width: 0.4rem;
                         height: 0.4rem;
@@ -165,7 +169,8 @@
                 .footer-right-b {
                     float: right;
                     margin-top: 0.2rem;
-                    a {
+                    a,
+                    .footer-text {
                         text-decoration: none;
                         color: #999;
                         font-size: 0.14rem;
@@ -173,12 +178,21 @@
                             color: #e2e2e2;
                         }
                     }
-                    span {
+                    // 注意：这里的裸 span 是「竖线分隔符」，必须排除 .footer-text，
+                    // 否则「关于我们 / 版权声明」文案会被渲染成 1px 宽的竖条。
+                    span:not(.footer-text) {
                         margin: 5px 30px;
                         background: #3b3b3d;
                         display: inline-block;
                         height: 12px;
                         width: 1px;
+                    }
+                    .footer-text {
+                        display: inline-block;
+                        background: none;
+                        height: auto;
+                        width: auto;
+                        margin: 0;
                     }
                 }
             }

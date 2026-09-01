@@ -6,12 +6,20 @@
  * 未设置时回退到下面的默认值。
  */
 if (file_exists(__DIR__ . '/.env')) {
-    foreach (file(__DIR__ . '/.env') as $line) {
-        $line = trim($line);
+    // 兼容 Git/记事本导致的 UTF-8 BOM 头：BOM 会出现在首行键名前，
+    // 使 "﻿DB_HOST" 不匹配 "DB_HOST"，从而回退 localhost 并连接失败（空 500）。
+    // 这里在解析前一次性剥掉文件开头的 BOM（\xEF\xBB\xBF）。
+    $raw = (string) @file_get_contents(__DIR__ . '/.env');
+    if (substr($raw, 0, 3) === "\xEF\xBB\xBF") {
+        $raw = substr($raw, 3);
+    }
+    foreach (explode("\n", $raw) as $line) {
+        // 兼容 Windows CRLF：去掉行尾 \r，避免值里混入回车
+        $line = trim($line, " \t\r\n\0\x0B");
         if ($line === '' || $line[0] === '#') continue;
         if (strpos($line, '=') === false) continue;
         list($k, $v) = explode('=', $line, 2);
-        putenv(trim($k) . '=' . trim($v));
+        putenv(trim($k) . '=' . trim($v, " \t\r\n\0\x0B"));
     }
 }
 

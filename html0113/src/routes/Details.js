@@ -7,6 +7,8 @@ import { Icon } from "antd";
 import { NavLink } from "react-router-dom";
 import sanitizeHtml from "../util/sanitize";
 
+import { coinPlaceholder } from '../static/placeholder';
+import { localePath } from '../i18n/i18n';
 class init extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -147,7 +149,7 @@ class init extends React.Component {
       <div className='market'>
         <div className="title">
           <h3>涨幅榜</h3>
-          <NavLink to='/#' className='more-6'></NavLink>
+          <NavLink to={localePath('/#')} className='more-6'></NavLink>
         </div>
         <div className='tab-box'>
           <div className='tab-switch'>
@@ -167,7 +169,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>1</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/LHC.png" alt="" />
+                  <img src={coinPlaceholder('LHC')} alt="" />
                   LHC
                 </span>
                 <span>￥0.30053</span>
@@ -176,7 +178,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>2</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/LHC.png" alt="" />
+                  <img src={coinPlaceholder('LHC')} alt="" />
                   LHC
                 </span>
                 <span>￥0.30053</span>
@@ -185,7 +187,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>3</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/LHC.png" alt="" />
+                  <img src={coinPlaceholder('LHC')} alt="" />
                   LHC
                 </span>
                 <span>￥0.30053</span>
@@ -194,7 +196,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>4</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/LHC.png" alt="" />
+                  <img src={coinPlaceholder('LHC')} alt="" />
                   LHC
                 </span>
                 <span>￥0.30053</span>
@@ -206,7 +208,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>1</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/NLX.png" alt="" />
+                  <img src={coinPlaceholder('NLX')} alt="" />
                   LHC
                 </span>
                 <span>￥0.00128</span>
@@ -215,7 +217,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>2</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/NLX.png" alt="" />
+                  <img src={coinPlaceholder('NLX')} alt="" />
                   LHC
                 </span>
                 <span>￥0.00128</span>
@@ -224,7 +226,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>3</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/NLX.png" alt="" />
+                  <img src={coinPlaceholder('NLX')} alt="" />
                   LHC
                 </span>
                 <span>￥0.00128</span>
@@ -233,7 +235,7 @@ class init extends React.Component {
               <li className='list-box'>
                 <span>4</span>
                 <span>
-                  <img src="https://static-hx24.huoxing24.com/coin/icon/NLX.png" alt="" />
+                  <img src={coinPlaceholder('NLX')} alt="" />
                   LHC
                 </span>
                 <span>￥0.00128</span>

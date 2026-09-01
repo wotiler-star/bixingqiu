@@ -74,15 +74,33 @@ bash deploy/build-hostinger.sh
 
 ### 步骤 3：上传
 
-**方式 A — hPanel 文件管理器（推荐，最省事）**
+> ⚠️ **实战教训（2026-08-03）**：完整包有 1072 个文件，其中 `service/` 占 1057 个。
+> hPanel 文件管理器一次性解压这么多小文件**容易中途静默中断**，
+> 结果是前端解出来了、`service/` 整个目录没落地 →
+> `https://域名/service/index.php` 返回 404 → 接口全挂。
+> 因此**强烈建议用下面的分包方式 A1**，而不是一次传完整包。
+
+**方式 A1 — 分包上传（推荐，规避解压中断）**
 1. hPanel → 文件 → 文件管理器 → 进入 `public_html`
 2. **先清空**原有默认页（`default.php` / `index.php` 等）
-3. 上传 `bixingqiu-hostinger.zip` → 在 `public_html` **内**右键 **Extract**
+3. 传 **`bixingqiu-frontend.zip`**（15 个文件，1.16 MB）→ 在 `public_html` **内** Extract
+   - 解出 `index.html`、`static/`、`.htaccess`、`env.example` 等
+4. 传 **`bixingqiu-service.zip`**（1057 个文件，14.28 MB）→ 同样在 `public_html` **内** Extract
+   - 包内顶层就是 `service/`，解压后落在 `public_html/service/`
+   - ✅ **解压完必须验证**：浏览器访问 `https://域名/service/index.php`
+     返回 **非 404** 才算成功（未配 `.env` 时报数据库错误是正常的，说明 PHP 已跑起来）
+     若仍 404 → `service/` 没解出来，重新解压这一个包即可
+5. 传 `bixingqiu-uploads.zip`，在 `public_html/service/` **内**解压
+   （包内顶层是 `konecms_ups/`，解压后落在 `public_html/service/konecms_ups/`）
+
+**方式 A2 — 一次性完整包（文件多，可能中断）**
+1. 同上进入 `public_html` 并清空默认页
+2. 上传 `bixingqiu-hostinger.zip` → 在 `public_html` **内**右键 **Extract**
    - ⚠️ 本包**已去除 `public_html/` 前缀**，务必解压到 `public_html` 目录内部；
      若解压到 home 根目录会把文件散落到 public_html 之外，站点无法访问。
-4. 解压后确认 `.htaccess` / `.user.ini` 存在（文件管理器需勾选"显示隐藏文件"）
+3. 解压后**务必核对 `public_html/service/` 存在且非空**（这是最容易丢的部分）
+4. 确认 `.htaccess` / `.user.ini` 存在（文件管理器需勾选"显示隐藏文件"）
 5. 同样上传 `bixingqiu-uploads.zip`，在 `public_html/service/` **内**解压
-   （包内顶层是 `konecms_ups/`，解压后落在 `public_html/service/konecms_ups/`）
 
 **方式 B — FTP**
 ```bash

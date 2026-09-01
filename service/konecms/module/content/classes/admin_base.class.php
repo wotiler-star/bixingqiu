@@ -4,7 +4,7 @@
  * @copyright konecms.com
  * @lastmodify 2016-2-26
 */ 
-error_reporting("E_ALL");
+error_reporting(E_ALL);
 session_start();
 define("KONE_ADMIN",true);
 define("STATIC_PATH",SITE_PATH."konecms"."/"."module"."/"."content"."/"."template"."/"."static"."/");

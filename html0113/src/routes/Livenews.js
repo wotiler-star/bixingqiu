@@ -7,6 +7,8 @@ import '../static/css/Livenews.less';
 import axios from "axios";
 import Qs from "qs";
 
+import { COVER_PLACEHOLDER } from '../static/placeholder';
+import { localePath } from '../i18n/i18n';
 class Livenews extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -62,7 +64,7 @@ class Livenews extends React.Component {
       <div className="main">
         {
           /* <a href="/#" className='activity'>
-                    <img src="https://hx24.huoxing24.com/image/news/2018/06/06/1528271007010029.png?x-oss-process=style/image_jpg"
+                    <img src={COVER_PLACEHOLDER}
                       alt="" />
                   </a>*/
         }
@@ -72,7 +74,7 @@ class Livenews extends React.Component {
 
               let a = item.cataid == cataid ? "active" : "";
               return <li>
-                <NavLink to={`/livenews?cataid=${item.cataid}`} className={a}>{item.sort}</NavLink>
+                <NavLink to={localePath(`/livenews?cataid=${item.cataid}`)} className={a}>{item.sort}</NavLink>
               </li>
             }) : null}
           </ul>
@@ -85,7 +87,7 @@ class Livenews extends React.Component {
                 <div className="round"></div>
                 <div className="time-left">{riqi}</div>
               </div>
-              <NavLink to={`/Details?cataid=${cataid}&id=${id}`}>
+              <NavLink to={localePath(`/details?cataid=${cataid}&id=${id}`)}>
                 <h1>{title}</h1>
                 <p>{short}</p>
               </NavLink>
@@ -189,7 +191,7 @@ class Livenews extends React.Component {
                 { cataid = 8 } = Qs.parse(search.substr(1)) || {}, a;
               let { picdir_list, title, riqi, id } = item;
               return <div className='listBox' key={index}>
-                <NavLink to={`/Detailed?cataid=${cataid}&id=${id}`}>
+                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
                   <img src={picdir_list} alt="" />
                   <span>{title}</span>
                   <p>{riqi}</p>

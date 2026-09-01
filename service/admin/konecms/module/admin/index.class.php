@@ -22,9 +22,28 @@ class index extends admin_base{
 	
 	function login(){
 	    if(isset($_POST["name"])){
-	        strtolower($_POST["yzm"])!=$_SESSION["randNum"]?showmessage(L('wrong_yzm'),"?m=admin&a=login"):"";
+	        // [安全修复] 后台登录防暴力破解：同一 IP 10 分钟内最多 10 次尝试。
+	        // 计数放在验证码校验之前，这样"刷验证码"本身也被限流。
+	        require_once __DIR__ . '/../../../../source/lib_ratelimit.php';
+	        if (!bxq_rl_check('admin_login', 10, 600)) {
+	            showmessage(L('尝试过于频繁，请稍后再试'), "?m=admin&a=login");
+	        }
+	        bxq_rl_hit('admin_login', 600);
+
+	        // [安全修复] 原实现有两个问题：
+	        //   ① 直接读 $_SESSION["randNum"]，若验证码尚未生成会产生 Notice 并暴露路径；
+	        //   ② 校验通过后不销毁验证码 —— 同一个验证码可被无限次复用，
+	        //      配合弱口令（如 123456）等同于没有验证码，可被脚本爆破。
+	        // 现改为：先判定，再立即作废（一次性），强制每次登录都必须刷新验证码。
+	        $sessYzm = isset($_SESSION["randNum"]) ? strtolower((string)$_SESSION["randNum"]) : '';
+	        $postYzm = isset($_POST["yzm"]) ? strtolower((string)$_POST["yzm"]) : '';
+	        $yzmOk   = ($sessYzm !== '' && $postYzm !== '' && hash_equals($sessYzm, $postYzm));
+	        unset($_SESSION["randNum"]);
+	        if (!$yzmOk) {
+	            showmessage(L('wrong_yzm'), "?m=admin&a=login");
+	        }
 	        $db=konecms::load_model_class("admin");
-	        $adminname = $db->escape($_POST["name"]);
+	        $adminname = addslashes($_POST["name"]);
 	        $rawPwd = (string)$_POST["pwd"];
 	        // 仅按账号查询，密码不参与 WHERE
 	        $data=$db->get_one("*","adminname='".$adminname."' and ifok='0'");

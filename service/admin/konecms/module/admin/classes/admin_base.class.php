@@ -5,7 +5,8 @@
  * @lastmodify 2016-2-26
 */
 session_start();
-error_reporting("E_ALL");
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 define("KONE_ADMIN",true);
 define("STATIC_PATH",SITE_PATH."konecms"."/"."module"."/"."admin"."/"."template"."/"."static"."/");
 define("CACHE_ROOT",WEB_ROOT.DIRECTORY_SEPARATOR."cache".DIRECTORY_SEPARATOR);
@@ -13,6 +14,8 @@ class admin_base{
     protected  $adminArr=null;//管理员信息数组
     protected  $rightsetArr=null;//管理员信息数组
     protected  $usualArr=null;//管理员信息数组
+    protected  $gteamArr=null;//权限数组
+    protected  $conn_catalog=null;
 	public function __construct(){
 		self::check_login(); 
 		if(isset($_SESSION["ADMINID"])&&$_SESSION["ADMINID"]){

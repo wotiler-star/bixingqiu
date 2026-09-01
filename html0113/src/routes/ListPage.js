@@ -6,6 +6,7 @@ import '../static/css/ListPage.less';
 import axios from "axios";
 import Qs from "qs";
 
+import { localePath } from '../i18n/i18n';
 class ListPage extends React.Component {
   constructor(props, context) {
     super(props.context);
@@ -62,7 +63,7 @@ class ListPage extends React.Component {
               { cataid = 8 } = Qs.parse(search.substr(1)) || {}, a;
             item.cataid == cataid ? a = "active" : a = "";
             return <li>
-              <NavLink to={`/list?cataid=${item.cataid}`} className={a}>{item.sort}</NavLink>
+              <NavLink to={localePath(`/list?cataid=${item.cataid}`)} className={a}>{item.sort}</NavLink>
             </li>
           }) : null}
         </ul>
@@ -75,7 +76,7 @@ class ListPage extends React.Component {
               indexID = this.state.data[index].id;
               let { picdir_list, title, short, riqi, source, title2, id } = item;
               return <div className='news-list'>
-                <NavLink to={`/Detailed?cataid=${cataid}&id=${id}`}>
+                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
                   <div className='imgBox'>
                     <img src={picdir_list} alt="" />
                   </div>
@@ -86,7 +87,7 @@ class ListPage extends React.Component {
                   <div className='list-bottom'>
                     <span>{source}</span>
                     <span>{riqi}</span>
-                    {/**<NavLink to='/#'>
+                    {/**<NavLink to={localePath('/#')}>
                       {title2}
                     </NavLink>
                     <p>关键字:</p> */}
@@ -124,7 +125,7 @@ class ListPage extends React.Component {
             {this.state.hotArr ? this.state.hotArr.map((item, index) => {
               let { picdir_list, title, riqi, id } = item;
               return <div className='listBox' key={index}>
-                <NavLink to={`/Detailed?cataid=${cataid}&id=${id}`}>
+                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
                   <img src={picdir_list} alt="" />
                   <span>{title}</span>
                   <p>{riqi}</p>

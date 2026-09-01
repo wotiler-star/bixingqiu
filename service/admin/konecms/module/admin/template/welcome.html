@@ -233,14 +233,13 @@
         <div class="nav">
 		
 <!-- 平台开始-->
-<?
+<?php
 	if(in_array("*",$this->gteamArr)||array_intersect($pingtaiArr,$this->gteamArr)):
 ?>
 <div class="nav_page checked">
     <ul class="kwl2017">
                       
-		 <?
-		
+		 <?php
 		     if(in_array("*",$this->gteamArr)||in_array("pwdmod",$this->gteamArr)||in_array("adminGen",$this->gteamArr)||in_array("adminList",$this->gteamArr)||in_array("gteamGen",$this->gteamArr)||in_array("gteamList",$this->gteamArr)):
 		 ?>              	
                     <li>
@@ -300,7 +299,7 @@
                     </li> 		 
 		<?php endif;?>
 		
-		<?
+		<?php
 		     if(in_array("*",$this->gteamArr)||in_array("adGen",$this->gteamArr)||in_array("adList",$this->gteamArr)||in_array("adCataGen",$this->gteamArr)||in_array("adCataList",$this->gteamArr)):
 		?> 
                     <li>
@@ -361,7 +360,7 @@
 
 		 <?php endif;?>
 		 
-		 <?
+		 <?php
 		     if(in_array("*",$this->gteamArr)||in_array("web",$this->gteamArr)||in_array("contact",$this->gteamArr)||in_array("sysmanage",$this->gteamArr)):
 		 ?> 
                     <li>
@@ -422,7 +421,7 @@
 <!--平台结束-->	  
 
 <!--文档开始--> 
-<?
+<?php
 	if(in_array("*",$this->gteamArr)||array_intersect($wendanArr,$this->gteamArr)):
 ?>
 <div class="nav_page">
@@ -471,7 +470,7 @@
  
 
 <!--目录开始-->			
-<?
+<?php
 	if(in_array("*",$this->gteamArr)||array_intersect($muluArr,$this->gteamArr)):
 ?>
 <div class="nav_page">
@@ -520,7 +519,7 @@
 <!--目录结束-->	
 
 <!--站点留言开始-->	
-<?
+<?php
 	if(in_array("*",$this->gteamArr)||array_intersect($shujuArr,$this->gteamArr)):
 ?>
 <div class="nav_page">
@@ -561,7 +560,7 @@
 
 
 <!--会员开始-->	
-<?
+<?php
 	if(in_array("*",$this->gteamArr)||array_intersect($shujuArr,$this->gteamArr)):
 ?>
 <div class="nav_page">
@@ -633,7 +632,7 @@
 <!--会员结束-->
 
 <!--导航开始-->	
-<?
+<?php
 	if(in_array("*",$this->gteamArr)||array_intersect($shujuArr,$this->gteamArr)):
 ?>
 <div class="nav_page">
