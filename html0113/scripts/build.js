@@ -81,6 +81,10 @@ measureFileSizesBeforeBuild(paths.appBuild)
             );
             console.log();
 
+            // 自愈改造：把仓库根 service/（后端 PHP）拷进 build/，
+            // 使其随前端产物一起被 Hostinger Git 自动部署发布，部署后后端自动复活。
+            try { require('./copy-service.js'); } catch (e) { console.warn('[copy-service] skipped: ' + e); }
+
             const appPackage = require(paths.appPackageJson);
             const publicUrl = paths.publicUrl;
             const publicPath = config.output.publicPath;

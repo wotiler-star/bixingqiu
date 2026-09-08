@@ -47,20 +47,24 @@ function copyRecursive(src, dest) {
 }
 
 let copied = 0;
-if (fs.existsSync(SERVICE_SRC)) {
-  copyRecursive(SERVICE_SRC, BUILD_DEST);
-  // 统计拷贝文件数
-  const walk = (d) => {
-    for (const e of fs.readdirSync(d)) {
-      const p = path.join(d, e);
-      const s = fs.statSync(p);
-      if (s.isDirectory()) walk(p);
-      else if (s.isFile()) copied++;
-    }
-  };
-  if (fs.existsSync(BUILD_DEST)) walk(BUILD_DEST);
-  console.log('[copy-service] ✓ synced service/ -> build/service/ (' + copied + ' files)');
-} else {
-  console.warn('[copy-service] ✗ source not found: ' + SERVICE_SRC);
-  process.exit(0); // 不阻断构建
+try {
+  if (fs.existsSync(SERVICE_SRC)) {
+    copyRecursive(SERVICE_SRC, BUILD_DEST);
+    // 统计拷贝文件数
+    const walk = (d) => {
+      for (const e of fs.readdirSync(d)) {
+        const p = path.join(d, e);
+        const s = fs.statSync(p);
+        if (s.isDirectory()) walk(p);
+        else if (s.isFile()) copied++;
+      }
+    };
+    if (fs.existsSync(BUILD_DEST)) walk(BUILD_DEST);
+    console.log('[copy-service] ✓ synced service/ -> build/service/ (' + copied + ' files)');
+  } else {
+    console.warn('[copy-service] ✗ source not found: ' + SERVICE_SRC);
+  }
+} catch (e) {
+  // 任何异常都不阻断前端构建
+  console.warn('[copy-service] skipped due to error: ' + (e && e.message ? e.message : e));
 }
