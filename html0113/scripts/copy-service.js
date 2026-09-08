@@ -1,14 +1,15 @@
 /**
  * copy-service.js
- * 自愈改造（self-heal）：在 webpack 构建完成后，把仓库根目录的 service/（后端 PHP）
- * 拷贝进 build/，使其随前端产物一起被 Hostinger Git 自动部署发布到 public_html/service/。
+ * 自愈改造（self-heal）：webpack 构建完成后，把仓库根的 service/（后端 PHP + 用户上传真实图片）拷进 build/，
+ * 随前端产物一起被 Hostinger Git 自动部署发布到 public_html/service/。
+ * 这样即使自动部署清空 public_html，每次部署后后端与用户上传都会自动复活。
  *
- * 这样即使自动部署会清空 public_html，每次部署后后端也会自动复活，不再需要手动 FTP 补传。
+ * 关于 konecms_ups（用户上传目录）：
+ *  - 历史上仓库里它是 Git LFS 指针（130B），直接拷贝只会得到坏文件；
+ *  - 现改为「真实 blob」存储：仓库 .gitattributes 末尾对 `service/konecms_ups/**` 关闭 LFS，
+ *    图片以真实字节入库，构建时这里从仓库源码直接拷进 build/service/konecms_ups，随部署自愈。
  *
- * 排除项（不进构建产物）：
- *  - .env            含数据库凭据，绝不进仓库/构建产物
- *  - konecms_ups/    用户上传目录（体积大，且应通过 FTP/持久存储单独维护）
- *  - .git/.settings/.buildpath/.project/node_modules 等无关文件
+ * 排除项：仅 .env（含 DB 凭据，绝不进构建产物）；以及 .git/.settings/.buildpath/.project/node_modules 等无关文件。
  */
 'use strict';
 
@@ -20,7 +21,6 @@ const BUILD_DEST = path.resolve(__dirname, '..', 'build', 'service'); // html011
 
 const EXCLUDE_NAMES = new Set([
   '.env',
-  'konecms_ups',
   '.git',
   '.settings',
   '.buildpath',
@@ -50,6 +50,7 @@ let copied = 0;
 try {
   if (fs.existsSync(SERVICE_SRC)) {
     copyRecursive(SERVICE_SRC, BUILD_DEST);
+
     // 统计拷贝文件数
     const walk = (d) => {
       for (const e of fs.readdirSync(d)) {
@@ -60,7 +61,7 @@ try {
       }
     };
     if (fs.existsSync(BUILD_DEST)) walk(BUILD_DEST);
-    console.log('[copy-service] ✓ synced service/ -> build/service/ (' + copied + ' files)');
+    console.log('[copy-service] ✓ synced service/ -> build/service/ (' + copied + ' files, incl. konecms_ups real uploads)');
   } else {
     console.warn('[copy-service] ✗ source not found: ' + SERVICE_SRC);
   }
