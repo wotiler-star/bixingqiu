@@ -10,10 +10,14 @@
  * 该文件不会被部署清空，从而每次部署后后端都能自动连上数据库。
  */
 // 候选凭据文件路径，按顺序取第一个存在的
+// 注意：Hostinger FTP 的 chroot 根通常是「域名目录」(public_html 的上级)，
+// 而非 /home/u906113796。自动部署只会清空 public_html，域名目录内的文件不受影响，
+// 因此把持久凭据放在「域名目录/.bxq.env」既能不被部署清空，又可通过 FTP 写入。
 $_bxq_env_candidates = array(
     __DIR__ . '/.env',                                  // 部署时若在场（优先）
+    dirname(dirname(dirname(__DIR__))) . '/.bxq.env',   // 域名目录（public_html 之外，存活于部署）
     (isset($_SERVER['HOME']) ? $_SERVER['HOME'] : '') . '/.bxq.env',
-    '/home/u906113796/.bxq.env',                        // Hostinger 共享主机 home 目录
+    '/home/u906113796/.bxq.env',                        // Hostinger 共享主机 home 目录（兜底）
 );
 $_bxq_env_file = null;
 foreach ($_bxq_env_candidates as $_c) {
