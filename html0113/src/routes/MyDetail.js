@@ -7,6 +7,7 @@ import Qs from "qs";
 import axios from "axios";
 
 import { localePath } from '../i18n/i18n';
+import { articleUrl } from '../util/link';
 class MyDetail extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -134,11 +135,11 @@ class MyDetail extends React.Component {
         {contentD ? contentD.map((item, index) => {
           let { picdir_list, title, cnt_short, riqi, hitnum, id } = item;
           return <div className='list' key={index}>
-            <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)} className='imgBox'>
+            <NavLink to={localePath(articleUrl(item, 11))} className='imgBox'>
               <img src={picdir_list} alt="" />
             </NavLink>
             <div className='textBox'>
-              <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
+              <NavLink to={localePath(articleUrl(item, 11))}>
                 {title}
               </NavLink>
               <p>

@@ -10,6 +10,7 @@ import { setSEO } from '../util/seo';
 
 import { AVATAR_PLACEHOLDER, COVER_PLACEHOLDER } from '../static/placeholder';
 import { localePath } from '../i18n/i18n';
+import { articleUrl } from '../util/link';
 import wechatQr from '../static/image/hx-ewm-c6929e3815.png'; // 修复：原为硬编码 static/media 字面量，webpack 未打包该文件 -> 线上 404
 const {TextArea} = Input;
 
@@ -257,13 +258,11 @@ class Detailed extends React.Component {
             <h5>相关新闻</h5>
             <div className="interest-box">
               {this.state.aboutArr ? this.state.aboutArr.map((item, index) => {
-                let {location: {search}} = this.props,
-                    {cataid = 8} = Qs.parse(search.substr(1)) || {}, a;
                 let {picdir_list, short, title, id} = item;
                 // [修复] 后端 short 字段被 Mars AI 占位文案（"摘要由 Mars AI 生成..."）污染，
                 // 导致所有相关新闻卡片文字一模一样。检测到占位符时回退到真实 title。
                 let aboutText = (short && !/摘要由|Mars AI|生成内容的准确性/.test(short)) ? short : title;
-                return <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}
+                return <NavLink to={localePath(articleUrl(item))}
                                 key={index}>
                   <img src={picdir_list} alt=""/>
                   <p>{aboutText}</p>
@@ -277,11 +276,9 @@ class Detailed extends React.Component {
           <div className='recomend'>
             <h3>热门新闻</h3>
             {this.state.hotArr ? this.state.hotArr.map((item, index) => {
-              let {location: {search}} = this.props,
-                  {cataid = 8} = Qs.parse(search.substr(1)) || {}, a;
               let {picdir_list, title, riqi, id} = item;
               return <div className='listBox' key={index}>
-                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
+                <NavLink to={localePath(articleUrl(item))}>
                   <img src={picdir_list} alt=""/>
                   <span>{title}</span>
                   <p>{riqi}</p>
@@ -290,10 +287,8 @@ class Detailed extends React.Component {
             }) : null}
           </div>
           {this.state.i ? this.state.nextArr.map((item, index) => {
-            let {location: {search}} = this.props,
-                {cataid = 8} = Qs.parse(search.substr(1)) || {}, a;
             return <div className={this.state.nextActive ? 'next-page next-active' : 'next-page'} key={index}>
-              <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${item.id}`)}>
+              <NavLink to={localePath(articleUrl(item))}>
                 <h5>下一篇</h5>
                 <img src={item.picdir_list} alt=""/>
                 <p>{item.title ? item.title : ''}</p>

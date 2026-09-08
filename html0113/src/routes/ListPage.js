@@ -7,6 +7,7 @@ import axios from "axios";
 import Qs from "qs";
 
 import { localePath } from '../i18n/i18n';
+import { articleUrl } from '../util/link';
 class ListPage extends React.Component {
   constructor(props, context) {
     super(props.context);
@@ -76,7 +77,7 @@ class ListPage extends React.Component {
               indexID = this.state.data[index].id;
               let { picdir_list, title, short, riqi, source, title2, id } = item;
               return <div className='news-list'>
-                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
+                <NavLink to={localePath(articleUrl(item, cataid))}>
                   <div className='imgBox'>
                     <img src={picdir_list} alt="" />
                   </div>
@@ -125,7 +126,7 @@ class ListPage extends React.Component {
             {this.state.hotArr ? this.state.hotArr.map((item, index) => {
               let { picdir_list, title, riqi, id } = item;
               return <div className='listBox' key={index}>
-                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
+                <NavLink to={localePath(articleUrl(item, cataid))}>
                   <img src={picdir_list} alt="" />
                   <span>{title}</span>
                   <p>{riqi}</p>

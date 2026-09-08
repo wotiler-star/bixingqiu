@@ -5,6 +5,7 @@ import '../static/css/search.less';
 import axios from "axios";
 
 import { localePath, t } from '../i18n/i18n';
+import { articleUrl } from '../util/link';
 
 // 安全读取 localStorage：隐私模式 / 禁用 storage 时 window.localStorage 取值会抛异常
 function readStoredKeyword() {
@@ -120,7 +121,7 @@ class Search extends React.Component {
                         {data && data.length ? data.map((item, index) => {
                             let { picdir_list, title, short, riqi, source, id, cataid } = item;
                             return <div className='news-list' key={id || index}>
-                                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
+                                <NavLink to={localePath(articleUrl(item))}>
                                     <div className='imgBox'>
                                         <img src={picdir_list} alt={title || ''} />
                                     </div>

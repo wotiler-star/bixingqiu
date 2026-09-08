@@ -11,6 +11,7 @@ import Qs from 'qs';
 
 import { AVATAR_PLACEHOLDER } from '../static/placeholder';
 import { localePath } from '../i18n/i18n';
+import { articleUrl } from '../util/link';
 // import 'antd/dist/antd.css';
 
 
@@ -214,7 +215,7 @@ class Home extends React.Component {
                           <span>{item.time}</span>
                         </div>
                       </div>
-                      <NavLink to={localePath(`/detailed?cataid=8&id=${item.id}`)}>
+                      <NavLink to={localePath(articleUrl(item, 8))}>
                         <span>{item.title}</span>
                       </NavLink>
                     </div>
@@ -248,7 +249,7 @@ class Home extends React.Component {
                 cataid = data[index].cataid;
                 let { picdir_list, title, short, source, riqi, keywords, id } = item;
                 return <div className='news-list' key={index}>
-                  <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
+                  <NavLink to={localePath(articleUrl(item, 11))}>
                     <div className='imgBox'>
                       <img src={picdir_list} alt="" />
                     </div>
@@ -375,7 +376,7 @@ class Home extends React.Component {
               {pai1Arr ? pai1Arr.map((item, index) => {
                 let { id, hitnum, picdir_list, title, num_days, pinglunnum } = item;
                 return <div className="listBox" key={index}>
-                  <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
+                  <NavLink to={localePath(articleUrl(item, 11))}>
                     <div className="imgBox">
                       <img src={picdir_list} alt="" />
                     </div>
@@ -398,7 +399,7 @@ class Home extends React.Component {
               {pai2Arr ? pai2Arr.map((item, index) => {
                 let { id, hitnum, picdir_list, title, pinglunnum, num_days } = item;
                 return <div className="listBox" key={index}>
-                  <NavLink to={localePath(`/detailed?cataid=11&id=${id}`)}>
+                  <NavLink to={localePath(articleUrl(item, 11))}>
                     <div className="imgBox">
                       <img src={picdir_list} alt="" />
                     </div>

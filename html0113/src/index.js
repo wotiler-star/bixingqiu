@@ -101,13 +101,15 @@ window.onbeforeunload = function () {
   }
 }
 
-// 注册缓存型 Service Worker：让回访/二次打开文章页「秒开」，绕过慢速 CDN 回源。
-// 注意：URL 带 ?v=2 缓存破坏参数 —— 根 .htaccess 把 /service-worker.js 标了 immutable(1年)，
-// 裸 URL 会被 CDN 永久缓存，改 SW 逻辑也无法生效；用新版号 URL 让浏览器/CDN 走全新键。
-// 同时此 URL 与「竞争部署源」覆盖的裸 /service-worker.js 不同，互不干扰。
+// 注册缓存型 Service Worker：仅对哈希静态资源做 cache-first，HTML/接口全部走网络（见 service-worker.js）。
+// 注意：URL 带 ?v= 缓存破坏参数 —— 根 .htaccess 把 /service-worker.js 标了 immutable(1年)，
+// 裸 URL 会被 CDN/浏览器永久缓存；每次调整 SW 逻辑必须 bump 此版号，否则新 SW 永不生效。
+// 2026-09-04 bump ?v=2 -> ?v=3：旧 SW 预缓存了已删除的 main.js 导致回访白屏，已改为网络优先 HTML。
+// 2026-09-08 bump ?v=3 -> ?v=4：全站链接逻辑收敛为规范 URL（link.js），main 哈希变更，
+//   必须 bump 使浏览器重新拉取新 SW（其预缓存清单含新 main 哈希），否则回访用户卡旧链接/旧版。
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/service-worker.js?v=2')
+    navigator.serviceWorker.register('/service-worker.js?v=4')
       .catch(function (err) {
         // 注册失败（隐私模式/浏览器禁用 SW）不影响主站功能
         console.warn('SW register failed:', err);

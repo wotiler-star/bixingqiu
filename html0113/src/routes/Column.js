@@ -8,6 +8,7 @@ import axios from "axios";
 
 import { COVER_PLACEHOLDER } from '../static/placeholder';
 import { localePath } from '../i18n/i18n';
+import { articleUrl, authorUrl } from '../util/link';
 class Column extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -87,16 +88,16 @@ class Column extends React.Component {
             cataid = dataTab[index].cataid;
             let { picdir_list, title, cnt_short, riqi, hitnum, cataid, hid, picdir_h, nickname, id } = item;
             return <div className='list' key={index}>
-              <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}&`)}>
+              <NavLink to={localePath(articleUrl(item))}>
                 <img src={picdir_list} alt="" />
               </NavLink>
               <div className='text'>
-                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}&`)} style={{ textDecoration: 'none' }}>
+                <NavLink to={localePath(articleUrl(item))} style={{ textDecoration: 'none' }}>
                   <h2>{title}</h2>
                 </NavLink>
                 <p>{cnt_short}</p>
                 <div>
-                  <NavLink to={localePath(`/mydetail?id=${hid}&`)}>
+                  <NavLink to={localePath(authorUrl(hid))}>
                     <img src={picdir_h} alt="" />
                     <span>{nickname}</span>
                   </NavLink>

@@ -9,6 +9,7 @@ import Qs from "qs";
 
 import { COVER_PLACEHOLDER } from '../static/placeholder';
 import { localePath } from '../i18n/i18n';
+import { articleUrl } from '../util/link';
 class Livenews extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -187,11 +188,9 @@ class Livenews extends React.Component {
           <div className='recomend'>
             <h3>热门新闻</h3>
             {hotArr ? hotArr.map((item, index) => {
-              let { location: { search } } = this.props,
-                { cataid = 8 } = Qs.parse(search.substr(1)) || {}, a;
               let { picdir_list, title, riqi, id } = item;
               return <div className='listBox' key={index}>
-                <NavLink to={localePath(`/detailed?cataid=${cataid}&id=${id}`)}>
+                <NavLink to={localePath(articleUrl(item, 8))}>
                   <img src={picdir_list} alt="" />
                   <span>{title}</span>
                   <p>{riqi}</p>
