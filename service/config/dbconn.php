@@ -1,15 +1,29 @@
 <?php
 /**
  * dbconn.php 数据库连接配置
- * 支持通过环境变量（或同目录 .env 文件）覆盖，便于在不同服务器部署。
+ * 支持通过环境变量（或 .env 文件）覆盖，便于在不同服务器部署。
  * 可用变量：DB_HOST / DB_PORT / DB_NAME / DB_USER / DB_PASS / BXQ_DEBUG
  * 未设置时回退到下面的默认值。
+ *
+ * 自愈改造：自动部署会清空 public_html，导致 config/.env 丢失。
+ * 因此额外读取「public_html 之外」的持久凭据文件（如 /home/u906113796/.bxq.env），
+ * 该文件不会被部署清空，从而每次部署后后端都能自动连上数据库。
  */
-if (file_exists(__DIR__ . '/.env')) {
+// 候选凭据文件路径，按顺序取第一个存在的
+$_bxq_env_candidates = array(
+    __DIR__ . '/.env',                                  // 部署时若在场（优先）
+    (isset($_SERVER['HOME']) ? $_SERVER['HOME'] : '') . '/.bxq.env',
+    '/home/u906113796/.bxq.env',                        // Hostinger 共享主机 home 目录
+);
+$_bxq_env_file = null;
+foreach ($_bxq_env_candidates as $_c) {
+    if ($_c && file_exists($_c)) { $_bxq_env_file = $_c; break; }
+}
+if ($_bxq_env_file !== null) {
     // 兼容 Git/记事本导致的 UTF-8 BOM 头：BOM 会出现在首行键名前，
     // 使 "﻿DB_HOST" 不匹配 "DB_HOST"，从而回退 localhost 并连接失败（空 500）。
     // 这里在解析前一次性剥掉文件开头的 BOM（\xEF\xBB\xBF）。
-    $raw = (string) @file_get_contents(__DIR__ . '/.env');
+    $raw = (string) @file_get_contents($_bxq_env_file);
     if (substr($raw, 0, 3) === "\xEF\xBB\xBF") {
         $raw = substr($raw, 3);
     }
