@@ -98,6 +98,11 @@ AddDefaultCharset UTF-8
     <FilesMatch "\.(html|json|webmanifest)$">
         Header set Cache-Control "no-cache, must-revalidate"
     </FilesMatch>
+    # 图片：Hostinger hCDN 图片优化层对 /static/ 下图片会返回 422 Invalid source image，
+    # 用 no-transform 禁止 CDN 改写原图、强制透传（保留长缓存）。否则全站 /static 图片碎图。
+    <FilesMatch "\.(png|jpe?g|gif|webp|svg)$">
+        Header set Cache-Control "public, max-age=15552000, no-transform"
+    </FilesMatch>
 
     # ---------- 安全响应头 ----------
     Header always set X-Content-Type-Options "nosniff"

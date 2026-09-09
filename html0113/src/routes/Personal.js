@@ -23,6 +23,16 @@ import { localePath } from '../i18n/i18n';
 // 与 Header 同一个问题：'../static/media/avatar.png' 是硬编码字面量，
 // webpack 从不打包它 -> 线上 404，未设置头像的会员中心是碎图。改为 import 由打包器接管。
 import avatarImg from '../static/image/avatar.png';
+
+// 会员中心侧边栏导航图标：原 <img src="/service/konecms/.../tb*.png"> 引用的图片文件在仓库中不存在，
+// 且 /static 下图片经 Hostinger hCDN 图片优化层会返回 422 Invalid source image，
+// 故改用内联 SVG 图标，杜绝破图与死链（无外部依赖、永远可渲染）。
+const NavIco = () => (
+  <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"
+       style={{ marginRight: 6, verticalAlign: 'middle', opacity: 0.5, fill: 'currentColor' }}>
+    <circle cx="8" cy="8" r="3.2" />
+  </svg>
+);
 //申请等待
 
 class Personal extends React.Component {
@@ -105,52 +115,41 @@ class Personal extends React.Component {
             <span>{this.state.name}</span>
           </div>
           <h2>
-            <img src="/service/konecms/module/content/template/static/h/tb1.png" alt="" />会员中心
+            <NavIco />会员中心
           </h2>
           <div className="left-nav">
             <NavLink to={localePath('/personal/init')}>
-              <img src="/service/konecms/module/content/template/static/h/tb5.png" alt="" />
-              个人资料
+              <NavIco />个人资料
             </NavLink>
             <NavLink to={localePath('/personal/myfeedback')}>
-              <img src="/service/konecms/module/content/template/static/h/tb2.png" alt="" />
-              我的评论
+              <NavIco />我的评论
             </NavLink>
             <NavLink to={localePath('/personal/myi')}>
-              <img src="/service/konecms/module/content/template/static/h/tb12.png" alt="" />
-              我的文章
+              <NavIco />我的文章
             </NavLink>
             <NavLink to={localePath('/personal/myguan')}>
-              <img src="/service/konecms/module/content/template/static/h/timg.jpg" alt="" />
-              我的关注
+              <NavIco />我的关注
             </NavLink>
             <NavLink to={localePath('/personal/myfavorate')}>
-              <img src="/service/konecms/module/content/template/static/h/tb4.png" alt="" />
-              我的收藏
+              <NavIco />我的收藏
             </NavLink>
             <NavLink to={localePath('/personal/mynotice')}>
-              <img src="/service/konecms/module/content/template/static/h/tb14.png" alt="" />
-              系统消息
+              <NavIco />系统消息
             </NavLink>
             <NavLink to={localePath('/personal/realname')}>
-              <img src="/service/konecms/module/content/template/static/h/timg.jpg"
-                alt="" style={{ top: '0.14rem' }} />
-              实名认证
+              <NavIco />实名认证
             </NavLink>
             <a href={'javascript:;'}>
-              <img src="/service/konecms/module/content/template/static/h/tb1.png" alt=""
-                style={{ height: '48px', width: '39px' }} />账号管理
+              <NavIco />账号管理
             </a>
             <NavLink to={localePath('/personal/pwd2')}>
-              <img src="/service/konecms/module/content/template/static/h/tb9.png" alt="" />
-              修改密码
+              <NavIco />修改密码
             </NavLink>
             <NavLink to={localePath('/home')} onClick={() => { 
               window.localStorage.clear();
               window.location.reload(true);
             }}>
-              <img src="/service/konecms/module/content/template/static/h/tb10.png" alt="" />
-              安全退出
+              <NavIco />安全退出
             </NavLink>
           </div>
         </div>
