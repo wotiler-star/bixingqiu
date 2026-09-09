@@ -9,7 +9,7 @@
  *  - /service/ 后端接口：始终走网络（network-only），保证文章/评论/收藏等数据实时、不串旧数据。
  *  - 跨域请求（广告、百度统计等）与非 GET 请求：一律不拦截，保持原行为。
  */
-const CACHE = 'bxq-cache-v2';
+const CACHE = 'bxq-cache-v3';
 const STATIC_RE = /\/static\//;   // 哈希静态资源，长期缓存
 const API_RE = /\/service\//;     // 后端接口，不缓存
 

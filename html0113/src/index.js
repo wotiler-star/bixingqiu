@@ -107,9 +107,12 @@ window.onbeforeunload = function () {
 // 2026-09-04 bump ?v=2 -> ?v=3：旧 SW 预缓存了已删除的 main.js 导致回访白屏，已改为网络优先 HTML。
 // 2026-09-08 bump ?v=3 -> ?v=4：全站链接逻辑收敛为规范 URL（link.js），main 哈希变更，
 //   必须 bump 使浏览器重新拉取新 SW（其预缓存清单含新 main 哈希），否则回访用户卡旧链接/旧版。
+// 2026-09-09 bump ?v=4 -> ?v=5：线上 .htaccess 一度把 service-worker.js 误标 immutable(1年)，
+//   导致已缓存的旧 SW 永不更新、回访白屏。本次连同 CACHE 名 v2->v3 一起 bump，
+//   强制所有浏览器重新拉取新 SW（新版 SW 随部署生效，且 .htaccess 已对 SW 改 no-cache）。
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/service-worker.js?v=4')
+    navigator.serviceWorker.register('/service-worker.js?v=5')
       .catch(function (err) {
         // 注册失败（隐私模式/浏览器禁用 SW）不影响主站功能
         console.warn('SW register failed:', err);
