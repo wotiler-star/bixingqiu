@@ -217,16 +217,6 @@ class Content extends admin_base
      */
     private function detail()
     {
-        // [临时诊断] 仅在 __debug=1 时捕获致命错误并输出 JSON，便于定位 500 根因；生产无参不受影响。
-        if (isset($_GET["__debug"]) && $_GET["__debug"] === "1") {
-            register_shutdown_function(function(){
-                $e = error_get_last();
-                if ($e && ($e["type"] & (E_ERROR|E_PARSE|E_COMPILE_ERROR|E_RECOVERABLE_ERROR))) {
-                    if (!headers_sent()) header("Content-Type: application/json;charset=utf-8");
-                    echo json_encode(array("debug_fatal"=>$e["message"],"file"=>$e["file"],"line"=>$e["line"]));
-                }
-            });
-        }
         // 获取数据
         /* [BUG 修复] 原实现里 $where 只在 isset($_GET["id"]) 分支内赋值，
          * 但 init() 对「单页属性(shux)」栏目也会走 detail()（此时无 id），
