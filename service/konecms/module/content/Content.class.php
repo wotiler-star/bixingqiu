@@ -282,7 +282,13 @@ class Content extends admin_base
             //当前频道
             $where_="cataid=".$mycataidArr[0];
             $arr_=$this->conn_catalog->get_one("sort",$where_);
-            $subject=$arr_["sort"]; 
+            /* [500 修复] 文章 cataid 首段在 catalog_tb 缺栏目行（如 cataid=8 行情/快讯根栏目缺失）
+             * 时 $arr_=false，原 $arr_["sort"] 对 false 取数组偏移会致命 500。
+             * 兜底：先回退到当前访问栏目 $this->mycataid，再不行置空，保证详情页始终可渲染。 */
+            if (!$arr_ && isset($this->mycataid) && $mycataidArr[0] != $this->mycataid) {
+                $arr_ = $this->conn_catalog->get_one("sort", "cataid=" . $this->mycataid);
+            }
+            $subject = $arr_ ? $arr_["sort"] : '';
             $parentidArr=array_reverse(explode(",",rtrim(pCataid($this->conn_catalog,$mycataidArr[0]),",")));//索引0 为顶级目录，索引1为目录根
         
             //当前路径
@@ -332,8 +338,10 @@ class Content extends admin_base
                 $hid=(int)$a["hid"];
                 $hid=$hid?$hid:4;
                 $arr_=$this->conn_h->get_one("name,picdir","id=$hid");
-                $feedArr[$i]["picdir"]=$arr_["picdir"];
-                $feedArr[$i]["name"]=$arr_["name"];
+                /* [500 修复] 留言作者（会员）已删除时 $arr_=false，原 $arr_["picdir"] 致命 500；
+                 * 兜底置空，详情页照常渲染。 */
+                $feedArr[$i]["picdir"] = $arr_ ? $arr_["picdir"] : '';
+                $feedArr[$i]["name"] = $arr_ ? $arr_["name"] : '';
                 $i++;
             }
         }
