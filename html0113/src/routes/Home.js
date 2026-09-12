@@ -1,32 +1,12 @@
 import React from 'react';
-import ReactDOM, { render } from 'react-dom';
-import { NavLink, Link } from 'react-router-dom';
-import { Icon, Carousel } from 'antd';
-import Swiper from 'swiper/dist/js/swiper.js'
 import 'swiper/dist/css/swiper.min.css'
 import '../static/css/Home.less';
 import axios from 'axios';
 import './config';
-import Qs from 'qs';
+import { blocksIn } from '../config/homeBlocks';
 
-import { AVATAR_PLACEHOLDER } from '../static/placeholder';
-import { localePath } from '../i18n/i18n';
-import { articleUrl } from '../util/link';
-// import 'antd/dist/antd.css';
-
-// 首页「热门标签」关键词（数据驱动）。
-// 原先是 19 个写死的 <a href="/#">：点击只是跳回首页锚点，中键新开、复制链接、
-// 搜索引擎抓取全部落在无效目标上（实测线上产物里共 28 处 "/#" 死链）。
-// 现改为统一走站内搜索深链 /search?w=关键词；增删标签只需改这个数组。
-const HOT_TAGS = [
-  '智能合约', '挖矿', '比特币', '监管', 'DAO', '王峰十问', 'bitcoin', '瑞波币',
-  '硬分叉', '侧链', '去中心化', '数字货币', '以太坊', '加密货币', '区块链',
-  '比特币扩容', 'EOS', 'ETC', '中本聪'
-];
-
-
-
-
+// 首页容器：只负责拉数据 + 维护 tab 状态，
+// 页面由哪些区块、以什么顺序呈现，全部交给 config/homeBlocks.js 决定。
 class Home extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -66,54 +46,6 @@ class Home extends React.Component {
 
   componentWillMount() {
     document.getElementById('root').scrollIntoView(true);//为ture返回顶部，false为底部
-  }
-
-  componentWillUnmount() {
-    if (this.swiper) { // 销毁swiper
-      this.swiper.destroy()
-    }
-  }
-
-  componentDidUpdate() {
-    if (this.swiper) {
-      this.swiper.slideTo(0, 0);
-      this.swiper.destroy();
-      this.swiper = null;
-    }
-    this.swiper = new Swiper(this.refs.banner, {
-      autoplay: true,
-      loop: true,
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      pagination: {
-        el: '.swiper-pagination',
-        type: 'progressbar',
-      },
-    });
-    this.swiper = new Swiper(this.refs.bannerT, {
-      autoplay: true,
-      loop: true,
-
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      }
-    });
-    this.swiper.el.onmouseover = function () {
-      this.swiper.autoplay.stop();
-    };
-    var aa = this.refs.aa,
-      bb = this.refs.bb,
-      H = bb.offsetHeight - 500,
-      c = () => {
-        if (H <= 0) return;
-        aa.scrollTop >= (H - 2) ? aa.scrollTop = 0 : aa.scrollTop += 2
-      },
-      timer = setInterval(c, 30);
-    aa.onmouseover = () => clearInterval(timer);
-    aa.onmouseleave = () => timer = setInterval(c, 30);
   }
 
   componentDidMount() {
@@ -157,313 +89,20 @@ class Home extends React.Component {
     })
   }
 
-
-  render() {
-    let { adshowArr, showArr, subshowArr, kuaiArr, data, pai1Arr, pai2Arr, zhuanjiaArr, tuishowArr, text } = this.state;
-    let indexID = 0,
-      cataid = 0;
-    return <section className='homeBox'>
-      <div className='mainBox'>
-        <div className='primaryBox'>
-          <div className='primary'>
-            <div className='primary-left'>
-              <div className='carousel'>
-                <div className=" swiper-container" ref={'banner'}>
-                  <div className="swiper-wrapper">
-                    {showArr ? showArr.map((item, index) => {
-                      return <div className="swiper-slide" key={index}>
-                        <span className='mode'>{item.title}</span>
-                        <a href={item.url}>
-                          <img src={item.picdir} alt="" />
-                        </a>
-                      </div>
-                    }) : null}
-                    {showArr ? showArr.map((item, index) => {
-                      return <div className="swiper-slide" key={index}>
-                        <span className='mode'>{item.title}</span>
-                        <img src={item.picdir} alt="" />
-                      </div>
-                    }) : null}
-                  </div>
-                  <div className="swiper-button-prev">
-                    <Icon type="left" theme="outlined" />
-                  </div>
-                  <div className="swiper-button-next">
-                    <Icon type="right" theme="outlined" />
-                  </div>
-                  <div className="swiper-pagination"></div>
-                </div>
-
-                <div className='recommend-cont'>
-                  {subshowArr ? subshowArr.map((item, index) => {
-                    return <a href={item.url} key={index}>
-                      <img src={item.picdir} alt="" />
-                      <p>{item.title}</p>
-                    </a>
-                  }) : null}
-                </div>
-              </div>
-              {adshowArr ? adshowArr.map((item, index) => {
-                return <NavLink to={localePath('/#')} className='imgBox' key={index}>
-                  <img src={item.picdir} alt={item.title} />
-                </NavLink>
-              }) : null}
-
-
-            </div>
-
-            <div className='primary-right'>
-              <h3>最新资讯</h3>
-              <NavLink to={localePath('/livenews?cataid=8')} className='more'> </NavLink>
-
-              <div className='list-box' id='list-items'>
-                <div className='item-box'>
-                  {kuaiArr ? kuaiArr.map((item, index) => {
-                    return <div className='item' key={index}>
-                      <div className='item-icons'>
-                        <div className='item-left' id={'active'}>
-                          <span>{item.time}</span>
-                        </div>
-                      </div>
-                      <NavLink to={localePath(articleUrl(item, 8))}>
-                        <span>{item.title}</span>
-                      </NavLink>
-                    </div>
-                  }) : ''}
-                </div>
-                <NavLink to={localePath('/livenews?cataid=1')} className='filsh'>查看更多</NavLink>
-              </div>
-              <div className='gradual'></div>
-            </div>
-          </div>
-        </div>
-
-        <div className='main-content'>
-          <div className='left-content'>
-            <ul className="title" onClick={this.switch}>
-              <li className="active">头条</li>
-              <li className=" "> 行情</li>
-              <li className=" ">研报</li>
-              <li className=" ">人物</li>
-              <li className=" ">宏观</li>
-              <li className=" ">技术</li>
-              <li className=" ">政策</li>
-              <li className=" ">评级</li>
-              <li className=" ">全球</li>
-              <li className=" "><NavLink to={localePath('/column?cataid=25')}>专栏</NavLink></li>
-            </ul>
-            <div className='list-content'>
-
-              {data ? data.map((item, index) => {
-                indexID = data[index].id;
-                cataid = data[index].cataid;
-                let { picdir_list, title, short, source, riqi, keywords, id } = item;
-                return <div className='news-list' key={index}>
-                  <NavLink to={localePath(articleUrl(item, 11))}>
-                    <div className='imgBox'>
-                      <img src={picdir_list} alt="" />
-                    </div>
-                    <div className='content-text'>
-                      <h1>{title}</h1>
-                      <p>{short}</p>
-                    </div>
-                    <div className='list-bottom'>
-                      <span>{source}</span>
-                      <span>{riqi}</span>
-                      {/**<NavLink to={localePath('/#')}>
-                        {keywords}
-                      </NavLink>
-                      <p>关键字:</p> */}
-                    </div>
-                  </NavLink>
-                  <div className='shadow'></div>
-                </div>
-              }) : null}
-
-            </div>
-            <div className="lazy" onClick={() => {
-              let obj = {
-                "id": indexID,
-                "cataid": cataid
-              }
-              axios({
-                method: 'post',
-                url: `${global.constants.winUrl}?a=getMore`,
-                data: { "data": obj }
-              }).then(res => {
-                console.log(res);
-                this.setState({
-                  data: this.state.data.concat(res)
-                });
-              })
-            }}>
-              点 击 加 载 更 多
-          </div>
-          </div>
-          <div className='right-content'>
-            <div className='advertising'>
-              <h4>推广</h4>
-              <div className="swiper-container swiper-t " ref={'bannerT'}>
-                <div className="swiper-wrapper">
-                  {tuishowArr ? tuishowArr.map((item, index) => {
-                    return <div className="swiper-slide" key={index}>
-                      {item.map((item2, index2) => {
-                        let { picdir, short, title, url } = item2;
-                        return <div className='swiper-list' key={index2}>
-                          <a href={url}>
-                            <div className='imgBox'>
-                              <img src={picdir} alt="" />
-                            </div>
-                            <div className="textBox">
-                              <span>{title}</span>
-                              <p>{short}</p>
-                            </div>
-                          </a>
-                        </div>
-                      })}
-                    </div>
-                  }) : null}
-                </div>
-                <div className="swiper-pagination"></div>
-              </div>
-            </div>
-
-
-            <div className='products-box'>
-              <div className='title'>
-                <h3>专栏作家</h3>
-                <NavLink to={localePath('/author')}>
-                  <span>更多</span>
-                  <i className="more-2"></i>
-                </NavLink>
-              </div>
-              {zhuanjiaArr ? zhuanjiaArr.map((item, index) => {
-                let { id, name, picdir, short, ifover } = item;
-                return <div className='products' key={index}>
-                  <a href={'javascript:;'}>
-                    <div className='imgBox'>
-                      <NavLink to={localePath(`/mydetail?id=${id}`)}>
-                        <img src={picdir} alt="" />
-                      </NavLink>
-                    </div>
-                    <NavLink to={localePath(`/mydetail?id=${id}`)} style={{ textDecoration: 'none' }}>
-                      <div className="textBox">
-                        <span>{name}</span>
-                        <p>{short}</p>
-                      </div>
-                    </NavLink>
-                    <div className='like' onClick={(ev) => {
-                      if (!this.state.typeI) {
-                        alert('请先登录后在关注！');
-                        return;
-                      }
-                      let hid = window.localStorage.getItem('HID');
-                      data = {
-                        "hid": hid,
-                        "mycarehid": id
-                      };
-                      if (ifover == 1) {
-                        axios({
-                          method: 'post',
-                          url: `${global.constants.winUrl}?a=carehid`,
-                          data: {
-                            "data": data
-                          }
-                        }).then(res => console.log(res));
-                      }
-
-                      ev.target.innerHTML = '已关注';
-                    }}>
-                      <b>{ifover == 0 ? "" : "+"}</b>{ifover == 1 || ifover == undefined ? "关注" : "已关注"}
-                    </div>
-                  </a>
-                </div>
-              }) : null}
-            </div>
-
-            <div className="mostviews">
-              <h3>一周点击排行</h3>
-              {pai1Arr ? pai1Arr.map((item, index) => {
-                let { id, hitnum, picdir_list, title, num_days, pinglunnum } = item;
-                return <div className="listBox" key={index}>
-                  <NavLink to={localePath(articleUrl(item, 11))}>
-                    <div className="imgBox">
-                      <img src={picdir_list} alt="" />
-                    </div>
-                    <p>{title}</p>
-                  </NavLink>
-                  <div className="project">
-                    <Icon type="dashboard" theme="outlined" />&nbsp;
-                    <span>{num_days}天前&nbsp;&nbsp;&nbsp;</span>
-                    <Icon type="eye" theme="outlined" />&nbsp;
-                    <span>{hitnum}&nbsp;&nbsp;&nbsp;</span>
-                    <Icon type="message" theme="outlined" />&nbsp;
-                    <span>{pinglunnum}&nbsp;&nbsp;&nbsp;</span>
-                  </div>
-                </div>
-              }) : null}
-            </div>
-
-            <div className="mostviews">
-              <h3>一周评论排行</h3>
-              {pai2Arr ? pai2Arr.map((item, index) => {
-                let { id, hitnum, picdir_list, title, pinglunnum, num_days } = item;
-                return <div className="listBox" key={index}>
-                  <NavLink to={localePath(articleUrl(item, 11))}>
-                    <div className="imgBox">
-                      <img src={picdir_list} alt="" />
-                    </div>
-                    <p>{title}</p>
-                  </NavLink>
-                  <div className="project">
-                    <Icon type="dashboard" theme="outlined" />&nbsp;
-                    <span>{num_days}天前&nbsp;&nbsp;&nbsp;</span>
-                    <Icon type="eye" theme="outlined" />&nbsp;
-                    <span>{hitnum}&nbsp;&nbsp;&nbsp;</span>
-                    <Icon type="message" theme="outlined" />&nbsp;
-                    <span>{pinglunnum}&nbsp;&nbsp;&nbsp;</span>
-                  </div>
-                </div>
-              }) : null}
-            </div>
-
-            <div className="comment">
-              <h3>实时最新评论</h3>
-              <div className="list-content" ref={'aa'}>
-                <div className="list-content-2" ref={'bb'}>
-                  {this.state.feedArr ? this.state.feedArr.map((item, index) => {
-                    let { content, name, picdir, pname, riqi } = item;
-                    return <div className='listBox' key={index}>
-                      <div className="topBox">
-                        <img src={picdir == undefined ? AVATAR_PLACEHOLDER : picdir} alt="" />
-                        <a href="javascript:;">{name == undefined ? '网友' : name}</a>
-                        <span>{riqi}</span>
-                      </div>
-                      <div className="contentBox">
-                        <a href="javascript:;">{content}</a>
-                      </div>
-                      <div className="bottomBox">
-                        评论在：“ {pname} ”
-                    </div>
-                    </div>
-                  }) : null}
-                </div>
-              </div>
-            </div>
-
-            <div className="tags-box">
-              <h3>热门标签</h3>
-              <div className="tags-cont">
-                {HOT_TAGS.map(tag => (
-                  <Link key={tag} to={localePath('/search?w=' + encodeURIComponent(tag))}>{tag}</Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  }
+  // 「加载更多」：以当前列表最后一条为游标继续翻页
+  // （原实现在 render 里用闭包变量 indexID/cataid 记录，语义等价于取最后一项）
+  loadMore = (data) => {
+    const last = (data && data.length) ? data[data.length - 1] : { id: 0, cataid: 0 };
+    axios({
+      method: 'post',
+      url: `${global.constants.winUrl}?a=getMore`,
+      data: { "data": { "id": last.id, "cataid": last.cataid } }
+    }).then(res => {
+      this.setState({
+        data: this.state.data.concat(res)
+      });
+    });
+  };
 
   switch = (ev) => {
     let target = ev.target,
@@ -472,7 +111,6 @@ class Home extends React.Component {
       liAry1 = target.parentNode.childNodes,
       liAry = [...liAry1],
       { i1Arr, i2Arr, i3Arr, i4Arr, i5Arr, i6Arr, i7Arr, i8Arr, i9Arr, i10Arr, i11Arr, i12Arr } = this.state;
-    console.log(i12Arr);
     liAry.forEach(item => tarName === 'LI' ? item.setAttribute('class', '') : null);
     tarName === "LI" ? target.setAttribute('class', 'active') : null;
     switch (tarName === 'LI') {
@@ -513,7 +151,40 @@ class Home extends React.Component {
         this.setState({ data: i12Arr });
         break;
     }
-    console.log(ev.target.className);
+  }
+
+  // 按配置渲染单个区块：把容器 state 与回调透传给区块组件
+  renderBlock = (b, ctx) => {
+    const extra = b.getProps ? b.getProps(ctx) : null;
+    const props = extra ? Object.assign({}, ctx, extra) : ctx;
+    const C = b.C;
+    return <C key={b.id} {...props} />;
+  };
+
+  render() {
+    const ctx = Object.assign({}, this.state, {
+      onSwitchTab: this.switch,
+      onLoadMore: this.loadMore
+    });
+    return <section className='homeBox'>
+      <div className='mainBox'>
+        <div className='primaryBox'>
+          <div className='primary'>
+            <div className='primary-left'>
+              {blocksIn('primaryLeft').map(b => this.renderBlock(b, ctx))}
+            </div>
+            {blocksIn('primaryRight').map(b => this.renderBlock(b, ctx))}
+          </div>
+        </div>
+
+        <div className='main-content'>
+          {blocksIn('leftContent').map(b => this.renderBlock(b, ctx))}
+          <div className='right-content'>
+            {blocksIn('rightContent').map(b => this.renderBlock(b, ctx))}
+          </div>
+        </div>
+      </div>
+    </section>
   }
 }
 
