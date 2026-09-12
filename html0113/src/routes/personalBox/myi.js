@@ -69,9 +69,9 @@ class myi extends React.Component {
         {this.state.data ? this.state.data.map((item, index) => {
           return <li key={index}>
             <img src={item.picdir_list} alt="" />
-            <a href={`${global.constants.winUrl2}Detailed?cataid=${item.cataid}&id=${item.id}`} target='_blank'><h4>{item.title}</h4></a><br />
+            <a href={`${global.constants.winUrl2}detailed?cataid=${item.cataid}&id=${item.id}`} target='_blank'><h4>{item.title}</h4></a><br />
             <span>【{item.riqi}】</span><br />
-            <a href={`${global.constants.winUrl2}Detailed?cataid=${item.cataid}&id=${item.id}`} target='_blank' className="btn">查看</a>
+            <a href={`${global.constants.winUrl2}detailed?cataid=${item.cataid}&id=${item.id}`} target='_blank' className="btn">查看</a>
             <button onClick={(ev) => {
               ev.target.parentNode.style.display = 'none';
               let hid = window.localStorage.getItem('HID');

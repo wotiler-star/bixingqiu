@@ -26,7 +26,7 @@ class myfavorate extends React.Component {
       <ul>
         {this.state.data ? this.state.data.map((item, index) => {
           return <li key={index}>
-            <a href={`${global.constants.winUrl2}Detailed?c=Content&cataid=${item.cataid}&id=${item.pid}`} target="_blank">{item.pname}</a>
+            <a href={`${global.constants.winUrl2}detailed?c=Content&cataid=${item.cataid}&id=${item.pid}`} target="_blank">{item.pname}</a>
             <span>【收藏日期：{item.riqi}】</span><button onClick={(ev) => {
             ev.target.parentNode.style.display = 'none';
             // let hid = window.localStorage.getItem('HID');

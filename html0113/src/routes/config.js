@@ -8,5 +8,5 @@ const API_BASE = INJECTED_API_BASE
 
 global.constants = {
     winUrl: API_BASE + '/service/',
-    winUrl2: API_BASE + '/#/'
+    winUrl2: API_BASE + '/'
 };
