@@ -453,6 +453,85 @@ final class db_mysqli {
 		return $this->link->real_escape_string($str);
 	}
 
+	/**
+	 * 字段名加反引号（仅允许 [A-Za-z0-9_]，其余剔除），防止字段名注入
+	 * @param string $field
+	 * @return string 例如 `id`
+	 */
+	public function escape_field($field) {
+		$field = preg_replace('/[^A-Za-z0-9_]/', '', (string)$field);
+		return '`' . $field . '`';
+	}
+
+	/**
+	 * 安全构造「字段 = 整数」WHERE 条件（SQLi 修复核心）
+	 * 调用方应把用户传入的 id 直接交给本方法，而非自行拼 "id=$id"。
+	 * @param string $field
+	 * @param mixed  $value
+	 * @return string 例如 `id` = 123
+	 */
+	public function where_id($field, $value) {
+		return $this->escape_field($field) . ' = ' . (int)$value;
+	}
+
+	/**
+	 * 安全构造「字段 = '转义字符串'」WHERE 条件
+	 * 使用纯 PHP 的 escape_once（不依赖 DB 连接，避免提前建连）。
+	 * @param string $field
+	 * @param string $value
+	 * @return string 例如 `name` = 'o\'brien'
+	 */
+	public function where_str($field, $value) {
+		return $this->escape_field($field) . " = '" . $this->escape_once((string)$value) . "'";
+	}
+
+	/**
+	 * 纯 PHP 的字符串转义（同 escape_once），供 WHERE 构造在不建连时使用。
+	 * @param string $value
+	 * @return string
+	 */
+	public function esc_str($value) {
+		return $this->escape_once((string)$value);
+	}
+
+	/**
+	 * [战略级] 预处理语句执行（参数化查询，SQLi 根治方案）
+	 * 供后续把 select/insert/update/delete 的调用点逐步迁移到参数化。
+	 * 当前调用方仍以字符串拼接为主，本方法先作为可用基建存在。
+	 * @param string $sql  含 ? 占位符的 SQL
+	 * @param array  $params 参数值（按占位符顺序）；自动推断类型 i/d/s
+	 * @return mysqli_stmt|false
+	 */
+	public function safe_prepare($sql, $params = array()) {
+		if (!is_object($this->link)) { $this->connect(); }
+		if (!is_object($this->link)) { $this->halt('Database connection failed'); return false; }
+		$stmt = $this->link->prepare($sql);
+		if ($stmt === false) { $this->halt($this->link->error, $sql); return false; }
+		if ($params) {
+			$types = '';
+			foreach ($params as $p) { $types .= is_int($p) ? 'i' : (is_float($p) ? 'd' : 's'); }
+			$stmt->bind_param($types, ...$params);
+		}
+		$stmt->execute();
+		return $stmt;
+	}
+
+	/**
+	 * [战略级] 按主键安全删除（参数化，演示 prepared statements 迁移路径）
+	 * @param string $table
+	 * @param int    $id
+	 * @return int affected rows
+	 */
+	public function delete_by_id($table, $id) {
+		$id = (int)$id;
+		$table = preg_replace('/[^A-Za-z0-9_]/', '', (string)$table);
+		$stmt = $this->safe_prepare("DELETE FROM `".$this->config['database']."`.`".$table."` WHERE `id` = ?", array($id));
+		if (!$stmt) return 0;
+		$n = $stmt->affected_rows;
+		$stmt->close();
+		return $n;
+	}
+
 
 	private function rmfile($file,$url=""){
 	    // 安全加固：移除向外部域名 jxc.tianrunshunteng.com 上报文件信息的请求，避免隐私泄露与不可控外联

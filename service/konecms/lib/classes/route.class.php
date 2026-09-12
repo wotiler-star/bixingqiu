@@ -29,6 +29,14 @@ class route
      */
     private $noKeywordCheck = array('w');
 
+    /*
+     * [安全修复] 单值整数主键白名单。
+     * 这些参数在 schema 中永远是整数（PK/FK），入口处统一 (int) 强转，
+     * 可中和所有 "id=$id" 类 SQL 注入（路由仅 add_slashes 挡不住无引号 payload）。
+     * 注意：cataid/catid 既当整数又当字符串（like '%cataidX%'），不能强转，已排除。
+     */
+    private $numericParams = array('id','pid','hid','uid','cid','aid','tid','sid','fid','gid','lid','oid','nid','mid','qid','rid','adminid','kwid','orderid','page');
+
     public function __construct()
     {
         $this->routeArr = konecms::load_config("route");
@@ -49,6 +57,10 @@ class route
                 } else {
                     $_GET[$k] = get_check(add_slashes(trim((string) $v)));
                 }
+                // [安全修复] 单值整数主键统一强转，中和 "id=$id" 类 SQL 注入
+                if (in_array($k, $this->numericParams, true) && !is_array($_GET[$k])) {
+                    $_GET[$k] = (int) $_GET[$k];
+                }
             }
         }
 
@@ -60,6 +72,10 @@ class route
                     $_POST[$k] = post_check(add_slashes(trim((string) $v)));
                 } else {
                     $_POST[$k] = $v;
+                }
+                // [安全修复] 单值整数主键统一强转（pwd/password 不在白名单，原样保留）
+                if (in_array($k, $this->numericParams, true) && !is_array($_POST[$k])) {
+                    $_POST[$k] = (int) $_POST[$k];
                 }
             }
         }

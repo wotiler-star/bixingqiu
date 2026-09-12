@@ -15,6 +15,13 @@ class route{
 
 	private $routeArr=array();
 
+	/*
+	 * [安全修复] 单值整数主键白名单（同前台路由）。
+	 * 入口处统一 (int) 强转，中和 "id=$id" 类 SQL 注入。
+	 * cataid/catid 既当整数又当字符串，已排除。
+	 */
+	private $numericParams=array('id','pid','hid','uid','cid','aid','tid','sid','fid','gid','lid','oid','nid','mid','qid','rid','adminid','kwid','orderid','page');
+
 	public function __construct(){
 
 		$this->routeArr=konecms::load_config("route"); 
@@ -32,6 +39,10 @@ class route{
 		            // PHP 8 直接抛 TypeError -> 500。
 		            $_GET[$k]=get_check(add_slashes(trim((string)$v)));
 		        }
+		        // [安全修复] 单值整数主键统一强转，中和 "id=$id" 类 SQL 注入
+		        if(in_array($k,$this->numericParams,true)&&!is_array($_GET[$k])){
+		            $_GET[$k]=(int)$_GET[$k];
+		        }
 
 		    }
 
@@ -46,6 +57,10 @@ class route{
 		        if($k!="pwd"&&$k!="password"&&!is_array($v)) $_POST[$k]=post_check(add_slashes(trim((string)$v)));//pwd/password表示密码
 
 		        else $_POST[$k]=$v;
+		        // [安全修复] 单值整数主键统一强转（pwd/password 不在白名单，原样保留）
+		        if(in_array($k,$this->numericParams,true)&&!is_array($_POST[$k])){
+		            $_POST[$k]=(int)$_POST[$k];
+		        }
 
 		    }
 

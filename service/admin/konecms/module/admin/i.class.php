@@ -561,9 +561,11 @@ class i extends admin_base
      */
     function ajax_dels()
     {
-        $ids = $_POST["ids"];
+        $ids = isset($_POST["ids"]) ? (string)$_POST["ids"] : '';
         $idsArr = explode(",", $ids); 
         foreach ($idsArr as $id) {
+            $id = (int)$id;
+            if ($id <= 0) continue;
             $where = "id=$id"; 
                     $this->conn_i->delete($where);
                     
@@ -577,7 +579,8 @@ class i extends admin_base
      */
     function ajax_del()
     {
-        $id = $_POST["id"];
+        $id = isset($_POST["id"]) ? (int)$_POST["id"] : 0;
+        if ($id <= 0) { echo json_encode(array("success"=>-1,"msg"=>"invalid id")); return; }
         $where = "id=$id"; 
         $this->conn_i->delete($where); 
         $arr['success'] = 0;
