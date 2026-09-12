@@ -167,16 +167,22 @@ class Detailed extends React.Component {
 
 
           {
-            /*<div className="keyword">
-                        关键字：
-                        <NavLink to={localePath("/list")}>火星晨报</NavLink>
-                        <NavLink to={localePath("/list")}>赵长鹏</NavLink>
-                        <NavLink to={localePath("/list")}>日本金融厅</NavLink>
-                        <NavLink to={localePath("/list")}>火币</NavLink>
-                        <NavLink to={localePath("/list")}>BitTrade</NavLink>
-                        <NavLink to={localePath("/list")}>SPoS</NavLink>
-                        <NavLink to={localePath("/list")}>共识机制</NavLink>
-                      </div> */
+            /* [P0-2/P1-3 标签云] 原静态标签块为死代码（整段注释、且指向空 /list）。
+               改为基于文章 keywords 动态渲染，每个标签跳 /search?w=关键词，
+               形成真实内链与主题簇，强化 SEO 与延伸阅读。 */
+            (() => {
+              const kw = (this.state.data && this.state.data[0] && this.state.data[0].keywords) || '';
+              const tags = String(kw).split(/[，,、\s]+/).map(t => t.trim()).filter(t => t.length >= 2);
+              if (!tags.length) return null;
+              return (
+                <div className="keyword">
+                  <span className="keyword-label">关键字：</span>
+                  {tags.map((t, i) => (
+                    <NavLink key={i} to={localePath('/search?w=' + encodeURIComponent(t))} className="kw-item">{t}</NavLink>
+                  ))}
+                </div>
+              );
+            })()
           }
           <div className={this.state.goTop ? 'news-share' : 'news-share news-active'}>
             {

@@ -227,7 +227,35 @@ class Content extends admin_base
         if (isset($_GET["id"])):
         $id = isset($_GET["id"]) ? intval($_GET["id"]) : 0;
         $where = "cataid like '%cataid".$this->mycataid."%' and id <>$id";
-        $aboutArr = $this->conn->select("*", $where, "id desc",6);
+        /* [关联升级 P1-1] 相关新闻：同栏目优先（相关性最高），
+         * 若同栏目不足 6 篇，用 keywords 重叠从其他栏目补充（首次利用长期闲置的 keywords 字段）。
+         * keywords 形如 '以太坊，多久，起来'（中文逗号分隔），按词切片做 LIKE 重叠匹配。 */
+        $aboutArr = $this->conn->select("*", $where, "id desc", 6);
+        if (count($aboutArr) < 6) {
+            $kwSrc = isset($data["keywords"]) ? $data["keywords"] : '';
+            if ($kwSrc == '' && isset($_GET["id"])) {
+                $kwRow = $this->conn->get_one("keywords", "id=" . $id);
+                $kwSrc = $kwRow ? $kwRow["keywords"] : '';
+            }
+            if ($kwSrc != '') {
+                $kws = preg_split("/[，,、\s]+/u", $kwSrc);
+                $like = array();
+                foreach ($kws as $kw) {
+                    $kw = trim($kw);
+                    if (mb_strlen($kw, 'UTF-8') >= 2) {
+                        $like[] = "keywords like '%" . $this->conn->escape_once($kw) . "%'";
+                    }
+                }
+                if ($like) {
+                    $w2 = "ifhidden='1' and id <>" . $id . " and (" . implode(" or ", $like) . ")";
+                    $have = array();
+                    foreach ($aboutArr as $a) { $have[] = (int)$a["id"]; }
+                    if ($have) { $w2 .= " and id not in (" . implode(",", $have) . ")"; }
+                    $more = $this->conn->select("*", $w2, "hitnum desc", (6 - count($aboutArr)));
+                    if ($more) { $aboutArr = array_merge($aboutArr, $more); }
+                }
+            }
+        }
         
         /* [安全修复] 原为 "id=" . $_GET["id"] 裸拼接。虽然 route 对 GET 标量
          * 做了 add_slashes，但数字上下文无需引号即可注入（如 id=1 or 1=1），
@@ -268,6 +296,18 @@ class Content extends admin_base
             
             // 推荐
             $hotArr=$this->getSetArr("hot",$this->mycataid,$this->conn,$cols);
+            /* [口径统一 P1-2] 编辑精选不足 6 篇时，用 hitnum 降序补充，
+             * 与首页 pai1Arr(hitnum desc) 口径一致，让"热门"真正反映热度。 */
+            if (count($hotArr) < 6) {
+                $wh = "ifhidden='1' and cataid like '%cataid" . $this->mycataid . "%' and id <>" . (int)$data["id"];
+                $hm = $this->conn->select($cols, $wh, "hitnum desc", 6);
+                $hid = array();
+                foreach ($hotArr as $a) { $hid[] = (int)$a["id"]; }
+                foreach ($hm as $a) {
+                    if (count($hotArr) >= 6) break;
+                    if (!in_array((int)$a["id"], $hid)) { $hotArr[] = $a; $hid[] = (int)$a["id"]; }
+                }
+            }
             // 上一页下一页
             if (isset($_GET["id"])) {
                 $mywhere=$this->genWhere($mycataidArr);

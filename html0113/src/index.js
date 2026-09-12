@@ -24,7 +24,8 @@ import Author from './routes/Author';
 import Login from './routes/Login';
 import Register from './routes/Register';
 import Personal from './routes/Personal';
-import Details from './routes/Details';
+// 注意：原 /details 裸路由（无推荐位的低配文章页）已收敛到 /detailed，
+// 见下方 P0-1 路由收敛；此处不再 import Details 组件，避免双 URL 内容分叉。
 import Apply from './routes/Apply';
 import Search from './routes/search';
 
@@ -63,7 +64,10 @@ class LocaleRouter extends React.Component {
           <Route path={base + '/login'} component={Login} />
           <Route path={base + '/register'} component={Register} />
           <Route path={base + '/personal'} component={Personal} />
-          <Route path={base + '/details'} component={Details} />
+          {/* P0-1 路由收敛：/details 与 /detailed 合并为同一组件，
+              直接渲染 Detailed（而非字符串 <Redirect>，避免丢失 query 导致白页），
+              彻底消除「裸 /details 文章页无相关推荐」的内容分叉。 */}
+          <Route path={base + '/details'} component={Detailed} />
           <Route path={base + '/apply'} component={Apply} />
           <Route path={base + '/search'} component={Search} />
           <Redirect to={base + '/home'} />

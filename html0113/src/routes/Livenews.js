@@ -88,7 +88,9 @@ class Livenews extends React.Component {
                 <div className="round"></div>
                 <div className="time-left">{riqi}</div>
               </div>
-              <NavLink to={localePath(`/details?cataid=${cataid}&id=${id}`)}>
+              {/* [P0-1 路由收敛] 统一走 articleUrl → /detailed 规范详情页（含相关/热门/下一篇），
+                  消除 /details 与 /detailed 双 URL 碎片化，且快讯读者也能获得推荐延伸 */}
+              <NavLink to={localePath(articleUrl(item, cataid))}>
                 <h1>{title}</h1>
                 <p>{short}</p>
               </NavLink>
