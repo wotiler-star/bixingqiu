@@ -71,12 +71,25 @@
     })();
   </script>
   <script>
-    // 兼容旧的 #/home 形式链接：加载时若带 hash 路由则改写为干净路径
+    // 兼容旧的 #/xxx 哈希链接：前端使用 BrowserRouter（干净路径），旧的 #/ 哈希链接在站内
+    // 点击只会改 hash、React 不响应 -> 表现为“点了没反应 / 死链跳转”（典型：首页轮播/副轮播
+    // 后端下发的 #/Detailed?cataid=11&id=586）。做法：加载时 + hash 变化时，把 #/Xxx?y 改写为
+    // /xxx?y（路径统一小写，所有路由均为小写），让 BrowserRouter 正确渲染对应页面。
     (function () {
-      var h = window.location.hash;
-      if (h && h.indexOf('#/') === 0) {
-        window.location.replace(h.slice(1));
+      function fixHash() {
+        var h = window.location.hash;
+        if (!h || h.indexOf('#/') !== 0) return;
+        var clean = h.slice(1);                 // /Detailed?cataid=11&id=586
+        var q = clean.indexOf('?');
+        var path = q >= 0 ? clean.slice(0, q) : clean;
+        var qs = q >= 0 ? clean.slice(q) : '';
+        clean = path.toLowerCase() + qs;        // /detailed?cataid=11&id=586
+        if (clean !== window.location.pathname + window.location.search) {
+          window.location.replace(clean);
+        }
       }
+      fixHash();
+      window.addEventListener('hashchange', fixHash);
     })();
   </script>
   <script>
