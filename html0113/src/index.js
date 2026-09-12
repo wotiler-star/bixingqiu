@@ -1,3 +1,5 @@
+// [临时构建标记] 用于强制 hPanel 重建并检测部署；诊断完成后移除
+window.__BUILD_MARKER__ = 'diag-188c8eb';
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
