@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM, { render } from 'react-dom';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { Icon, Carousel } from 'antd';
 import Swiper from 'swiper/dist/js/swiper.js'
 import 'swiper/dist/css/swiper.min.css'
@@ -13,6 +13,16 @@ import { AVATAR_PLACEHOLDER } from '../static/placeholder';
 import { localePath } from '../i18n/i18n';
 import { articleUrl } from '../util/link';
 // import 'antd/dist/antd.css';
+
+// 首页「热门标签」关键词（数据驱动）。
+// 原先是 19 个写死的 <a href="/#">：点击只是跳回首页锚点，中键新开、复制链接、
+// 搜索引擎抓取全部落在无效目标上（实测线上产物里共 28 处 "/#" 死链）。
+// 现改为统一走站内搜索深链 /search?w=关键词；增删标签只需改这个数组。
+const HOT_TAGS = [
+  '智能合约', '挖矿', '比特币', '监管', 'DAO', '王峰十问', 'bitcoin', '瑞波币',
+  '硬分叉', '侧链', '去中心化', '数字货币', '以太坊', '加密货币', '区块链',
+  '比特币扩容', 'EOS', 'ETC', '中本聪'
+];
 
 
 
@@ -444,25 +454,9 @@ class Home extends React.Component {
             <div className="tags-box">
               <h3>热门标签</h3>
               <div className="tags-cont">
-                <a href="/#">智能合约</a>
-                <a href="/#">挖矿</a>
-                <a href="/#">比特币</a>
-                <a href="/#">监管</a>
-                <a href="/#">DAO</a>
-                <a href="/#">王峰十问</a>
-                <a href="/#">bitcoin</a>
-                <a href="/#">瑞波币</a>
-                <a href="/#">硬分叉</a>
-                <a href="/#">侧链</a>
-                <a href="/#">去中心化</a>
-                <a href="/#">数字货币</a>
-                <a href="/#">以太坊</a>
-                <a href="/#">加密货币</a>
-                <a href="/#">区块链</a>
-                <a href="/#">比特币扩容</a>
-                <a href="/#">EOS</a>
-                <a href="/#">ETC</a>
-                <a href="/#">中本聪</a>
+                {HOT_TAGS.map(tag => (
+                  <Link key={tag} to={localePath('/search?w=' + encodeURIComponent(tag))}>{tag}</Link>
+                ))}
               </div>
             </div>
           </div>

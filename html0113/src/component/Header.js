@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter, NavLink } from 'react-router-dom';
+import { withRouter, NavLink, Link } from 'react-router-dom';
 import { Icon } from 'antd';
 import axios from "axios";
 import { t, localePath, getLocale, LOCALES, normalizeBase } from '../i18n/i18n';
@@ -77,13 +77,13 @@ class Header extends React.Component {
       .catch(() => { /* 头像拉取失败保持默认头像即可，不应影响导航渲染 */ });
   }
 
-  // 切换语种：保持当前 base path 与 query 不变，只换前缀，避免语言切换后回到首页
-  switchLocale = (loc) => {
-    const { location, history } = this.props;
-    const base = normalizeBase(location.pathname || '/');
-    const search = location.search || '';
-    this.setState({ langOpen: false });
-    history.push('/' + loc + base + search);
+  // 语种切换的目标 URL：保持当前 base path 与 query 不变，只换前缀，
+  // 避免在 /en/list?cataid=3 这类深层 URL 下切语言后查询串丢失或被弹回首页。
+  // 由 <Link to={...}> 承载跳转（曾用 <a href> + preventDefault + history.push，
+  // 一旦 JS 抛错就会退化成整页刷新，丢失 SPA 状态）。
+  localeTarget = (loc) => {
+    const { location } = this.props;
+    return '/' + loc + normalizeBase(location.pathname || '/') + (location.search || '');
   };
 
   submitSearch = () => {
@@ -152,12 +152,12 @@ class Header extends React.Component {
               </span>
               <div className='bxq-lang-menu' style={{ display: langOpen ? 'block' : 'none' }}>
                 {LOCALES.map(loc => (
-                  <a
+                  <Link
                     key={loc}
                     className={loc === cur ? 'active' : ''}
-                    href={'/' + loc + normalizeBase(this.props.location.pathname || '/') + (this.props.location.search || '')}
-                    onClick={(ev) => { ev.preventDefault(); this.switchLocale(loc); }}
-                  >{LOCALE_LABEL[loc] || loc}</a>
+                    to={this.localeTarget(loc)}
+                    onClick={() => this.setState({ langOpen: false })}
+                  >{LOCALE_LABEL[loc] || loc}</Link>
                 ))}
               </div>
             </div>

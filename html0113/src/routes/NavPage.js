@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM, { render } from 'react-dom';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { Icon } from 'antd';
 import '../static/css/NavPage.less';
 import axios from 'axios';
@@ -64,14 +64,16 @@ class NavPage extends React.Component {
             <div className='tabnav-mousemove'>
               {g55 ? g55.map((item, index) => {
                 let { picdir, short, sitename } = item;
-                return <a href="/#" key={index}>
+                /* 原为 <a href="/#">：机构卡片点了毫无反应（纯锚点）。
+                   改为站内搜索该机构名，至少能落到有内容的深链且支持中键新开/收藏。 */
+                return <Link key={index} to={localePath('/search?w=' + encodeURIComponent(sitename || ''))}>
                   <img src={picdir} alt="" />
                   <span>{short}</span>
                   <div className='nameBox'>
                     <p>{sitename}</p>
                     <i></i>
                   </div>
-                </a>
+                </Link>
               }) : null}
             </div>
             <i className='tabnav-drop-down' onClick={() => {
@@ -89,14 +91,15 @@ class NavPage extends React.Component {
             <div className='tabnav-mousemove'>
               {g56 ? g56.map((item, index) => {
                 let { picdir, short, sitename } = item;
-                return <a href="/#" key={index}>
+                /* 同 g55：<a href="/#"> 死链 -> 站内搜索该机构名 */
+                return <Link key={index} to={localePath('/search?w=' + encodeURIComponent(sitename || ''))}>
                   <img src={picdir} alt="" />
                   <span>{short}</span>
                   <div className='nameBox'>
                     <p>{sitename}</p>
                     <i></i>
                   </div>
-                </a>
+                </Link>
               }) : null}
             </div>
             <i className='tabnav-drop-down' onClick={() => {
