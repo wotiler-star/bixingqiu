@@ -130,6 +130,9 @@ class Personal extends React.Component {
             <NavLink to={localePath('/personal/myi')}>
               <NavIco />我的文章
             </NavLink>
+            <NavLink to={localePath('/personal/geni')}>
+              <NavIco />发布文章
+            </NavLink>
             <NavLink to={localePath('/personal/myguan')}>
               <NavIco />我的关注
             </NavLink>
@@ -142,9 +145,6 @@ class Personal extends React.Component {
             <NavLink to={localePath('/personal/realname')}>
               <NavIco />实名认证
             </NavLink>
-            <a href={'javascript:;'}>
-              <NavIco />账号管理
-            </a>
             <NavLink to={localePath('/personal/pwd2')}>
               <NavIco />修改密码
             </NavLink>

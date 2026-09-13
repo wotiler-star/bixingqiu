@@ -60,12 +60,7 @@ class Login extends React.Component {
             title="点击刷新" style={{ width: '110px', height: '44px', marginLeft: '10px', cursor: 'pointer', borderRadius: '4px' }} />
         </div>
         <div className="sign-in">
-          <input type="button" value="登录" title="登录"
-            onMouseDown={(ev) => ev.target.setAttribute('id', 'btn')}
-            onMouseUp={(ev) => ev.target.setAttribute('id', '')}
-            onMouseLeave={(ev) => ev.target.setAttribute('id', '')}
-            onClick={this.verification}
-          />
+          <input type="button" value="登录" title="登录" onClick={this.verification} />
         </div>
       </div>
     </section>
@@ -77,7 +72,6 @@ class Login extends React.Component {
       { cataid = 0 } = Qs.parse(search.substr(1)) || {};
     id = parseFloat(id);
     let url = !id ? 'personal' : `detailed?cataid=${cataid}&id=${id}`;
-    console.log(this.props);
     let a = () => setTimeout(() => this.setState({ warningIf: false }), 3000),
       b = () => this.props.history.push(localePath(`/${url}`));
 
@@ -134,7 +128,6 @@ class Login extends React.Component {
         });
         a()
         this.refreshCaptcha();
-        alert('登录失败，密码错误！');
       }
       if (res.success == 2) {
         this.setState({
@@ -143,7 +136,6 @@ class Login extends React.Component {
         });
         a()
         this.refreshCaptcha();
-        alert('账号不存在！');
       }
       if (res.success == 3) {
         this.setState({
@@ -152,7 +144,6 @@ class Login extends React.Component {
         });
         a()
         this.refreshCaptcha();
-        alert('图形验证码错误！');
       }
       if (res.success == 9) {
         this.setState({
@@ -161,7 +152,6 @@ class Login extends React.Component {
         });
         a()
         this.refreshCaptcha();
-        alert('尝试过于频繁，请稍后再试');
       }
     });
   }

@@ -4,6 +4,8 @@ import {Radio, Input, Upload, Icon, message} from 'antd';
 import axios from "axios";
 import Editor from "react-umeditor";
 
+import { localePath } from '../../i18n/i18n';
+
 const RadioGroup = Radio.Group;
 const {TextArea} = Input;
 
@@ -13,45 +15,35 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 
-function beforeUpload(file) {
-  const isJPG = file.type === 'image/jpeg';
-  if (!isJPG) {
-    message.error('You can only upload JPG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJPG && isLt2M;
-}
-
 class geni extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      data: null,
+      id: '',
+      hname: '',
       value: 26,
       form_data: {
-        text: "123",
         editor: ""
       },
       loading: false,
+      imageUrl: '',
+      tip: '',
+      tipIf: false,
     }
   }
 
   componentDidMount() {
-    let id = window.localStorage.getItem('HID'),
-        hname = window.localStorage.getItem('HNAME');
-    this.setState({
-      id,
-      hname
-    });
+    let id = '';
+    let hname = '';
+    try {
+      id = window.localStorage.getItem('HID') || '';
+      hname = window.localStorage.getItem('HNAME') || '';
+    } catch (e) { }
+    this.setState({ id, hname });
   }
 
   onChange = (e) => {
-    this.setState({
-      value: e.target.value,
-    });
+    this.setState({ value: e.target.value });
   };
 
   getIcons() {
@@ -64,29 +56,33 @@ class geni extends React.Component {
     ]
   }
 
-  handleFormChange(e) {
-    e = e || window.event;
-    var target = e.target || e.srcElement;
-    var value = target.value;
-    var form_data = this.state.form_data;
-    form_data.text = value;
-    this.setState({
-      form_data: form_data
-    })
-  }
-
   handleEditorChange(content) {
     var form_data = this.state.form_data;
     form_data.editor = content;
-    this.setState({
-      form_data: form_data
-    })
+    this.setState({ form_data: form_data });
   }
 
-  handleSubmitForm() {
-    var form_data = this.state.form_data;
-    alert(form_data.editor);
-  }
+  // 内联提示（替代 alert，避免双弹窗）
+  showTip = (msg) => {
+    this.setState({ tip: msg, tipIf: true });
+    setTimeout(() => this.setState({ tipIf: false }), 3000);
+  };
+
+  // 封面上传：本地直读 base64 后 return false，阻止 antd 默认上传到不存在的 static/media（与 init.js 一致）
+  beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('封面仅支持 JPG / PNG 格式');
+      return false;
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('封面图片不能超过 2MB');
+      return false;
+    }
+    getBase64(file, imageUrl => this.setState({ imageUrl, loading: false }));
+    return false;
+  };
 
   handleChange = (info) => {
     if (info.file.status === 'uploading') {
@@ -94,25 +90,58 @@ class geni extends React.Component {
       return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl => this.setState({
-        imageUrl,
-        loading: false,
-      }));
+      getBase64(info.file.originFileObj, imageUrl => this.setState({ imageUrl, loading: false }));
     }
+  };
+
+  // 提交审核 / 存草稿 共用逻辑
+  submitArticle = (isDraft) => {
+    const { id, hname } = this.state;
+    if (!id) {
+      this.showTip('请先登录后再投稿');
+      setTimeout(() => { this.props.history && this.props.history.push(localePath('/login')); }, 1200);
+      return;
+    }
+    const { title, gjc, nrzy } = this.refs;
+    const t = (title.value || '').trim();
+    const cnt = this.state.form_data.editor || '';
+    const cntText = cnt.replace(/<[^>]+>/g, '').trim();
+    if (!t) {
+      this.showTip('请填写文章标题');
+      return;
+    }
+    if (cntText.length < 10) {
+      this.showTip('正文内容过短，请完善后再提交');
+      return;
+    }
+    const obj = {
+      "hid": id,
+      "hname": hname,
+      "cataid": this.state.value,
+      "title": t,
+      "keywords": gjc.value,
+      "cnt_short": nrzy.textAreaRef.value,
+      "cnt": cnt,
+      "picdir_list": this.state.imageUrl || ''
+    };
+    axios({
+      method: "post",
+      url: `${global.constants.winUrl}?c=h&a=geni&hid=${encodeURIComponent(id)}` + (isDraft ? '&cg' : ''),
+      data: {"data": obj}
+    }).then(res => {
+      if (res.success == 0) {
+        message.success(isDraft ? '已存草稿' : '提交成功，等待审核');
+        setTimeout(() => window.location.reload(), 900);
+      } else if (res.success == 401) {
+        this.showTip('登录已失效，请重新登录');
+      } else {
+        this.showTip('提交失败，请稍后重试');
+      }
+    }).catch(() => this.showTip('网络异常，请稍后重试'));
   };
 
   render() {
     let icons = this.getIcons();
-    let plugins = {
-      image: {
-        uploader: {
-          url: "../../static/media",
-          name: "file",
-          filter: (res) => res.url
-        }
-      }
-    };
     let form_data = this.state.form_data;
     const uploadButton = (
         <div>
@@ -123,6 +152,7 @@ class geni extends React.Component {
     const imageUrl = this.state.imageUrl;
     return <div className="right-content-7 right-box">
       <h3>发布文章</h3>
+      <div className='warning' style={{ display: this.state.tipIf ? 'block' : 'none' }}>{this.state.tip}</div>
       <div className={'column-box'}>
         <h4>选择栏目:</h4>
         <RadioGroup onChange={this.onChange} value={this.state.value}>
@@ -142,11 +172,11 @@ class geni extends React.Component {
       </div>
       <div className={'headline'}>
         <h4>文章标题:</h4>
-        <input type="text" ref={'title'}/>
+        <input type="text" placeholder="请输入文章标题" ref={'title'}/>
       </div>
       <div className="particulars">
         <div>
-          <Editor icons={icons} plugins={plugins} value={form_data.editor}
+          <Editor icons={icons} value={form_data.editor}
                   onChange={this.handleEditorChange.bind(this)}/>
         </div>
       </div>
@@ -166,13 +196,12 @@ class geni extends React.Component {
               listType="picture-card"
               className="avatar-uploader"
               showUploadList={false}
-              action="static/media"
-              beforeUpload={beforeUpload}
+              beforeUpload={this.beforeUpload}
               onChange={this.handleChange}
           >
-            {imageUrl ? <img src={imageUrl} alt="avatar"/> : uploadButton}
+            {imageUrl ? <img src={imageUrl} alt="封面"/> : uploadButton}
           </Upload>
-          <span>支持jpeg、png等格式，照片大小不超过5M。</span>
+          <span>支持 JPG / PNG 格式，封面大小不超过 2MB。</span>
         </div>
       </div>
       <div className={'explain'}>
@@ -180,60 +209,9 @@ class geni extends React.Component {
         <p>考虑到用户浏览体验，所有投稿美好星球的稿件，美好星球均有权对文章的标题、头图进行调整，这些调整并不会影响正文内容，如果需要进行内容调整，编辑会与作者联系确认，不会直接修改。</p>
       </div>
       <div className="submit">
-        <button onClick={() => {
-          let {title, gjc, nrzy} = this.refs;
-          let obj = {
-            "hid": this.state.id,
-            "hname": this.state.hname,
-            "cataid": this.state.value,
-            "title": title.value,
-            "keywords": gjc.value,
-            "cnt_short": nrzy.textAreaRef.value,
-            "cnt": this.state.form_data.editor,
-            "picdir_list": imageUrl,
-          };
-          axios({
-            method: "post",
-            url: `${global.constants.winUrl}?c=h&a=geni&hid=${this.state.id}`,
-            data: {"data": obj}
-          }).then(res => {
-            if (res.success == 0) {
-              alert('提交成功');
-              window.location.reload();
-            } else if (res.success == 1) {
-              alert('提交失败')
-            }
-          })
-        }
-        }>提交审核
-        </button>
+        <button onClick={() => this.submitArticle(false)}>提交审核</button>
         &nbsp;&nbsp;&nbsp;
-        <button  onClick={() => {
-          let {title, gjc, nrzy} = this.refs;
-          let obj = {
-            "hid": this.state.id,
-            "hname": this.state.hname,
-            "cataid": this.state.value,
-            "title": title.value,
-            "keywords": gjc.value,
-            "cnt_short": nrzy.textAreaRef.value,
-            "cnt": this.state.form_data.editor,
-            "picdir_list": imageUrl
-          };
-          axios({
-            method: "post",
-            url: `${global.constants.winUrl}?c=h&a=geni&hid=${this.state.id}&cg`,
-            data: {"data": obj}
-          }).then(res => {
-            if (res.success == 0) {
-              alert('提交成功');
-              window.location.reload();
-            } else if (res.success == 1) {
-              alert('提交失败')
-            }
-          })
-        }
-        }>存草稿</button>
+        <button onClick={() => this.submitArticle(true)}>存草稿</button>
         &nbsp;&nbsp;&nbsp;
       </div>
     </div>

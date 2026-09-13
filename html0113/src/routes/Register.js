@@ -216,24 +216,20 @@ class Register extends React.Component {
           });
           a()
           this.refreshCaptcha();
-          alert(res.msg || '注册失败！');
         }
         if (res.success == 3) {
           this.setState({ warning: '图形验证码错误！', warningIf: true });
           a()
           this.refreshCaptcha();
-          alert('图形验证码错误！');
         }
         if (res.success == 4) {
           this.setState({ warning: '短信验证码错误！', warningIf: true });
           a()
-          alert('短信验证码错误！');
         }
         if (res.success == 9) {
           this.setState({ warning: '注册过于频繁，请稍后再试', warningIf: true });
           a()
           this.refreshCaptcha();
-          alert('注册过于频繁，请稍后再试');
         }
       })
     }
