@@ -149,7 +149,7 @@ class init extends React.Component {
       <div className='market'>
         <div className="title">
           <h3>涨幅榜</h3>
-          <NavLink to={localePath('/#')} className='more-6'></NavLink>
+          <NavLink to={localePath('/list')} className='more-6'></NavLink>
         </div>
         <div className='tab-box'>
           <div className='tab-switch'>

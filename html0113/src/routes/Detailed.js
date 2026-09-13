@@ -11,6 +11,7 @@ import { setSEO } from '../util/seo';
 import { AVATAR_PLACEHOLDER, COVER_PLACEHOLDER } from '../static/placeholder';
 import { localePath } from '../i18n/i18n';
 import { articleUrl } from '../util/link';
+import { socialShareUrl, currentShareContext } from '../util/share';
 import wechatQr from '../static/image/hx-ewm-c6929e3815.png'; // 修复：原为硬编码 static/media 字面量，webpack 未打包该文件 -> 线上 404
 const {TextArea} = Input;
 
@@ -127,6 +128,7 @@ class Detailed extends React.Component {
   }
 
   render() {
+    const shareCtx = currentShareContext();
     return <section className='detailed'>
 
       {this.state.loading ? (
@@ -197,20 +199,20 @@ class Detailed extends React.Component {
             <div className="author-right">
               <div className="back-top" onClick={this.goTop}></div>
               <div className="share-box">
-                <a href="/#" className='icon-wechat'></a>
-                <a href="/#" className='icon-weibo'>
+                <a href="/#" className='icon-wechat' onClick={(e) => e.preventDefault()}>
                   <div className="wechat-qrcode">
-                    <h4>微博扫一扫：分享</h4>
+                    <h4>微信扫一扫：分享</h4>
                     <div className="qrcode">
                       <img src={wechatQr} alt=''/>
                     </div>
                     <div className="help">
-                      <p>微博里点“发现”，扫一下</p>
-                      {/*<p>二维码便可将本文分享至朋友圈。</p> */}
+                      <p>微信里点“发现”，扫一下</p>
+                      <p>二维码便可将本文分享至朋友圈。</p>
                     </div>
                   </div>
                 </a>
-                <a href="/#" className='icon-qq'></a>
+                <a href={socialShareUrl('weibo', shareCtx.url, shareCtx.title)} target="_blank" rel="noopener noreferrer" className='icon-weibo'></a>
+                <a href={socialShareUrl('qq', shareCtx.url, shareCtx.title)} target="_blank" rel="noopener noreferrer" className='icon-qq'></a>
                 <p>分享</p>
               </div>
               <div className="comment-btn">

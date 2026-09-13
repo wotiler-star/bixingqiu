@@ -8,6 +8,7 @@ import axios from "axios";
 
 import { localePath } from '../i18n/i18n';
 import { articleUrl } from '../util/link';
+import { socialShareUrl, currentShareContext } from '../util/share';
 class MyDetail extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -47,6 +48,7 @@ class MyDetail extends React.Component {
   }
 
   render() {
+    const shareCtx = currentShareContext();
     let { headerD, contentD } = this.state;
     return <section className='myDetail'>
 
@@ -62,13 +64,13 @@ class MyDetail extends React.Component {
             分享
           </div>
           <div className='shareBox' style={{ display: this.state.share ? 'block' : 'none' }}>
-            <NavLink to={localePath('/#')}>
+            <a href={socialShareUrl('qq', shareCtx.url, shareCtx.title)} target="_blank" rel="noopener noreferrer">
               <Icon type="qq" theme="outlined" />
-            </NavLink>
-            <NavLink to={localePath('/#')}>
+            </a>
+            <a href={socialShareUrl('weibo', shareCtx.url, shareCtx.title)} target="_blank" rel="noopener noreferrer">
               <Icon type="weibo" theme="outlined" />
-            </NavLink>
-            <NavLink to={localePath('/#')} className='w'>
+            </a>
+            <a href="#" onClick={(e) => e.preventDefault()} className='w'>
               <Icon type="wechat" theme="filled" />
               <div className='wechatBox'>
                 <p>微信扫一扫：分享</p>
@@ -78,7 +80,7 @@ class MyDetail extends React.Component {
                 <span>微信里点“发现”，扫一下</span>
                 <span>二维码便可将本文分享至朋友圈。</span>
               </div>
-            </NavLink>
+            </a>
           </div>
           <div className='avatar'>
             <img src={picdir} alt="" />
