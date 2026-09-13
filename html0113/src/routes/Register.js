@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM, { render } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import action from '../store/action';
+// 注册成功自动登录，并同步登录态到 redux（与 Login 共用）
+import store from '../store/index';
 import { Icon } from 'antd';
 import '../static/css/Register.less';
 import axios from 'axios';
@@ -177,8 +179,35 @@ class Register extends React.Component {
             warningIf: true
           });
           a();
-          setTimeout(b, 3000);
-          alert('注册成功，请登录！');
+          const hname = this.refs.a.value;
+          const pwd = this.refs.b.value;
+          // 注册成功自动登录：无需用户再手动登录
+          axios({
+            method: "post",
+            url: `${global.constants.winUrl}?c=h&a=ajax_login`,
+            data: { "data": { hname: hname, pwd: pwd } }
+          }).then((loginRes) => {
+            if (loginRes && loginRes.success == 0) {
+              if (window.localStorage) {
+                let Storage = window.localStorage;
+                Storage.NICKNAME = loginRes.nickname;
+                Storage.HID = loginRes.hid;
+                Storage.HNAME = loginRes.hname;
+              }
+              store.dispatch(action.person.setPerson({
+                hid: loginRes.hid,
+                hname: loginRes.hname,
+                nickname: loginRes.nickname
+              }));
+              // 直接进入会员中心
+              this.props.history.push(localePath("/personal"));
+            } else {
+              // 自动登录失败（如图形验证码开启），退回手动登录页
+              this.props.history.push(localePath("/login"));
+            }
+          }).catch(() => {
+            this.props.history.push(localePath("/login"));
+          });
         }
         if (res.success == 1) {
           this.setState({

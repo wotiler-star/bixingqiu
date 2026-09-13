@@ -53,9 +53,11 @@ function readHid() {
 class Header extends React.Component {
   constructor(props) {
     super(props);
+    // 登录态优先取 redux（登录/登出即时生效），退化到 localStorage 兜底
+    const hid = (props.person && props.person.hid) || readHid();
     this.state = {
       search: false,
-      typeI: !!readHid(),
+      typeI: !!hid,
       image: null,
       langOpen: false
     };
@@ -63,11 +65,29 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    const id = readHid();
+    const id = (this.props.person && this.props.person.hid) || readHid();
     this.setState({ typeI: !!id });
     // 原实现无论是否登录都请求 ajax_getInfo&hid=null，且直接读 res[0].picdir，
     // 未登录时 res 为空数组 -> TypeError（被 Promise 静默吞掉，但请求纯属浪费）。
     if (!id) return;
+    this.fetchAvatar(id);
+  }
+
+  // 登录成功后 redux person.hid 由空变有值：立即拉取头像并刷新登录态，无需整页 reload
+  componentDidUpdate(prevProps) {
+    const prevHid = prevProps.person && prevProps.person.hid;
+    const curHid = this.props.person && this.props.person.hid;
+    if (!prevHid && curHid) {
+      this.setState({ typeI: true });
+      this.fetchAvatar(curHid);
+    }
+    if (prevHid && !curHid) {
+      // 登出
+      this.setState({ typeI: false, image: null });
+    }
+  }
+
+  fetchAvatar(id) {
     axios.get(`${global.constants.winUrl}?c=h&a=ajax_getInfo&hid=${encodeURIComponent(id)}`)
       .then(res => {
         if (Array.isArray(res) && res[0] && res[0].picdir) {
@@ -183,4 +203,9 @@ class Header extends React.Component {
     </section>;
   }
 }
-export default withRouter(connect()(Header));
+// 连接 redux 登录态：person = {hid, hname, nickname}，登录/登出即时驱动 Header 重渲染
+const mapStateToProps = (state) => ({
+  person: state.person || {}
+});
+
+export default withRouter(connect(mapStateToProps)(Header));

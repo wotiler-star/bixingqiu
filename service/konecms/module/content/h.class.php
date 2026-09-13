@@ -159,9 +159,11 @@ class h extends admin_base
         }
     }
     //获取账号信息
-    function ajax_getInfo(){ 
-        /* [安全修复] hid 原样拼进 SQL；且 get_one("*") 会把 pwd 哈希/手机号吐给匿名请求方 */
-        $hid = isset($_GET["hid"]) ? (int) $_GET["hid"] : 0;
+    function ajax_getInfo(){
+        /* [安全修复] 原实现以 GET hid 返回任意会员资料（含 hname=手机号），
+         * 等于任何人都能枚举手机号、翻看他人资料（IDOR）。现一律以 session 登录会员为准，
+         * 未登录返回空数组，只能查到自己。 */
+        $hid = $this->currentHid();
         if ($hid <= 0) {
             echo json_encode(array());
             return;
@@ -273,8 +275,9 @@ class h extends admin_base
 
     //我的关注
     function mycarehid(){
-        /* [安全修复] hid 强制整型，避免 ?hid=1 or 1=1 拖库 */
-        $hid = isset($_GET["hid"]) ? (int) $_GET["hid"] : 0;
+        /* [安全修复] hid 强制整型，避免 ?hid=1 or 1=1 拖库；且原实现按 GET hid 返回任意会员
+         * 的关注列表，可枚举他人隐私。现以 session 登录会员为准，未登录返回空。 */
+        $hid = $this->currentHid();
         if ($hid <= 0) {
             echo json_encode(array());
             return;
@@ -315,7 +318,12 @@ class h extends admin_base
     function myi()
     {
         $this->curA="i";
-    
+
+        /* [安全修复] 原为读接口却按 GET hid 返回任意会员的文章（含草稿），可枚举他人私密稿件。
+         * 现以 session 登录会员为准，未登录返回空。 */
+        $hid = $this->currentHid();
+        if ($hid <= 0) { echo json_encode(array()); return; }
+
         //定制cataid
         $sort_=array("作家专栏");
         $k_=array("only");
@@ -333,11 +341,11 @@ class h extends admin_base
         $subArr=$this->conn_catalog->select("cataid,sort",$where);
         
         //是否为专栏作家
-        $where_="ifauthor='0' and  id=".intval($_GET["hid"]);
+        $where_="ifauthor='0' and  id=".$hid;
         $ifauthor=$this->conn_h->get_one("*",$where_);
-        
+
         //是否有文章
-        $where = "ifhidden='1' and hid= ".intval($_GET["hid"]);   
+        $where = "ifhidden='1' and hid= ".$hid;
         if(isset($_POST["data"]["status"])){
             $v=$_POST["data"]["status"];
             switch($v){
@@ -429,7 +437,19 @@ class h extends admin_base
      */
     function geni(){
         $this->curA="i";
-        
+
+        /*
+         * [安全修复 — 严重] 原实现无登录校验，且直接采用客户端传来的
+         * $_POST["data"]["hid"] / ["hname"] 作为文章作者，等于「匿名 POST 任意
+         * hid 即可以他人身份发稿」的越权写（IDOR）。现强制以 session 登录会员为准，
+         * 忽略客户端伪造的 hid / hname。
+         */
+        $hid = $this->requireLogin();
+        if (!isset($_POST["data"]) || !is_array($_POST["data"])) {
+            echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
         //定制cataid
         // $sort_=array("专栏");
         // $k_=array("only");
@@ -442,23 +462,23 @@ class h extends admin_base
         //     $i++;
         // }
         // $mycataid=$cataidArr["only"];
-        
+
         // $where="parentid=$mycataid";
         // $subArr=$this->conn_catalog->select("cataid,sort",$where);
-        
+
         if(isset($_POST["data"])){
-           
+
            $_POST["data"]["riqi"]=date("Y-m-d H:i:s");
-           $_POST["data"]["hid"]=$_POST["data"]["hid"];
+           $_POST["data"]["hid"]=$hid; // [安全修复] 强制为当前登录会员，忽略客户端伪造
            $_POST["data"]["cataid"]="cataid".$_POST["data"]["cataid"];
            $_POST["data"]["ifchecked"]=1;
            $_POST["data"]["ifpublic"]=isset($_GET["cg"])?'1':'0';
-           $_POST["data"]["uploader"]=$_POST["data"]["hname"];
+           $_POST["data"]["uploader"]=$hid;
            $_POST["data"]["source"]=$this->hArr["name"]?$this->hArr["name"]:"专栏作家";
            $_POST["data"]["picdir_list"]=base64_image_content($_POST["data"]["picdir_list"],"konecms_ups/k/image","/service/");
            unset($_POST["data"]["hname"]);
            $id=$this->conn_i->insert($_POST["data"]);
-           $arr["success"]=$id ? 0: 1; 
+           $arr["success"]=$id ? 0: 1;
            echo json_encode($arr);
         }
         //include parent::load_tpl("h/h_geni");
@@ -571,8 +591,12 @@ class h extends admin_base
     function myfeedback()
     {
         $this->curA="f";
-      
-        $where = "hid= ".intval($_GET["hid"]);        
+
+        /* [安全修复] 原按 GET hid 返回任意会员评论，可枚举他人隐私。改为 session 会员，未登录返回空。 */
+        $hid = $this->currentHid();
+        if ($hid <= 0) { echo json_encode(array()); return; }
+
+        $where = "hid= ".$hid;
         $cols="*";
         $data = $this->conn_feedback->i($cols, $where, "riqi desc", "", 25, "","",12);
         echo json_encode($data);
@@ -584,8 +608,13 @@ class h extends admin_base
      */
     function myfavorate()
     {
-        $this->curA="fav"; 
-        $where = "hid=". intval($_GET["hid"]); 
+        $this->curA="fav";
+
+        /* [安全修复] 原按 GET hid 返回任意会员收藏，可枚举他人隐私。改为 session 会员，未登录返回空。 */
+        $hid = $this->currentHid();
+        if ($hid <= 0) { echo json_encode(array()); return; }
+
+        $where = "hid=".$hid;
         $cols="*";
         $data = $this->conn_favorate->i($cols, $where, "riqi desc", "", 25, "","",12);
           
@@ -778,30 +807,49 @@ class h extends admin_base
         echo $data ? '1' : '0';
     }
     /*
-     * 修改密码
+     * 修改密码（ajax 接口，供会员中心「修改密码」页调用）
+     *
+     * [安全修复 — 严重] 原实现：
+     *   $hid = (int)$_POST["data"]["hid"];
+     *   $this->conn_h->update(array("pwd"=>...), "id=$hid");
+     * 即完全信任客户端传来的 hid，且**没有任何登录态校验、也不验证原密码**。
+     * 后果：匿名用户只要 POST 任意 hid（枚举 1/2/3...）即可把全站账号密码
+     * 重置成自己知道的值 —— 等同于任意账号接管（IDOR）。
+     * 现改为：必须登录（session HID 为准）+ 校验原密码（兼容 md5/bcrypt）+ 只改自己。
      */
     function ajax_pwd2()
     {
-         
-        $hid = (int)$_POST["data"]["hid"];
-        $pwd = password_hash((string)$_POST["data"]["pwd"], PASSWORD_BCRYPT);
-                $where = "id=$hid";
-                $data = $this->conn_h->get_one("*", $where);
-                if (! $data) {
-                    $myArr["msg"] = "修改密码失败 ！该账号不存在。";
-                    $myArr["success"] = 1;
-                } else {
-                    
-                    $arr = array(
-                        "pwd" => $pwd
-                    );
-                    
-                    $this->conn_h->update($arr, $where);
-                    $myArr["success"] = 0;
-                }
-       
-            echo json_encode($myArr);
-       
+        $hid = $this->requireLogin();
+
+        $oldPwd = isset($_POST["data"]["pwd0"]) ? (string)$_POST["data"]["pwd0"] : '';
+        $newPwd = isset($_POST["data"]["pwd"]) ? (string)$_POST["data"]["pwd"] : '';
+
+        // 新密码强度校验（与注册保持一致）
+        if (!preg_match('/^[\w_@#$%&*\-]{8,24}$/', $newPwd)) {
+            echo json_encode(array("success" => 1, "msg" => "新密码需为 8-24 位字母、数字或常见符号"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        // 校验原密码（绝不信任客户端，服务端取存储哈希比对）
+        $row = $this->conn_h->get_one("pwd", "id=$hid");
+        $stored = $row ? $row["pwd"] : '';
+        $ok = false;
+        if (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0) {
+            $ok = password_verify($oldPwd, $stored);
+        } else {
+            $ok = (strcasecmp($stored, md5($oldPwd)) === 0);
+            // 登录式透明重哈希：原密码正确则把 md5 升级成 bcrypt，下次起走强校验
+            if ($ok) {
+                $this->conn_h->update(array("pwd" => password_hash($oldPwd, PASSWORD_BCRYPT)), "id=$hid");
+            }
+        }
+        if (!$ok) {
+            echo json_encode(array("success" => 1, "msg" => "原密码输入有误"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $this->conn_h->update(array("pwd" => password_hash($newPwd, PASSWORD_BCRYPT)), "id=$hid");
+        echo json_encode(array("success" => 0, "msg" => "密码已修改"), JSON_UNESCAPED_UNICODE);
     }
 
     /*

@@ -7,6 +7,9 @@ import axios from "axios";
 import Qs from "qs";
 
 import { localePath } from '../i18n/i18n';
+// 登录态同步到 redux，使全局 Header 即时刷新（无需整页 reload）
+import store from '../store/index';
+import action from '../store/action';
 class Login extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -115,6 +118,12 @@ class Login extends React.Component {
           Storage.HID = res.hid;
           Storage.HNAME = res.hname;
         }
+        // 同步登录态到 redux（Header 即时刷新为已登录态）
+        store.dispatch(action.person.setPerson({
+          hid: res.hid,
+          hname: res.hname,
+          nickname: res.nickname
+        }));
         setTimeout(b, 3000);
 
       }

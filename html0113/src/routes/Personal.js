@@ -20,6 +20,9 @@ import TipsPage from './personalBox/TipsPage';
 import axios from "axios";
 
 import { localePath } from '../i18n/i18n';
+// 登出时同步清理 redux 登录态
+import store from '../store/index';
+import action from '../store/action';
 // 与 Header 同一个问题：'../static/media/avatar.png' 是硬编码字面量，
 // webpack 从不打包它 -> 线上 404，未设置头像的会员中心是碎图。改为 import 由打包器接管。
 import avatarImg from '../static/image/avatar.png';
@@ -145,7 +148,8 @@ class Personal extends React.Component {
             <NavLink to={localePath('/personal/pwd2')}>
               <NavIco />修改密码
             </NavLink>
-            <NavLink to={localePath('/home')} onClick={() => { 
+            <NavLink to={localePath('/home')} onClick={() => {
+              try { store.dispatch(action.person.clearPerson()); } catch (e) {}
               window.localStorage.clear();
               window.location.reload(true);
             }}>

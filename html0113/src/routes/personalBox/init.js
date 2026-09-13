@@ -3,23 +3,31 @@ import ReactDOM, {render} from 'react-dom';
 import {Upload, Icon, message} from 'antd';
 import axios from "axios";
 
+// [修复] 原 beforeUpload 返回 true 会触发 antd 把文件 POST 到 action="static/media"（一个不存在的
+// 假地址），请求 404 后 onChange 拿不到 'done'，于是头像 base64 永远设不上、且控制台报错。
+// 改为在 beforeUpload 内直接读成 dataURL 并写入 state，随后 return false 阻止自动上传。
 function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
-  console.log(img);
   reader.readAsDataURL(img);
 }
 
 function beforeUpload(file) {
-  const isJPG = file.type === 'image/jpeg';
-  if (!isJPG) {
-    message.error('You can only upload JPG file!');
+  const isImage = /image\/(jpeg|png|gif|bmp|webp)/.test(file.type);
+  if (!isImage) {
+    message.error('只能上传 JPG/PNG 等图片文件！');
+    return false;
   }
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
+    message.error('图片大小不能超过 2MB！');
+    return false;
   }
-  return isJPG && isLt2M;
+  getBase64(file, (imageUrl) => {
+    // 延迟到下一帧，避免与 antd 内部 setState 冲突
+    setTimeout(() => this.setState({imageUrl: imageUrl, loading: false}), 0);
+  });
+  return false; // 阻止自动上传到假地址
 }
 
 
@@ -29,23 +37,9 @@ class init extends React.Component {
     this.state = {
       data: null,
       id: null,
-      loading: false
+      loading: false,
+      imageUrl: null
     }
-  }
-
-  handleChange = (info) => {
-    if (info.file.status === 'uploading') {
-      this.setState({loading: true});
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl => this.setState({
-        imageUrl,
-        loading: false,
-      }));
-    }
-    console.log(this.state.image);
   }
 
   componentDidMount() {
@@ -54,9 +48,9 @@ class init extends React.Component {
       id: id
     });
     axios.get(`${global.constants.winUrl}?c=h&a=ajax_getInfo&hid=${id}`).then(res => {
-      console.log(res);
+      // [修复] 后端未登录/会话过期会返回空数组而非数组，这里兜底避免 .map 崩溃
       this.setState({
-        data: res
+        data: Array.isArray(res) ? res : []
       })
     });
   }
@@ -81,9 +75,7 @@ class init extends React.Component {
               listType="picture-card"
               className="avatar-uploader"
               showUploadList={false}
-              action="static/media"
-              beforeUpload={beforeUpload}
-              onChange={this.handleChange}
+              beforeUpload={beforeUpload.bind(this)}
           >
             {imageUrl ? <img src={imageUrl} alt="avatar"/> : uploadButton}
           </Upload>
@@ -113,31 +105,39 @@ class init extends React.Component {
           </li>
           <li>
             <span>地址</span>
-            <input type="text" placeholder={item.addr} ref={'d'}/>
+            <input type="text" placeholder={item.address} ref={'d'}/>
           </li>
           <li>
             <button onClick={() => {
               let {a, b, c, d} = this.refs;
 
               let obj = {
-                "hid": this.state.id,
                 "sort": "geren",
                 "name": a.value == '' ? item.name : a.value,
                 "short": b.value == '' ? item.short : b.value,
                 'email': c.value == '' ? item.email : c.value,
-                'addr': d.value == '' ? item.addr : d.value,
-                'picdir': imageUrl ? imageUrl : 'null'
-            };
+                // [修复] 后端 profileWhitelist 字段名是 address，原代码误用 addr → 地址永远存不上
+                'address': d.value == '' ? item.address : d.value
+              };
+              // [修复] 仅当用户真正选择了新头像（dataURL）时才上传 picdir，
+              // 否则传字符串 'null' 会被后端 base64_image_content 误判并清空原头像。
+              if (imageUrl && imageUrl.indexOf('data:') === 0) {
+                obj.picdir = imageUrl;
+              }
               axios({
                 method: 'post',
                 url: `${global.constants.winUrl}?c=h&a=ajax_setInfo&hid=${this.state.id}`,
                 data: {"data": obj}
               }).then(res => {
-                res.success == 0 ? alert('上传成功！') : alert('失败请重新上传！');
+                res.success == 0 ? alert('保存成功！') : alert('保存失败，请重试！');
               })
             }}>确定
             </button>
-            <button>重置</button>
+            <button onClick={() => {
+              let {a, b, c, d} = this.refs;
+              a.value = ''; b.value = ''; c.value = ''; d.value = '';
+              this.setState({imageUrl: null});
+            }}>重置</button>
             <b>提示：点击文字，进行编辑！</b>
           </li>
         </ul>
