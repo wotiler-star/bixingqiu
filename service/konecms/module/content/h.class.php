@@ -483,6 +483,81 @@ class h extends admin_base
         }
         //include parent::load_tpl("h/h_geni");
     }
+
+    /*
+     * 读取单篇稿件（供前端编辑预填）
+     */
+    function ajax_get_myi_one(){
+        /*
+         * [安全修复] 必须登录 + 只能读自己名下的稿件（id + session hid 双约束），
+         * 杜绝通过 id 枚举他人草稿/未通过稿的 IDOR。
+         */
+        $hid = $this->requireLogin();
+        $id = isset($_POST["data"]["id"]) ? (int) $_POST["data"]["id"] : 0;
+        if ($id <= 0) {
+            echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $cols = "id,cataid,title,keywords,cnt_short,cnt,picdir_list,ifpublic,ifchecked";
+        $row = $this->conn_i->get_one($cols, "id=$id and hid=$hid");
+        if (!$row) {
+            echo json_encode(array("success" => 1, "msg" => "文章不存在或无权访问"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        // 前端 RadioGroup 用的是数字栏目号，这里把存储的 "cataid26" 还原成 26
+        $rawCat = explode(',', $row["cataid"]);
+        $row["cataid"] = (int) preg_replace('/^cataid/', '', $rawCat[0]);
+        echo json_encode(array("success" => 0, "data" => $row));
+    }
+
+    /*
+     * 编辑稿件（更新已存在的文章）
+     */
+    function geni_edit(){
+        $this->curA="i";
+        /*
+         * [安全修复] 与 geni 一致：必须登录 + 只能改自己名下的稿件
+         * （update 的 WHERE 强制 id + hid 双约束，且字段走白名单，禁止客户端改 hid / 审核态逃逸）。
+         */
+        $hid = $this->requireLogin();
+        if (!isset($_POST["data"]) || !is_array($_POST["data"])) {
+            echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $id = isset($_POST["data"]["id"]) ? (int) $_POST["data"]["id"] : 0;
+        if ($id <= 0) {
+            echo json_encode(array("success" => 1, "msg" => "文章 ID 错误"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        // 先校验归属，避免越权更新他人文章
+        $exist = $this->conn_i->get_one("id", "id=$id and hid=$hid");
+        if (!$exist) {
+            echo json_encode(array("success" => 1, "msg" => "无权编辑该文章"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $data = array();
+        if (isset($_POST["data"]["title"]))      $data["title"]      = trim($_POST["data"]["title"]);
+        if (isset($_POST["data"]["keywords"]))   $data["keywords"]   = trim($_POST["data"]["keywords"]);
+        if (isset($_POST["data"]["cnt_short"]))  $data["cnt_short"]  = trim($_POST["data"]["cnt_short"]);
+        if (isset($_POST["data"]["cnt"]))        $data["cnt"]        = $_POST["data"]["cnt"];
+        if (isset($_POST["data"]["cataid"]))     $data["cataid"]     = "cataid" . (int) $_POST["data"]["cataid"];
+        if (isset($_POST["data"]["picdir_list"]) && $_POST["data"]["picdir_list"] !== '') {
+            $data["picdir_list"] = base64_image_content($_POST["data"]["picdir_list"], "konecms_ups/k/image", "/service/");
+        }
+        // 编辑后重新进入审核；草稿保持草稿态
+        $data["ifchecked"] = 1;
+        $data["ifpublic"]  = isset($_GET["cg"]) ? '1' : '0';
+
+        if (empty($data)) {
+            echo json_encode(array("success" => 1, "msg" => "没有可更新的内容"), JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $this->conn_i->update($data, "id=$id and hid=$hid");
+        $arr["success"] = $this->conn_i->affected_rows() ? 0 : 1;
+        echo json_encode($arr);
+    }
+
     /*
      * 申请专栏预处理：申请认证按钮
      */

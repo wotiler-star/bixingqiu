@@ -38,6 +38,9 @@ class Login extends React.Component {
           <span>账号密码登录</span>
           <NavLink to={localePath('/register')}>注册</NavLink>
         </div>
+        <div className="lost-pwd">
+          <NavLink to={localePath('/callpwd')}>忘记密码？</NavLink>
+        </div>
         <div className="account-number">
           <span>
             +86

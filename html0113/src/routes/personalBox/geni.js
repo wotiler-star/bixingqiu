@@ -22,6 +22,7 @@ class geni extends React.Component {
       id: '',
       hname: '',
       value: 26,
+      editId: null,
       form_data: {
         editor: ""
       },
@@ -40,7 +41,48 @@ class geni extends React.Component {
       hname = window.localStorage.getItem('HNAME') || '';
     } catch (e) { }
     this.setState({ id, hname });
+    // 编辑态：URL 带 ?id= 时拉取该稿件预填
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const editId = params.get('id');
+      if (editId) {
+        this.fetchEdit(editId);
+      }
+    } catch (e) { }
   }
+
+  // 编辑态：读取单篇稿件并预填表单
+  fetchEdit = (id) => {
+    let hid = '';
+    try { hid = window.localStorage.getItem('HID') || ''; } catch (e) { }
+    if (!hid) {
+      this.showTip('请先登录后再投稿');
+      return;
+    }
+    axios({
+      method: "post",
+      url: `${global.constants.winUrl}?c=h&a=ajax_get_myi_one&hid=${encodeURIComponent(hid)}`,
+      data: { "data": { "id": id } }
+    }).then(res => {
+      if (res && res.success == 0 && res.data) {
+        const d = res.data;
+        const catNum = parseInt(d.cataid, 10) || this.state.value;
+        this.setState({
+          editId: parseInt(id, 10),
+          value: catNum,
+          imageUrl: d.picdir_list || '',
+          form_data: { editor: d.cnt || '' }
+        });
+        // 同步非受控字段（title / gjc / nrzy）
+        if (this.refs.title) this.refs.title.value = d.title || '';
+        if (this.refs.gjc) this.refs.gjc.value = d.keywords || '';
+        if (this.refs.nrzy && this.refs.nrzy.textAreaRef) this.refs.nrzy.textAreaRef.value = d.cnt_short || '';
+        this.showTip('已载入待编辑文章');
+      } else {
+        this.showTip('文章加载失败或无权编辑');
+      }
+    }).catch(() => this.showTip('网络异常，文章加载失败'));
+  };
 
   onChange = (e) => {
     this.setState({ value: e.target.value });
@@ -94,9 +136,9 @@ class geni extends React.Component {
     }
   };
 
-  // 提交审核 / 存草稿 共用逻辑
+  // 提交审核 / 存草稿 共用逻辑（新建或编辑复用）
   submitArticle = (isDraft) => {
-    const { id, hname } = this.state;
+    const { id, hname, editId } = this.state;
     if (!id) {
       this.showTip('请先登录后再投稿');
       setTimeout(() => { this.props.history && this.props.history.push(localePath('/login')); }, 1200);
@@ -124,14 +166,23 @@ class geni extends React.Component {
       "cnt": cnt,
       "picdir_list": this.state.imageUrl || ''
     };
+    // 编辑态附带稿件 id，并切换到 geni_edit 接口
+    const act = editId ? 'geni_edit' : 'geni';
+    if (editId) obj.id = editId;
     axios({
       method: "post",
-      url: `${global.constants.winUrl}?c=h&a=geni&hid=${encodeURIComponent(id)}` + (isDraft ? '&cg' : ''),
+      url: `${global.constants.winUrl}?c=h&a=${act}&hid=${encodeURIComponent(id)}` + (isDraft ? '&cg' : ''),
       data: {"data": obj}
     }).then(res => {
       if (res.success == 0) {
-        message.success(isDraft ? '已存草稿' : '提交成功，等待审核');
-        setTimeout(() => window.location.reload(), 900);
+        message.success(isDraft
+          ? (editId ? '草稿已更新' : '已存草稿')
+          : (editId ? '修改已提交，等待审核' : '提交成功，等待审核'));
+        const go = localePath('/personal/myi');
+        setTimeout(() => {
+          if (this.props.history) this.props.history.push(go);
+          else window.location.assign(go);
+        }, 900);
       } else if (res.success == 401) {
         this.showTip('登录已失效，请重新登录');
       } else {
@@ -151,7 +202,7 @@ class geni extends React.Component {
     );
     const imageUrl = this.state.imageUrl;
     return <div className="right-content-7 right-box">
-      <h3>发布文章</h3>
+      <h3>{this.state.editId ? '编辑文章' : '发布文章'}</h3>
       <div className='warning' style={{ display: this.state.tipIf ? 'block' : 'none' }}>{this.state.tip}</div>
       <div className={'column-box'}>
         <h4>选择栏目:</h4>
@@ -209,9 +260,9 @@ class geni extends React.Component {
         <p>考虑到用户浏览体验，所有投稿美好星球的稿件，美好星球均有权对文章的标题、头图进行调整，这些调整并不会影响正文内容，如果需要进行内容调整，编辑会与作者联系确认，不会直接修改。</p>
       </div>
       <div className="submit">
-        <button onClick={() => this.submitArticle(false)}>提交审核</button>
+        <button onClick={() => this.submitArticle(false)}>{this.state.editId ? '保存修改' : '提交审核'}</button>
         &nbsp;&nbsp;&nbsp;
-        <button onClick={() => this.submitArticle(true)}>存草稿</button>
+        <button onClick={() => this.submitArticle(true)}>{this.state.editId ? '更新草稿' : '存草稿'}</button>
         &nbsp;&nbsp;&nbsp;
       </div>
     </div>

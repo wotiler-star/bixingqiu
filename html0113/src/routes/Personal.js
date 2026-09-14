@@ -97,18 +97,23 @@ class Personal extends React.Component {
         <img src={this.state.image || avatarImg} alt="" />
         <div className="name">{this.state.name}</div>
         <div className="tongji">
-          <div className="pl-number">
-            <span>评论数量</span>
-            <p>{this.state.num_feedback}</p>
-          </div>
-          <div className="wz-number">
-            <span>文章数量</span>
-            <p>{this.state.num_content}</p>
-          </div>
-          <div className="sc-number">
-            <span>收藏数量</span>
-            <p>{this.state.num_favorate}</p>
-          </div>
+          {(() => {
+            const vals = [
+              { key: 'num_feedback', label: '评论', val: parseInt(this.state.num_feedback, 10) || 0 },
+              { key: 'num_content', label: '文章', val: parseInt(this.state.num_content, 10) || 0 },
+              { key: 'num_favorate', label: '收藏', val: parseInt(this.state.num_favorate, 10) || 0 },
+            ];
+            const max = Math.max(1, ...vals.map(v => v.val));
+            return vals.map(v => (
+              <div className="pl-number" key={v.key}>
+                <span>{v.label}数量</span>
+                <p>{v.val}</p>
+                <div style={{ display: 'block', width: '100%', height: 4, background: '#eee', borderRadius: 2, marginTop: 6, overflow: 'hidden' }}>
+                  <i style={{ display: 'block', height: '100%', width: (v.val / max * 100) + '%', background: '#f29700' }} />
+                </div>
+              </div>
+            ));
+          })()}
         </div>
       </div>
       <div className="main-content">

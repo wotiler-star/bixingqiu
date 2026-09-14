@@ -72,8 +72,8 @@ class myi extends React.Component {
             <a href={`${global.constants.winUrl2}detailed?cataid=${item.cataid}&id=${item.id}`} target='_blank'><h4>{item.title}</h4></a><br />
             <span>【{item.riqi}】</span><br />
             <a href={`${global.constants.winUrl2}detailed?cataid=${item.cataid}&id=${item.id}`} target='_blank' className="btn">查看</a>
-            <button onClick={(ev) => {
-              ev.target.parentNode.style.display = 'none';
+            <NavLink to={`${localePath('/personal/geni')}?id=${item.id}`} className="btn">编辑</NavLink>
+            <button onClick={() => {
               let hid = window.localStorage.getItem('HID');
               axios({
                 method: "post",
@@ -84,7 +84,11 @@ class myi extends React.Component {
                     "id": item.id
                   }
                 }
-              }).then(res => console.log(res))
+              }).then(() => {
+                // 成功后从列表移除该条（而非仅隐藏 DOM）
+                const list = (this.state.data || []).filter(d => d.id !== item.id);
+                this.setState({ data: list, len: list.length });
+              }).catch(() => {})
             }}>删除</button>
           </li>
         }) : null}
