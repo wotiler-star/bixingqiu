@@ -41,7 +41,7 @@ class admin extends admin_base{
             $_POST["data"]["riqi_start"]=$_POST["data"]["riqi_start"]==""?date("Y-m-d"):$_POST["data"]["riqi_start"];
             
             //5. 组名及昵称
-            $where="id=".$_POST["data"]["gid"];
+            $where=$this->conn_gteam->where_id('id', $_POST["data"]["gid"]);
             $rs=$this->conn_gteam->get_one("title",$where);
             $gname=$_POST["data"]["gname"]=$rs["title"];
             $_POST["data"]["name"]=$_POST["data"]["name"]==""?$gname:$_POST["data"]["name"];
@@ -120,7 +120,7 @@ class admin extends admin_base{
 
           
             //2 组名及昵称
-            $where_="id=".$_POST["data"]["gid"];
+            $where_=$this->conn_gteam->where_id('id', $_POST["data"]["gid"]);
             $rs=$this->conn_gteam->get_one("title",$where_);
             $gname=$_POST["data"]["gname"]=$rs["title"];
             

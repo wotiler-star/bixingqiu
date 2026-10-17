@@ -213,6 +213,26 @@ class model {
 	final public function escape($str) {
 		return $this->db->escape($str);
 	}
+
+	final public function where_id($field, $value) {
+		return $this->db->where_id($field, $value);
+	}
+
+	final public function where_str($field, $value) {
+		return $this->db->where_str($field, $value);
+	}
+
+	final public function esc_str($value) {
+		return $this->db->esc_str($value);
+	}
+
+	final public function where_like($field, $value, $wrap = true) {
+		return $this->db->where_like($field, $value, $wrap);
+	}
+
+	final public function where_find_in_set($field, $value) {
+		return $this->db->where_find_in_set($field, $value);
+	}
 	
 	/**
 	 * 获取最后数据库操作影响到的条数

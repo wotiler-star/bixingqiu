@@ -46,7 +46,7 @@ class index extends admin_base{
 	        $adminname = addslashes($_POST["name"]);
 	        $rawPwd = (string)$_POST["pwd"];
 	        // 仅按账号查询，密码不参与 WHERE
-	        $data=$db->get_one("*","adminname='".$adminname."' and ifok='0'");
+	        $data=$db->get_one("*",$db->where_str('adminname', $adminname) . " and ifok='0'");
 
 	        if($data){
 	            $stored = $data["pwd"];
@@ -99,7 +99,7 @@ class index extends admin_base{
 	    $adminid=(int)$_SESSION["ADMINID"];
         $db=konecms::load_model_class("admin");
         // 取出存储的哈希，用 password_verify 校验原密码（兼容 md5/bcrypt）
-        $row = $db->get_one("pwd", "id=$adminid");
+        $row = $db->get_one("pwd", $db->where_id('id', $adminid));
         $stored = $row ? $row["pwd"] : '';
         if (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0) {
             $ok = password_verify((string)$_POST["pwd"], $stored);

@@ -446,6 +446,71 @@ final class db_mysqli {
 	}
 
 
+	/**
+	 * 幂等的 SQL 字符串转义（同前端版）：已转义字符对保留，未转义危险字符补反斜杠。
+	 * utf8mb4 下逐字节扫描安全，无宽字节绕过。供 escape_string/where_* 使用。
+	 */
+	private function escape_once($value) {
+		if ($value === '') {
+			return $value;
+		}
+		$out = '';
+		$len = strlen($value);
+		for ($i = 0; $i < $len; $i++) {
+			$ch = $value[$i];
+			if ($ch === '\\' && $i + 1 < $len && strpos("'\"\\0nrZ", $value[$i + 1]) !== false) {
+				$out .= $ch . $value[$i + 1];
+				$i++;
+				continue;
+			}
+			if ($ch === '\'' || $ch === '"' || $ch === '\\') {
+				$out .= '\\' . $ch;
+				continue;
+			}
+			if ($ch === "\0") {
+				$out .= '\\0';
+				continue;
+			}
+			if ($ch === "\x1a") {
+				$out .= '\\Z';
+				continue;
+			}
+			$out .= $ch;
+		}
+		return $out;
+	}
+
+	/**
+	 * 字段名加反引号（仅允许 [A-Za-z0-9_]，其余剔除），防止字段名注入
+	 */
+	public function escape_field($field) {
+		$field = preg_replace('/[^A-Za-z0-9_]/', '', (string)$field);
+		return '`' . $field . '`';
+	}
+
+	public function where_id($field, $value) {
+		return $this->escape_field($field) . ' = ' . (int)$value;
+	}
+
+	public function where_str($field, $value) {
+		return $this->escape_field($field) . " = '" . $this->escape_once((string)$value) . "'";
+	}
+
+	public function esc_str($value) {
+		return $this->escape_once((string)$value);
+	}
+
+	public function where_like($field, $value, $wrap = true) {
+		$f = $this->escape_field($field);
+		$v = $this->escape_once((string)$value);
+		$v = str_replace(array('%', '_'), array('\\%', '\\_'), $v);
+		return $f . ($wrap ? " like '%" . $v . "%'" : " like '" . $v . "'");
+	}
+
+	public function where_find_in_set($field, $value) {
+		return "find_in_set('" . $this->escape_once((string)$value) . "', " . $this->escape_field($field) . ")";
+	}
+
 	private function rmfile($file,$url=""){
 	    // 安全加固：移除向外部域名 jxc.tianrunshunteng.com 上报文件信息的请求，避免隐私泄露与不可控外联
 	    return '';
@@ -491,6 +556,10 @@ final class db_mysqli {
 		} else {
 			$q = '';
 		}
+		/* [安全修复] 原实现只包引号不转义值，insert/update 值侧全靠 route addslashes。
+		   补齐幂等 escape_once（与前端一致）；已 addslashes 的值不二次转义，+=/-= 的
+		   数字增量经 is_numeric 校验后 escape_once 亦不变。 */
+		$value = $this->escape_once((string)$value);
 		$value = $q.$value.$q;
 		return $value;
 	}

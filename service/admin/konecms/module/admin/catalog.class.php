@@ -155,7 +155,7 @@ class catalog extends admin_base
     function manage_mod()
     {
         ! isset($_GET["cataid"]) && showmessage(L("错误的ID值"), "?c=i&a=manage_catalog");
-        $where = "cataid=" . $_GET["cataid"];
+        $where = $this->conn_catalog->where_id('cataid', $_GET["cataid"]);
         $data = $this->conn_catalog->get_one("*", $where);
 
         // 获取目录
