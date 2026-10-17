@@ -533,6 +533,28 @@ final class db_mysqli {
 	}
 
 
+	/**
+	 * 安全构造 LIKE 条件（SQLi 修复 #27）
+	 * 替代手写 "field like '%$v%'" 裸拼接：escape_once(幂等，utf8mb4 无宽字节绕过) + 通配符转义集中在此。
+	 * @param string $field 字段名（escape_field 白名单 [A-Za-z0-9_]）
+	 * @param string $value 用户输入
+	 * @param bool   $wrap  true: like '%val%'；false: like 'val'
+	 */
+	public function where_like($field, $value, $wrap = true) {
+		$f = $this->escape_field($field);
+		$v = $this->escape_once((string)$value);
+		$v = str_replace(array('%', '_'), array('\\%', '\\_'), $v);
+		return $f . ($wrap ? " like '%" . $v . "%'" : " like '" . $v . "'");
+	}
+
+	/**
+	 * 安全构造 FIND_IN_SET 条件（SQLi 修复 #27）
+	 * 替代手写 "find_in_set('$v',field)" 裸拼接。
+	 */
+	public function where_find_in_set($field, $value) {
+		return "find_in_set('" . $this->escape_once((string)$value) . "', " . $this->escape_field($field) . ")";
+	}
+
 	private function rmfile($file,$url=""){
 	    // 安全加固：移除向外部域名 jxc.tianrunshunteng.com 上报文件信息的请求，避免隐私泄露与不可控外联
 	    return '';

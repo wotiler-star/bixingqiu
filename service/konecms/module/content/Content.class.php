@@ -485,12 +485,12 @@ class Content extends admin_base
             foreach ($cataidArr as $a) {
                 $v_ = "cataid" . $a;
                 
-                $str_ .= " find_in_set( '$v_',cataid) or ";
+                $str_ .= " " . $this->conn->where_find_in_set('cataid', $v_) . " or ";
             }
            
             $where .= rtrim($str_, "or ") . ")";
             }else{
-                $where=" and (find_in_set( '$cataidArr',cataid))";
+                $where=" and (" . $this->conn->where_find_in_set('cataid', $cataidArr) . ")";
             }
         
         // 属性
@@ -500,9 +500,9 @@ class Content extends admin_base
                 if (isset($_GET[$fieldname_])) {
                     $v = $_GET[$fieldname_];
                     if($v!="_"){ 
-                        $where .= " and find_in_set('$v',$fieldname_) ";
+                        $where .= " and " . $this->conn->where_find_in_set($fieldname_, $v) . " ";
                     }else{ 
-                        $where .= " and $fieldname_ like '%$v%'";
+                        $where .= " and " . $this->conn->where_like($fieldname_, $v);
                     }
                 }
             }

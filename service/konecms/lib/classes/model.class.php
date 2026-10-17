@@ -221,6 +221,14 @@ class model {
 		return $this->db->escape($str);
 	}
 
+	final public function where_like($field, $value, $wrap = true) {
+		return $this->db->where_like($field, $value, $wrap);
+	}
+
+	final public function where_find_in_set($field, $value) {
+		return $this->db->where_find_in_set($field, $value);
+	}
+
 	final public function affected_rows() {
 		return $this->db->affected_rows ();
 	}

@@ -400,11 +400,11 @@ if($kuaiArr){
 	        $where .= " and (";
 	        foreach ($cataidArr as $a) {
 	            $v_ = "cataid" . $a;
-	            $str_ .= " cataid like '%$v_%' or ";
+	            $str_ .= " " . $this->conn_i->where_like('cataid', $v_) . " or ";
 	        }
 	        $where .= rtrim($str_, "or ") . ")";
 	    }else{
-	        $where=" and (cataid like '%$cataidArr%')";
+	        $where=" and (" . $this->conn_i->where_like('cataid', $cataidArr) . ")";
 	    }
 	    // 属性
 	    if ($shuxArr) {
@@ -412,7 +412,7 @@ if($kuaiArr){
 	            $fieldname_ = $a["fieldname"];
 	            if (isset($_GET[$fieldname_])) {
 	                $v = $_GET[$fieldname_];
-	                $where .= " and $fieldname_ like '%$v%'";
+	                $where .= " and " . $this->conn_i->where_like($fieldname_, $v);
 	            }
 	        }
 	    }
