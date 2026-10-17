@@ -74,7 +74,7 @@ class mydo extends admin_base{
 	           // "cnt"=>$cnt,
 	            "picdir"=>$picdir 
 	        );
-	        $this->conn_i->update($arr_,"id=$id");
+	        $this->conn_i->update($arr_,$this->conn_i->where_id('id', $id));
 	    }
 
 	    
@@ -90,7 +90,7 @@ class mydo extends admin_base{
 	            "picdir_wap"=>$picdir_wap, 
 	            "picdir"=>$picdir
 	        );
-	        $this->conn_ad->update($arr_,"id=$id");
+	        $this->conn_ad->update($arr_,$this->conn_ad->where_id('id', $id));
 	    }
 
 	    //目录
@@ -114,7 +114,7 @@ class mydo extends admin_base{
 	        $arr_=array(
 	            "picdir"=>$picdir
 	        );
-	        $this->conn_site->update($arr_,"id=$id");
+	        $this->conn_site->update($arr_,$this->conn_site->where_id('id', $id));
 	    }
 	    //会员
 	    $data=$this->conn_h->select("*","1=1");
@@ -125,7 +125,7 @@ class mydo extends admin_base{
 	        $arr_=array( 
 	            "picdir"=>$picdir
 	        );
-	        $this->conn_h->update($arr_,"id=$id");
+	        $this->conn_h->update($arr_,$this->conn_h->where_id('id', $id));
 	    }
 	    
 	    

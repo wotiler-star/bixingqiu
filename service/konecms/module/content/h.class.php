@@ -153,9 +153,9 @@ class h extends admin_base
             $where = "id=$hid";
             $this->hArr = $this->conn_h->get_one("*", $where);
             
-            $this->num_feedback=$this->conn_feedback->count("hid=$hid");
-            $this->num_favorate=$this->conn_favorate->count("hid=$hid");
-            $this->num_i=$this->conn_i->count("hid=$hid");
+            $this->num_feedback=$this->conn_feedback->count($this->conn_feedback->where_id('hid', $hid));
+            $this->num_favorate=$this->conn_favorate->count($this->conn_favorate->where_id('hid', $hid));
+            $this->num_i=$this->conn_i->count($this->conn_i->where_id('hid', $hid));
         }
     }
     //获取账号信息
@@ -220,7 +220,7 @@ class h extends admin_base
             echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
             return;
         }
-        $this->conn_i->delete("id=$id and hid=$hid");
+        $this->conn_i->delete($this->conn_i->where_id('id', $id) . " and " . $this->conn_i->where_id('hid', $hid));
         echo json_encode(array("success" => $this->conn_i->affected_rows() ? 0 : 1));
     }
     /*
@@ -287,7 +287,7 @@ class h extends admin_base
             $i=0;
             foreach($data as $a){
                 $carehid=(int)$a["carehid"];
-                $data_=$this->conn_h->get_one("*","id=$carehid");
+                $data_=$this->conn_h->get_one("*",$this->conn_h->where_id('id', $carehid));
                 /* [修复] 原代码未判空，被关注账号已注销时 PHP8 下访问 null 数组键会告警 */
                 $data[$i]["name"]=$data_ ? $data_["name"] : '';
                 $data[$i]["picdir"]=$data_ ? $data_["picdir"] : '';
@@ -306,7 +306,7 @@ class h extends admin_base
         $hid = $this->requireLogin();
         $carehid = isset($_POST["data"]["mycarehid"]) ? (int) $_POST["data"]["mycarehid"] : 0;
         if ($carehid > 0) {
-            $this->conn_mycarehid->delete("myhid=$hid and carehid=$carehid");
+            $this->conn_mycarehid->delete($this->conn_mycarehid->where_id('myhid', $hid) . " and " . $this->conn_mycarehid->where_id('carehid', $carehid));
             echo json_encode(array("success" => $this->conn_mycarehid->affected_rows() ? 0 : 1));
             return;
         }
@@ -499,7 +499,7 @@ class h extends admin_base
             return;
         }
         $cols = "id,cataid,title,keywords,cnt_short,cnt,picdir_list,ifpublic,ifchecked";
-        $row = $this->conn_i->get_one($cols, "id=$id and hid=$hid");
+        $row = $this->conn_i->get_one($cols, $this->conn_i->where_id('id', $id) . " and " . $this->conn_i->where_id('hid', $hid));
         if (!$row) {
             echo json_encode(array("success" => 1, "msg" => "文章不存在或无权访问"), JSON_UNESCAPED_UNICODE);
             return;
@@ -530,7 +530,7 @@ class h extends admin_base
             return;
         }
         // 先校验归属，避免越权更新他人文章
-        $exist = $this->conn_i->get_one("id", "id=$id and hid=$hid");
+        $exist = $this->conn_i->get_one("id", $this->conn_i->where_id('id', $id) . " and " . $this->conn_i->where_id('hid', $hid));
         if (!$exist) {
             echo json_encode(array("success" => 1, "msg" => "无权编辑该文章"), JSON_UNESCAPED_UNICODE);
             return;
@@ -553,7 +553,7 @@ class h extends admin_base
             echo json_encode(array("success" => 1, "msg" => "没有可更新的内容"), JSON_UNESCAPED_UNICODE);
             return;
         }
-        $this->conn_i->update($data, "id=$id and hid=$hid");
+        $this->conn_i->update($data, $this->conn_i->where_id('id', $id) . " and " . $this->conn_i->where_id('hid', $hid));
         $arr["success"] = $this->conn_i->affected_rows() ? 0 : 1;
         echo json_encode($arr);
     }
@@ -624,7 +624,7 @@ class h extends admin_base
 
             $id=$conn->insert($_POST["data"]);
             if($id){
-                $this->conn_h->update(array("ifauthor"=>2,"sort"=>$sort),"id=$hid");
+                $this->conn_h->update(array("ifauthor"=>2,"sort"=>$sort),$this->conn_h->where_id('id', $hid));
             }
            
         $myArr["success"]=$id ?  0: 1; 
@@ -708,7 +708,7 @@ class h extends admin_base
             echo json_encode(array("success" => 1, "msg" => "参数错误"), JSON_UNESCAPED_UNICODE);
             return;
         }
-        $this->conn_favorate->delete("id=$id and hid=$hid");
+        $this->conn_favorate->delete($this->conn_favorate->where_id('id', $id) . " and " . $this->conn_favorate->where_id('hid', $hid));
         echo json_encode(array("success" => $this->conn_favorate->affected_rows() ? 0 : 1));
     }
 
@@ -741,7 +741,7 @@ class h extends admin_base
             $newPwd = (string)$_POST["data"]["pwd2"];
 
             // 取出存储的哈希，用 password_verify 校验原密码（兼容 md5/bcrypt，并避免原代码的 SQL 注入）
-            $row = $this->conn_h->get_one("pwd", "id=$hid");
+            $row = $this->conn_h->get_one("pwd", $this->conn_h->where_id('id', $hid));
             $stored = $row ? $row["pwd"] : '';
             if (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0) {
                 $ok = password_verify($oldPwd, $stored);
@@ -754,7 +754,7 @@ class h extends admin_base
             $_POST["data"]["pwd"] = password_hash($newPwd, PASSWORD_BCRYPT);
             unset($_POST["data"]["pwd2"]);
             unset($_POST["data"]["pwd3"]);
-            $this->conn_h->update($_POST["data"], "id=$hid");
+            $this->conn_h->update($_POST["data"], $this->conn_h->where_id('id', $hid));
             $this->conn_h->affected_rows() ? showmessage(L("do_ok"), "?c=h&a=pwd2") : showmessage(L("do_fail"), "?c=h&a=pwd2");
         }
 
@@ -792,7 +792,7 @@ class h extends admin_base
         $hid = $this->requireLogin();
         $picdir = isset($_POST["picdir"]) ? (string) $_POST["picdir"] : '';
         if ($picdir !== '') {
-            $this->conn_h->update(array("picdir" => $picdir), "id=$hid");
+            $this->conn_h->update(array("picdir" => $picdir), $this->conn_h->where_id('id', $hid));
             $arr["success"] = 0;
         } else {
             $arr["success"] = 1;
@@ -886,7 +886,7 @@ class h extends admin_base
      *
      * [安全修复 — 严重] 原实现：
      *   $hid = (int)$_POST["data"]["hid"];
-     *   $this->conn_h->update(array("pwd"=>...), "id=$hid");
+     *   $this->conn_h->update(array("pwd"=>...), $this->conn_h->where_id('id', $hid));
      * 即完全信任客户端传来的 hid，且**没有任何登录态校验、也不验证原密码**。
      * 后果：匿名用户只要 POST 任意 hid（枚举 1/2/3...）即可把全站账号密码
      * 重置成自己知道的值 —— 等同于任意账号接管（IDOR）。
@@ -906,7 +906,7 @@ class h extends admin_base
         }
 
         // 校验原密码（绝不信任客户端，服务端取存储哈希比对）
-        $row = $this->conn_h->get_one("pwd", "id=$hid");
+        $row = $this->conn_h->get_one("pwd", $this->conn_h->where_id('id', $hid));
         $stored = $row ? $row["pwd"] : '';
         $ok = false;
         if (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0) {
@@ -915,7 +915,7 @@ class h extends admin_base
             $ok = (strcasecmp($stored, md5($oldPwd)) === 0);
             // 登录式透明重哈希：原密码正确则把 md5 升级成 bcrypt，下次起走强校验
             if ($ok) {
-                $this->conn_h->update(array("pwd" => password_hash($oldPwd, PASSWORD_BCRYPT)), "id=$hid");
+                $this->conn_h->update(array("pwd" => password_hash($oldPwd, PASSWORD_BCRYPT)), $this->conn_h->where_id('id', $hid));
             }
         }
         if (!$ok) {
@@ -923,7 +923,7 @@ class h extends admin_base
             return;
         }
 
-        $this->conn_h->update(array("pwd" => password_hash($newPwd, PASSWORD_BCRYPT)), "id=$hid");
+        $this->conn_h->update(array("pwd" => password_hash($newPwd, PASSWORD_BCRYPT)), $this->conn_h->where_id('id', $hid));
         echo json_encode(array("success" => 0, "msg" => "密码已修改"), JSON_UNESCAPED_UNICODE);
     }
 

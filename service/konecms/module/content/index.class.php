@@ -215,7 +215,7 @@ if($kuaiArr){
 	              $id=$a["id"];
 	              $day=strtotime($a["riqi"]);
 	              $pai1Arr[$i]["num_days"]=floor(($curday-$day)/86400);
-	              $count=$this->conn_feedback->count("pid=$id");
+	              $count=$this->conn_feedback->count($this->conn_feedback->where_id('pid', $id));
 	              $pai1Arr[$i]["pinglunnum"]=$count;
 	              $i++;
 	          }
@@ -228,7 +228,7 @@ if($kuaiArr){
 	              $id=$a["id"];
 	              $day=strtotime($a["riqi"]);
 	              $pai2Arr[$i]["num_days"]=floor(($curday-$day)/86400);
-	              $count=$this->conn_feedback->count("pid=$id");
+	              $count=$this->conn_feedback->count($this->conn_feedback->where_id('pid', $id));
 	              $pai2Arr[$i]["pinglunnum"]=$count;
 	              $i++;
 	          }
@@ -250,7 +250,7 @@ if($kuaiArr){
 	      $i=0;
 	      foreach($zhuanjiaArr as $a){
 	          $hid=$a["id"];
-	          $data_=$this->conn_mycarehid->get_one("*","carehid=$hid and myhid=$myhid");
+	          $data_=$this->conn_mycarehid->get_one("*",$this->conn_mycarehid->where_id('carehid', $hid) . " and " . $this->conn_mycarehid->where_id('myhid', $myhid));
 	          if($data_){
 	              $zhuanjiaArr[$i]["ifover"]='0';
 	          }else{
@@ -283,7 +283,7 @@ if($kuaiArr){
 		    $i=0;
 		    foreach($feedArr as $a){
 		        $hid=$a["hid"];
-		        $arr_=$this->conn_h->get_one("name,picdir","id=$hid");
+		        $arr_=$this->conn_h->get_one("name,picdir",$this->conn_h->where_id('id', $hid));
 		        $feedArr[$i]["picdir"]=$arr_["picdir"];
 		        $feedArr[$i]["name"]=$arr_["name"];
 		        $i++;
@@ -372,11 +372,11 @@ if($kuaiArr){
 	        return;
 	    }
 	    // 目标专家必须存在
-	    if (!$this->conn_h->get_one("id", "id=$carehid")) {
+	    if (!$this->conn_h->get_one("id", $this->conn_h->where_id('id', $carehid))) {
 	        $this->jsonOut(array("success" => 1, "msg" => "专家不存在"));
 	        return;
 	    }
-	    $exist = $this->conn_mycarehid->get_one("id", "myhid=$hid and carehid=$carehid");
+	    $exist = $this->conn_mycarehid->get_one("id", $this->conn_mycarehid->where_id('myhid', $hid) . " and " . $this->conn_mycarehid->where_id('carehid', $carehid));
 	    if (!$exist) {
 	        $arr=array("carehid"=>$carehid,"myhid"=>$hid,"riqi"=>date("Y-m-d H:i:s"));
 	        $this->conn_mycarehid->insert($arr);

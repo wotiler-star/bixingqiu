@@ -337,7 +337,7 @@ class Content extends admin_base
             foreach($feedArr as $a){
                 $hid=(int)$a["hid"];
                 $hid=$hid?$hid:4;
-                $arr_=$this->conn_h->get_one("name,picdir","id=$hid");
+                $arr_=$this->conn_h->get_one("name,picdir",$this->conn_h->where_id('id', $hid));
                 /* [500 修复] 留言作者（会员）已删除时 $arr_=false，原 $arr_["picdir"] 致命 500；
                  * 兜底置空，详情页照常渲染。 */
                 $feedArr[$i]["picdir"] = $arr_ ? $arr_["picdir"] : '';
@@ -352,7 +352,7 @@ class Content extends admin_base
         if(isset($_GET["hid"])&&$_GET["hid"]){
             $pid=(int)$data["id"];
             $hid=(int)$_GET["hid"];
-            $ifFavorate=$this->conn_favorate->get_one("*","pid=$pid and hid=$hid");
+            $ifFavorate=$this->conn_favorate->get_one("*",$this->conn_favorate->where_id('pid', $pid) . " and " . $this->conn_favorate->where_id('hid', $hid));
             if($ifFavorate){
                 $data["favorate"]=0;
                 $data["favid"]=$ifFavorate["id"];
@@ -700,12 +700,12 @@ class Content extends admin_base
         }
 
         // 文章标题与会员昵称都从库里取，不采信客户端
-        $iRow = $this->conn_i->get_one("title", "id=$pid");
+        $iRow = $this->conn_i->get_one("title", $this->conn_i->where_id('id', $pid));
         if (!$iRow) {
             $this->jsonOut(array("success" => 1, "msg" => "文章不存在"));
             return;
         }
-        $hRow = $this->conn_h->get_one("hname,name", "id=$hid");
+        $hRow = $this->conn_h->get_one("hname,name", $this->conn_h->where_id('id', $hid));
         $hname = $hRow ? ($hRow["name"] ? $hRow["name"] : $hRow["hname"]) : "";
 
         $conn_feedback=konecms::load_model_class("feedback");
@@ -798,13 +798,13 @@ class Content extends admin_base
             return;
         }
 
-        $data_=$this->conn_favorate->get_one("*","pid=$pid and hid=$hid");
+        $data_=$this->conn_favorate->get_one("*",$this->conn_favorate->where_id('pid', $pid) . " and " . $this->conn_favorate->where_id('hid', $hid));
         if($data_){
             // 已收藏，视为成功（幂等），并回传已有记录 id 供前端取消收藏使用
             $this->jsonOut(array("success" => 0, "favid" => (int)$data_["id"], "repeat" => 1));
             return;
         }
-        $data2_=$this->conn_i->get_one("title","id=$pid");
+        $data2_=$this->conn_i->get_one("title",$this->conn_i->where_id('id', $pid));
         if(!$data2_){
             $this->jsonOut(array("success" => 1, "msg" => "文章不存在"));
             return;
@@ -854,7 +854,7 @@ class Content extends admin_base
             $i=0;
             foreach($zhuanjiaArr as $a){
                 $hid=$a["id"];
-                $data_=$this->conn_mycarehid->get_one("*","carehid=$hid and myhid=$myhid");
+                $data_=$this->conn_mycarehid->get_one("*",$this->conn_mycarehid->where_id('carehid', $hid) . " and " . $this->conn_mycarehid->where_id('myhid', $myhid));
                 if($data_){
                     $zhuanjiaArr[$i]["ifover"]='0';
                 }else{
@@ -886,8 +886,8 @@ class Content extends admin_base
 	      $i=0;
 	      foreach($zhuanjiaArr as $a){
 	          $hid=$a["id"];
-	          $data_=$this->conn_mycarehid->get_one("*","carehid=$hid and myhid=$myhid");
-	          $num_wenzhang=$this->conn_i->count("hid=$hid");
+	          $data_=$this->conn_mycarehid->get_one("*",$this->conn_mycarehid->where_id('carehid', $hid) . " and " . $this->conn_mycarehid->where_id('myhid', $myhid));
+	          $num_wenzhang=$this->conn_i->count($this->conn_i->where_id('hid', $hid));
 	          $zhuanjiaArr[$i]["num_wenzhang"]=$num_wenzhang;
 	          if($data_){
 	              $zhuanjiaArr[$i]["ifover"]='0';
@@ -925,7 +925,7 @@ class Content extends admin_base
             $data[$k][$k2]["cnt_short"]= strip_tags($a["cnt_short"]);
             $hid=$a["hid"];
             if($hid){
-                $arr_=$this->conn_h->get_one("*","id=$hid");
+                $arr_=$this->conn_h->get_one("*",$this->conn_h->where_id('id', $hid));
                 $data[$k][$k2]["picdir_h"]=$arr_["picdir"];
                 $data[$k][$k2]["nickname"]=$arr_["name"]; 
             } 
@@ -957,7 +957,7 @@ class Content extends admin_base
         $data[$i]["cnt_short"]= strip_tags($a["cnt_short"]);
         $hid=$a["hid"];
         if($hid){
-            $arr_=$this->conn_h->get_one("*","id=$hid");
+            $arr_=$this->conn_h->get_one("*",$this->conn_h->where_id('id', $hid));
             $data[$i]["picdir_h"]=$arr_["picdir"];
             $data[$i]["nickname"]=$arr_["name"];
         
@@ -999,9 +999,9 @@ class Content extends admin_base
     function getExpert(){
         if (isset($_GET["hid"])) {
             $hid=(int)$_GET["hid"]; // [安全修复] 裸插值 id=$hid
-            $this->conn_h->update(array("hitnum" => "+=1"), "id=$hid");
+            $this->conn_h->update(array("hitnum" => "+=1"), $this->conn_h->where_id('id', $hid));
             //会员信息
-            $hArr=$this->conn_h->get_one("*","id=$hid");
+            $hArr=$this->conn_h->get_one("*",$this->conn_h->where_id('id', $hid));
             unset($hArr["pwd"]); // 安全加固：不向前端返回密码哈希，避免敏感信息泄露
             $sort=$hArr["sort"];
             switch($sort){
@@ -1016,8 +1016,8 @@ class Content extends admin_base
                     break;
             }
             //粉丝数量
-             $hArr["num_fans"]=$this->conn_mycarehid->count("carehid=$hid");
-             $hArr["num_contents"]=$this->conn_i->count("hid=$hid");
+             $hArr["num_fans"]=$this->conn_mycarehid->count($this->conn_mycarehid->where_id('carehid', $hid));
+             $hArr["num_contents"]=$this->conn_i->count($this->conn_i->where_id('hid', $hid));
             $hArr=array($hArr);
             
 	  if($_POST["data"]["hid"]){
@@ -1025,7 +1025,7 @@ class Content extends admin_base
                 $i=0;
                 foreach($hArr as $a){
                     $hid=$a["id"];
-                    $data_=$this->conn_mycarehid->get_one("*","carehid=$hid and myhid=$myhid");
+                    $data_=$this->conn_mycarehid->get_one("*",$this->conn_mycarehid->where_id('carehid', $hid) . " and " . $this->conn_mycarehid->where_id('myhid', $myhid));
                     if($data_){
                         $hArr[$i]["ifover"]='0';
                     }else{
@@ -1037,7 +1037,7 @@ class Content extends admin_base
             
             
             //发布的文章
-            $iArr=$this->conn_i->select("*","hid=$hid","id desc",10);
+            $iArr=$this->conn_i->select("*",$this->conn_i->where_id('hid', $hid),"id desc",10);
             $rtnArr=array("hArr"=>$hArr,"iArr"=>$iArr); 
             echo json_encode($rtnArr);
         }
@@ -1089,12 +1089,12 @@ class Content extends admin_base
             return;
         }
         if ($type) {
-            $this->conn_i->update(array($field => "-=1"), "id=$id and $field>0");
+            $this->conn_i->update(array($field => "-=1"), $this->conn_i->where_id('id', $id) . " and $field>0");
         } else {
-            $this->conn_i->update(array($field => "+=1"), "id=$id");
+            $this->conn_i->update(array($field => "+=1"), $this->conn_i->where_id('id', $id));
         }
         bxq_rl_hit('vote', 600);
-        $row = $this->conn_i->get_one("$field", "id=$id");
+        $row = $this->conn_i->get_one("$field", $this->conn_i->where_id('id', $id));
         $this->jsonOut(array("success" => 0, $field => $row ? (int)$row[$field] : 0));
     }
 
